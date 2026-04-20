@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI Operating Model — Personal Workbook | HWZ</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F0F4F8;color:#1A2A3A;min-height:100vh;padding:24px 16px 60px}
+  .container{max-width:820px;margin:0 auto}
+
+  /* Header */
+  .header{background:#002D5C;border-radius:12px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+  .logo{width:44px;height:44px;background:#0066B3;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
+  .header-text h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:2px}
+  .header-text p{font-size:13px;color:#7AAFD4}
+  .header-right{margin-left:auto;text-align:right}
+  .header-right span{font-size:12px;color:#7AAFD4;display:block}
+  .header-right strong{font-size:15px;color:#E8A838}
+
+  /* Progress */
+  .progress-wrap{background:#fff;border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;border:1px solid #D8E4EF}
+  .progress-track{flex:1;height:6px;background:#E8EEF4;border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:#0066B3;border-radius:3px;transition:width 0.4s}
+  .progress-wrap span{font-size:13px;color:#64748B;white-space:nowrap}
+
+  /* Nav tabs */
+  .mod-nav{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+  .mod-tab{padding:7px 14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;font-size:12px;font-weight:500;color:#64748B;cursor:pointer;transition:all 0.15s}
+  .mod-tab:hover{background:#EBF4FF;border-color:#0066B3;color:#0066B3}
+  .mod-tab.active{background:#0066B3;border-color:#0066B3;color:#fff}
+  .mod-tab.done{border-color:#16A34A;color:#15803D}
+  .mod-tab.done::after{content:" ✓"}
+
+  /* Module card */
+  .module-card{background:#fff;border-radius:12px;border:1px solid #D8E4EF;overflow:hidden;margin-bottom:16px}
+  .mod-header{padding:16px 22px;border-bottom:1px solid #EBF0F6;display:flex;align-items:center;gap:14px;background:#F8FBFF}
+  .mod-num{width:32px;height:32px;border-radius:50%;background:#0066B3;color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .mod-info h2{font-size:16px;font-weight:600;color:#002D5C;margin-bottom:2px}
+  .mod-info p{font-size:12px;color:#64748B}
+  .mod-time{margin-left:auto;font-size:11px;color:#64748B;background:#EBF0F6;padding:4px 10px;border-radius:20px;white-space:nowrap}
+  .mod-body{padding:22px}
+
+  /* Fields */
+  .field-group{margin-bottom:18px}
+  .field-label{font-size:13px;font-weight:600;color:#1A2A3A;margin-bottom:4px;display:block}
+  .field-hint{font-size:12px;color:#64748B;margin-bottom:6px;display:block;line-height:1.5}
+  textarea{width:100%;min-height:72px;resize:vertical;padding:10px 12px;font-size:14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#1A2A3A;font-family:inherit;line-height:1.6;transition:border 0.15s}
+  textarea:focus{outline:none;border-color:#0066B3;box-shadow:0 0 0 3px rgba(0,102,179,0.12)}
+  input[type=text]{width:100%;padding:9px 12px;font-size:14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#1A2A3A;font-family:inherit;transition:border 0.15s}
+  input[type=text]:focus{outline:none;border-color:#0066B3;box-shadow:0 0 0 3px rgba(0,102,179,0.12)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+  /* Dimension blocks */
+  .dim-block{border:1px solid #D8E4EF;border-radius:10px;margin-bottom:10px;overflow:hidden}
+  .dim-top{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;background:#F8FBFF;transition:background 0.15s;user-select:none}
+  .dim-top:hover{background:#EBF4FF}
+  .dim-icon-wrap{width:30px;height:30px;border-radius:50%;background:#EBF4FF;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .dim-name{font-size:14px;font-weight:600;color:#002D5C;flex:1}
+  .dim-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#E8EEF4;color:#64748B;transition:all 0.2s}
+  .dim-badge.rated{background:#D6E8F5;color:#003B6F}
+  .dim-chevron{font-size:11px;color:#94A3B8;margin-left:6px;transition:transform 0.2s}
+  .dim-chevron.open{transform:rotate(180deg)}
+
+  .dim-guide{display:none;padding:16px;border-top:1px solid #EBF0F6;background:#FAFCFF}
+  .dim-guide.open{display:block}
+  .anchor-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+  .anchor{border-radius:8px;padding:11px 13px}
+  .anchor.a1{background:#FEF2F2;border:1px solid #FECACA}
+  .anchor.a3{background:#FFFBEB;border:1px solid #FDE68A}
+  .anchor.a5{background:#F0FDF4;border:1px solid #86EFAC}
+  .anchor-title{font-size:11px;font-weight:700;margin-bottom:5px}
+  .anchor.a1 .anchor-title{color:#991B1B}
+  .anchor.a3 .anchor-title{color:#92400E}
+  .anchor.a5 .anchor-title{color:#166534}
+  .anchor p{font-size:12px;line-height:1.55;color:#374151}
+
+  .rating-row{display:flex;align-items:center;gap:6px}
+  .r-dot{width:34px;height:34px;border-radius:50%;border:2px solid #0066B3;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#0066B3;transition:all 0.12s;flex-shrink:0}
+  .r-dot:hover{background:#EBF4FF}
+  .r-dot.on{background:#0066B3;color:#fff}
+  .r-text{font-size:12px;color:#64748B;margin-left:8px;font-style:italic}
+
+  .dim-note{margin-top:10px}
+  .dim-note textarea{min-height:52px;font-size:13px;background:#fff}
+
+  /* Tension */
+  .tension-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #EBF0F6}
+  .tension-item:last-child{border-bottom:none}
+  .tension-name{font-size:13px;font-weight:600;color:#1A2A3A;width:220px;flex-shrink:0}
+  .t-dots{display:flex;gap:5px}
+  .t-dot{width:22px;height:22px;border-radius:50%;border:2px solid #C5D8ED;cursor:pointer;transition:all 0.12s}
+  .t-dot.on{background:#E8A838;border-color:#E8A838}
+  .t-score{font-size:12px;color:#64748B;min-width:18px;margin-left:4px}
+
+  /* Commitment */
+  .commitment-card{background:#F0F7FF;border:1px solid #BFDBFE;border-left:4px solid #0066B3;border-radius:8px;padding:18px;margin-bottom:16px}
+  .commitment-card .field-label{color:#002D5C}
+
+  /* Nav buttons */
+  .nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid #EBF0F6}
+  .btn-prev{padding:9px 20px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#64748B;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s}
+  .btn-prev:hover{background:#F0F4F8;border-color:#94A3B8}
+  .btn-next{padding:9px 22px;border-radius:8px;border:none;background:#0066B3;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s}
+  .btn-next:hover{background:#005A9E}
+  .btn-export{padding:9px 20px;border-radius:8px;border:1px solid #16A34A;background:#F0FDF4;color:#15803D;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
+  .btn-export:hover{background:#DCFCE7}
+
+  /* Export section */
+  .export-section{background:#fff;border:1px solid #D8E4EF;border-radius:12px;padding:22px;margin-bottom:20px}
+  .export-section h3{font-size:15px;font-weight:600;color:#002D5C;margin-bottom:6px}
+  .export-section p{font-size:13px;color:#64748B;margin-bottom:14px;line-height:1.6}
+  .export-btns{display:flex;gap:10px;flex-wrap:wrap}
+
+  @media(max-width:600px){
+    .anchor-grid{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
+    .tension-name{width:140px}
+    .header{flex-wrap:wrap}
+    .header-right{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo">HWZ</div>
+    <div class="header-text">
+      <h1>AI Operating Model — Personal Workbook</h1>
+      <p>CAS AI in Marketing · Fill this out throughout the day</p>
+    </div>
+    <div class="header-right">
+      <span>Kurs</span>
+      <strong>MCA-MAI26-1</strong>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <span id="prog-label">Module 1 of 6</span>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:16.6%"></div></div>
+    <span id="prog-pct">17%</span>
+  </div>
+
+  <div class="mod-nav" id="nav"></div>
+  <div id="module-container"></div>
+
+</div>
+
+<script>
+const DIMS = [
+  {
+    name:"Governance & Decision-making", icon:"⚖️",
+    anchors:[
+      {cls:"a1",title:"1 — Ad hoc",txt:"No clear owner for AI decisions. Each team decides independently. No guidelines, no escalation path. AI initiatives start and stop without structure."},
+      {cls:"a3",title:"3 — Developing",txt:"An AI steering group exists but meets irregularly. Some guidelines in place for high-risk use cases. Decisions often made reactively rather than proactively."},
+      {cls:"a5",title:"5 — Leading",txt:"Clear AI governance framework with defined owners, decision rights, and escalation paths. Regular review cycles. Policies cover data, ethics, compliance and brand risk."}
+    ]
+  },
+  {
+    name:"Roles & Capabilities", icon:"👥",
+    anchors:[
+      {cls:"a1",title:"1 — Ad hoc",txt:"No dedicated AI roles. A few curious individuals use AI tools privately. No structured upskilling. Heavy dependence on external agencies for AI work."},
+      {cls:"a3",title:"3 — Developing",txt:"First AI-specific roles hired (e.g. data analyst, prompt specialist). Sporadic training. Most teams still rely on traditional skill sets."},
+      {cls:"a5",title:"5 — Leading",txt:"AI fluency embedded across marketing. Defined career paths for AI roles. Regular skill assessments. Mix of embedded experts and central CoE with clear interfaces."}
+    ]
+  },
+  {
+    name:"Processes & Workflows", icon:"⚙️",
+    anchors:[
+      {cls:"a1",title:"1 — Ad hoc",txt:"Core processes (campaign planning, content production, reporting) run as they always have. AI tools used sporadically, not integrated. Manual steps dominate."},
+      {cls:"a3",title:"3 — Developing",txt:"Some processes partially automated (e.g. content drafting, A/B testing). AI integrated in 1–2 workflows but not end-to-end. Efficiency gains visible but not scaled."},
+      {cls:"a5",title:"5 — Leading",txt:"AI embedded in core marketing workflows end-to-end: selection, personalisation, execution, measurement. Humans focus on strategy and exceptions, not execution."}
+    ]
+  },
+  {
+    name:"Data & Infrastructure", icon:"🗄️",
+    anchors:[
+      {cls:"a1",title:"1 — Ad hoc",txt:"Data is siloed across platforms. No unified customer profile. First-party data not systematically collected. AI tools work on incomplete or stale data."},
+      {cls:"a3",title:"3 — Developing",txt:"A CDP or data lake in place but not fully integrated. First-party data strategy defined but not fully executed. Some personalisation possible but limited in real-time."},
+      {cls:"a5",title:"5 — Leading",txt:"Unified real-time customer data platform. First-party data strategy fully executed. AI models feed off clean, governed, fresh data. Infrastructure supports personalisation at scale."}
+    ]
+  },
+  {
+    name:"Culture & Change", icon:"❤️",
+    anchors:[
+      {cls:"a1",title:"1 — Ad hoc",txt:"Significant scepticism or fear around AI in the team. Creative identity feels threatened. Change driven top-down with little buy-in. Experimentation is not encouraged."},
+      {cls:"a3",title:"3 — Developing",txt:"Openness growing but inconsistent. Some champions visible. Failures tolerated in pilot context. Cultural shift in progress but not yet embedded in ways of working."},
+      {cls:"a5",title:"5 — Leading",txt:"AI is part of the team's identity, not a threat. Psychological safety is high. Experimentation is celebrated. Learning from AI failures built into retrospectives."}
+    ]
+  }
+];
+
+const RLABELS = {1:"Early stage",2:"Developing",3:"Established",4:"Advanced",5:"Leading"};
+const state = { current:0, ratings:{}, tensions:{}, guideOpen:{} };
+
+// ── IDs for all inputs (for export) ──────────────────────────────────────────
+// We'll query by data-field attribute
+
+// ── MODULES ──────────────────────────────────────────────────────────────────
+function m1(){
+  return `
+    <div class="field-group">
+      <span class="field-label">Your company & role</span>
+      <div class="grid2" style="margin-top:6px">
+        <input type="text" data-field="company" placeholder="Company name..."/>
+        <input type="text" data-field="role" placeholder="Your role in marketing..."/>
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Rate your organisation on each dimension</span>
+      <span class="field-hint">Click a dimension to expand the guidance — then pick your score (1 = early stage, 5 = leading).</span>
+      ${DIMS.map((d,i)=>`
+        <div class="dim-block">
+          <div class="dim-top" onclick="toggleDim(${i})">
+            <div class="dim-icon-wrap">${d.icon}</div>
+            <span class="dim-name">${d.name}</span>
+            <span class="dim-badge${state.ratings[i]?' rated':''}" id="badge${i}">${state.ratings[i]?'Score: '+state.ratings[i]:'Not rated'}</span>
+            <span class="dim-chevron${state.guideOpen[i]?' open':''}" id="chev${i}">▼</span>
+          </div>
+          <div class="dim-guide${state.guideOpen[i]?' open':''}" id="guide${i}">
+            <div class="anchor-grid">
+              ${d.anchors.map(a=>`
+                <div class="anchor ${a.cls}">
+                  <div class="anchor-title">${a.title}</div>
+                  <p>${a.txt}</p>
+                </div>`).join('')}
+            </div>
+            <div class="rating-row" id="dimrate${i}">
+              ${[1,2,3,4,5].map(n=>`<div class="r-dot${(state.ratings[i]||0)>=n?' on':''}" onclick="rate(${i},${n})">${n}</div>`).join('')}
+              <span class="r-text" id="rtxt${i}">${state.ratings[i]?RLABELS[state.ratings[i]]:''}</span>
+            </div>
+            <div class="dim-note">
+              <span class="field-hint" style="margin-bottom:4px;display:block">Why this score?</span>
+              <textarea data-field="dimnote${i}" placeholder="e.g. We have guidelines but they're rarely applied in day-to-day decisions..." style="min-height:50px"></textarea>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div class="field-group">
+      <span class="field-label">Your biggest observation from this scan</span>
+      <span class="field-hint">What surprised you? What confirms what you already suspected?</span>
+      <textarea data-field="scan_obs" placeholder="Write here..."></textarea>
+    </div>`;
+}
+
+function m2(){
+  return DIMS.map((d,i)=>`
+    <div class="field-group">
+      <span class="field-label">${d.icon}&nbsp; ${d.name}</span>
+      <div class="grid2" style="margin-top:6px">
+        <div>
+          <span class="field-hint">What is already working well?</span>
+          <textarea data-field="dim2_good${i}" placeholder="Strengths in your company..." style="min-height:64px"></textarea>
+        </div>
+        <div>
+          <span class="field-hint">What is clearly missing or broken?</span>
+          <textarea data-field="dim2_gap${i}" placeholder="Gaps or pain points..." style="min-height:64px"></textarea>
+        </div>
+      </div>
+    </div>`).join('')+`
+    <div class="field-group">
+      <span class="field-label">Your most critical dimension — and why</span>
+      <textarea data-field="crit_dim" placeholder="Which dimension is the biggest lever for YOUR organisation?"></textarea>
+    </div>`;
+}
+
+function m3(){
+  return `
+    <div class="field-group">
+      <span class="field-label">Your biggest tension (the one you put on the sticky)</span>
+      <input type="text" data-field="own_tension" placeholder="Describe in 1 sentence..."/>
+    </div>
+    <div class="field-group" style="margin-top:1rem">
+      <span class="field-label">How hot is each tension for your organisation?</span>
+      <span class="field-hint">1 = not really a problem · 5 = burning issue right now</span>
+      <div style="margin-top:10px">
+        ${['Centralisation vs. Decentralisation','Efficiency vs. Creativity','Governance & AI Risk'].map((t,i)=>`
+          <div class="tension-item">
+            <span class="tension-name">${t}</span>
+            <div class="t-dots">
+              ${[1,2,3,4,5].map(n=>`<div class="t-dot${(state.tensions[i]||0)>=n?' on':''}" onclick="rateTension(${i},${n})"></div>`).join('')}
+            </div>
+            <span class="t-score" id="tscore${i}">${state.tensions[i]?state.tensions[i]+'/5':''}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="field-group" style="margin-top:1.2rem">
+      <span class="field-label">3 impulses from the Hot Seat round</span>
+      <span class="field-hint">What did you hear from others that was useful for your situation?</span>
+      ${[1,2,3].map(n=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:13px;color:#64748B;min-width:18px;font-weight:600">${n}.</span>
+          <input type="text" data-field="impulse${n}" placeholder="Impulse from the group..."/>
+        </div>`).join('')}
+    </div>`;
+}
+
+function m4(){
+  return `
+    <div class="field-group">
+      <span class="field-label">Most surprising insight from the consulting session</span>
+      <textarea data-field="guest_surprise" placeholder="Something you didn't expect to hear..."></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Most directly relevant point for YOUR company</span>
+      <textarea data-field="guest_relevant" placeholder="The thing you could act on immediately..."></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">The pattern that distinguishes scalers from pilots — in your own words</span>
+      <textarea data-field="guest_pattern" placeholder="Based on what the consultant described..."></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">One question you still have</span>
+      <input type="text" data-field="guest_question" placeholder="Something left open after the session..."/>
+    </div>`;
+}
+
+function m5(){
+  return `
+    <div class="field-group">
+      <span class="field-label">What should be concretely different in 18–24 months?</span>
+      <span class="field-hint">Be specific — not "more AI" but "our campaign selection runs without manual intervention".</span>
+      <textarea data-field="target_vision" placeholder="In 18–24 months, my marketing organisation will..." style="min-height:90px"></textarea>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Your critical lever — the one dimension you must change first</span>
+      <input type="text" data-field="crit_lever" placeholder="e.g. Governance — because nothing else can move without it"/>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Target state per dimension in 18–24 months</span>
+      <div style="margin-top:10px">
+        ${DIMS.map((d,i)=>`
+          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
+            <span style="font-size:15px;margin-top:8px;flex-shrink:0">${d.icon}</span>
+            <span style="font-size:12px;font-weight:600;color:#64748B;min-width:115px;padding-top:9px;flex-shrink:0">${d.name.split('&')[0].trim()}</span>
+            <input type="text" data-field="target_dim${i}" placeholder="Target state..."/>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="field-label">First realistic step you can take next week</span>
+      <input type="text" data-field="first_step" placeholder="Something specific, not abstract..."/>
+    </div>
+    <div class="field-group">
+      <span class="field-label">Peer review feedback received</span>
+      <textarea data-field="peer_feedback" placeholder="What did your review partner say? What will you act on?"></textarea>
+    </div>`;
+}
+
+function m6(){
+  return `
+    <div class="commitment-card">
+      <div class="field-group">
+        <span class="field-label">My 30-day commitment</span>
+        <span class="field-hint">One action. Concrete. Something you can actually do in the next 30 days.</span>
+        <textarea data-field="commitment" placeholder="In the next 30 days, I will..." style="min-height:80px;background:#fff"></textarea>
+      </div>
+      <div class="grid2" style="margin-top:4px">
+        <div class="field-group" style="margin-bottom:0">
+          <span class="field-label">By when?</span>
+          <input type="text" data-field="commit_date" placeholder="e.g. 20 May 2026"/>
+        </div>
+        <div class="field-group" style="margin-bottom:0">
+          <span class="field-label">Accountability partner</span>
+          <input type="text" data-field="commit_partner" placeholder="Name of your tandem from today"/>
+        </div>
+      </div>
+    </div>
+    <div class="field-group">
+      <span class="field-label">My 3 key learnings from the day</span>
+      ${[1,2,3].map(n=>`
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:13px;color:#64748B;min-width:18px;font-weight:600">${n}.</span>
+          <input type="text" data-field="learning${n}" placeholder="Learning ${n}..."/>
+        </div>`).join('')}
+    </div>
+    <div class="field-group">
+      <span class="field-label">One open question I am leaving with</span>
+      <input type="text" data-field="open_question" placeholder="Something I still need to figure out..."/>
+    </div>
+    <div style="margin-top:20px;padding-top:18px;border-top:1px solid #EBF0F6">
+      <p style="font-size:13px;color:#64748B;margin-bottom:14px">When you are done, download your workbook as a Word document to save, edit and share your results.</p>
+      <div class="export-btns">
+        <button class="btn-export" onclick="exportWord()">⬇ Download as Word (.doc)</button>
+      </div>
+    </div>`;
+}
+
+const MODULES = [
+  {num:1,time:"08:30–10:00",title:"AI Maturity Scan",sub:"Where does your organisation stand today?",fn:m1},
+  {num:2,time:"10:00–11:00",title:"Dimension Profile",sub:"Deep dive on each of the 5 dimensions",fn:m2},
+  {num:3,time:"11:00–12:30",title:"Tensions & Peer Impulses",sub:"Hot Seat — what did you learn from others?",fn:m3},
+  {num:4,time:"13:30–14:30",title:"Guest Impulse",sub:"Key take-aways from the consulting session",fn:m4},
+  {num:5,time:"14:30–16:00",title:"Target Operating Model",sub:"From now to 18–24 months — your sketch",fn:m5},
+  {num:6,time:"16:00–16:30",title:"My 30-Day Commitment",sub:"One concrete action — specific and measurable",fn:m6},
+];
+
+// ── RATINGS ───────────────────────────────────────────────────────────────────
+function rate(dim,val){
+  state.ratings[dim]=val;
+  const row=document.getElementById('dimrate'+dim);
+  if(row) row.querySelectorAll('.r-dot').forEach((d,i)=>d.classList.toggle('on',i<val));
+  const b=document.getElementById('badge'+dim);
+  if(b){b.textContent='Score: '+val;b.classList.add('rated');}
+  const t=document.getElementById('rtxt'+dim);
+  if(t) t.textContent=RLABELS[val]||'';
+}
+function rateTension(t,v){
+  state.tensions[t]=v;
+  const row=document.getElementById('module-container').querySelectorAll('.tension-item')[t];
+  if(row) row.querySelectorAll('.t-dot').forEach((d,i)=>d.classList.toggle('on',i<v));
+  const sc=document.getElementById('tscore'+t);
+  if(sc) sc.textContent=v+'/5';
+}
+function toggleDim(i){
+  state.guideOpen[i]=!state.guideOpen[i];
+  const g=document.getElementById('guide'+i);
+  const c=document.getElementById('chev'+i);
+  if(g) g.classList.toggle('open',state.guideOpen[i]);
+  if(c) c.classList.toggle('open',state.guideOpen[i]);
+}
+
+// ── SAVE INPUT STATE ──────────────────────────────────────────────────────────
+function saveInputs(){
+  document.querySelectorAll('[data-field]').forEach(el=>{
+    state[el.dataset.field]=el.value;
+  });
+}
+function restoreInputs(){
+  document.querySelectorAll('[data-field]').forEach(el=>{
+    if(state[el.dataset.field]!==undefined) el.value=state[el.dataset.field];
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderNav(){
+  document.getElementById('nav').innerHTML=MODULES.map((m,i)=>`
+    <button class="mod-tab${i===state.current?' active':''}" onclick="goTo(${i})">M${m.num} ${m.title}</button>`).join('');
+}
+function renderModule(){
+  const m=MODULES[state.current];
+  document.getElementById('module-container').innerHTML=`
+    <div class="module-card">
+      <div class="mod-header">
+        <div class="mod-num">${m.num}</div>
+        <div class="mod-info"><h2>${m.title}</h2><p>${m.sub}</p></div>
+        <span class="mod-time">${m.time}</span>
+      </div>
+      <div class="mod-body">
+        ${m.fn()}
+        <div class="nav-btns">
+          ${state.current>0?`<button class="btn-prev" onclick="goTo(${state.current-1})">← Previous</button>`:'<div></div>'}
+          ${state.current<MODULES.length-1
+            ?`<button class="btn-next" onclick="goTo(${state.current+1})">Next module →</button>`
+            :'<div></div>'}
+        </div>
+      </div>
+    </div>`;
+  const pct=Math.round((state.current+1)/MODULES.length*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-label').textContent='Module '+(state.current+1)+' of '+MODULES.length;
+  document.getElementById('prog-pct').textContent=pct+'%';
+  restoreInputs();
+  Object.keys(state.ratings).forEach(i=>rate(parseInt(i),state.ratings[i]));
+  Object.keys(state.tensions).forEach(t=>rateTension(parseInt(t),state.tensions[t]));
+}
+function goTo(i){saveInputs();state.current=i;renderNav();renderModule();window.scrollTo({top:0,behavior:'smooth'});}
+
+// ── WORD EXPORT ───────────────────────────────────────────────────────────────
+function v(key,fallback='—'){return(state[key]&&state[key].trim())||fallback;}
+function dimScore(i){return state.ratings[i]?(state.ratings[i]+'/5 — '+RLABELS[state.ratings[i]]):'Not rated';}
+function tensionScore(i){return state.tensions[i]?(state.tensions[i]+'/5'):'Not rated';}
+
+function exportWord(){
+  saveInputs();
+  const name=v('company','Your Company')+' · '+v('role','Your Role');
+  const today=new Date().toLocaleDateString('en-CH',{day:'2-digit',month:'long',year:'numeric'});
+
+  const html=`
+<html xmlns:o='urn:schemas-microsoft-com:office:office'
+      xmlns:w='urn:schemas-microsoft-com:office:word'
+      xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'>
+<title>AI Operating Model Workbook</title>
+<style>
+  body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1A2A3A;margin:2cm}
+  h1{font-size:20pt;color:#002D5C;border-bottom:3px solid #0066B3;padding-bottom:6pt;margin-bottom:4pt}
+  h2{font-size:14pt;color:#0066B3;margin-top:18pt;margin-bottom:4pt}
+  h3{font-size:12pt;color:#002D5C;margin-top:12pt;margin-bottom:2pt}
+  p,td{font-size:11pt;line-height:1.5}
+  .meta{color:#64748B;font-size:10pt;margin-bottom:16pt}
+  table{width:100%;border-collapse:collapse;margin:8pt 0}
+  th{background:#002D5C;color:#fff;padding:8pt 10pt;text-align:left;font-size:10pt}
+  td{padding:7pt 10pt;border-bottom:1px solid #D8E4EF;vertical-align:top}
+  tr:nth-child(even) td{background:#F8FBFF}
+  .score{font-weight:bold;color:#0066B3}
+  .section-rule{border:none;border-top:1px solid #C5D8ED;margin:14pt 0}
+  .answer{background:#F8FBFF;border-left:3px solid #0066B3;padding:8pt 12pt;margin:4pt 0}
+  .commitment{background:#F0F7FF;border-left:4px solid #0066B3;padding:12pt;margin:8pt 0}
+  .commitment p{margin:4pt 0}
+  .footer{color:#94A3B8;font-size:9pt;text-align:center;margin-top:30pt;border-top:1px solid #D8E4EF;padding-top:8pt}
+</style>
+</head>
+<body>
+
+<h1>AI Operating Model — Personal Workbook</h1>
+<p class="meta">HWZ · CAS AI in Marketing · MCA-MAI26-1 · Exported: ${today}</p>
+<p class="meta"><strong>${name}</strong></p>
+
+<hr class="section-rule"/>
+
+<h2>Module 1 — AI Maturity Scan</h2>
+
+<h3>Dimension Scores</h3>
+<table>
+  <tr><th>Dimension</th><th>Score</th><th>Notes</th></tr>
+  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td class="score">${dimScore(i)}</td><td>${v('dimnote'+i,'—')}</td></tr>`).join('')}
+</table>
+
+<h3>Biggest observation from the maturity scan</h3>
+<div class="answer"><p>${v('scan_obs')}</p></div>
+
+<hr class="section-rule"/>
+
+<h2>Module 2 — Dimension Profile</h2>
+<table>
+  <tr><th>Dimension</th><th>What is working well</th><th>What is missing / broken</th></tr>
+  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td>${v('dim2_good'+i)}</td><td>${v('dim2_gap'+i)}</td></tr>`).join('')}
+</table>
+<h3>Most critical dimension</h3>
+<div class="answer"><p>${v('crit_dim')}</p></div>
+
+<hr class="section-rule"/>
+
+<h2>Module 3 — Tensions &amp; Peer Impulses</h2>
+
+<h3>My biggest tension</h3>
+<div class="answer"><p>${v('own_tension')}</p></div>
+
+<h3>Tension ratings</h3>
+<table>
+  <tr><th>Tension</th><th>Score</th></tr>
+  ${['Centralisation vs. Decentralisation','Efficiency vs. Creativity','Governance &amp; AI Risk'].map((t,i)=>`<tr><td>${t}</td><td class="score">${tensionScore(i)}</td></tr>`).join('')}
+</table>
+
+<h3>3 impulses from the Hot Seat round</h3>
+<table>
+  ${[1,2,3].map(n=>`<tr><td style="width:24pt;font-weight:bold;color:#0066B3">${n}.</td><td>${v('impulse'+n)}</td></tr>`).join('')}
+</table>
+
+<hr class="section-rule"/>
+
+<h2>Module 4 — Guest Impulse</h2>
+
+<h3>Most surprising insight</h3>
+<div class="answer"><p>${v('guest_surprise')}</p></div>
+
+<h3>Most directly relevant point for my company</h3>
+<div class="answer"><p>${v('guest_relevant')}</p></div>
+
+<h3>The pattern that distinguishes scalers from pilots</h3>
+<div class="answer"><p>${v('guest_pattern')}</p></div>
+
+<h3>One question still open</h3>
+<div class="answer"><p>${v('guest_question')}</p></div>
+
+<hr class="section-rule"/>
+
+<h2>Module 5 — Target Operating Model</h2>
+
+<h3>Vision for 18–24 months</h3>
+<div class="answer"><p>${v('target_vision')}</p></div>
+
+<h3>Critical lever</h3>
+<div class="answer"><p>${v('crit_lever')}</p></div>
+
+<h3>Target state per dimension</h3>
+<table>
+  <tr><th>Dimension</th><th>Target state in 18–24 months</th></tr>
+  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td>${v('target_dim'+i)}</td></tr>`).join('')}
+</table>
+
+<h3>First step next week</h3>
+<div class="answer"><p>${v('first_step')}</p></div>
+
+<h3>Peer review feedback</h3>
+<div class="answer"><p>${v('peer_feedback')}</p></div>
+
+<hr class="section-rule"/>
+
+<h2>Module 6 — My 30-Day Commitment</h2>
+
+<div class="commitment">
+  <p><strong>Commitment:</strong> ${v('commitment')}</p>
+  <p><strong>By:</strong> ${v('commit_date')}</p>
+  <p><strong>Accountability partner:</strong> ${v('commit_partner')}</p>
+</div>
+
+<h3>3 key learnings from the day</h3>
+<table>
+  ${[1,2,3].map(n=>`<tr><td style="width:24pt;font-weight:bold;color:#0066B3">${n}.</td><td>${v('learning'+n)}</td></tr>`).join('')}
+</table>
+
+<h3>One open question I am leaving with</h3>
+<div class="answer"><p>${v('open_question')}</p></div>
+
+<p class="footer">HWZ · CAS AI in Marketing · AI Operating Model Tageskurs · ${today}</p>
+
+</body></html>`;
+
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='AI_OM_Workbook_'+v('company','HWZ').replace(/\s+/g,'_')+'.doc';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderNav();
+renderModule();
+</script>
+</body>
+</html>
