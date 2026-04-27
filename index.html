@@ -102,11 +102,11 @@
   /* ── Module nav ── */
   .mod-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
   .mod-tab {
-    padding: 8px 15px; border-radius: 9px;
+    padding: 11px 15px; border-radius: 9px;
     border: 1.5px solid var(--border);
     background: #fff; font-size: 12px; font-weight: 500;
     color: var(--gray); cursor: pointer; transition: all 0.15s;
-    font-family: inherit;
+    font-family: inherit; min-height: 44px;
   }
   .mod-tab:hover { background: var(--light-blue); border-color: var(--blue); color: var(--blue); }
   .mod-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
@@ -155,15 +155,10 @@
   .section:last-child { margin-bottom: 0; }
 
   .section-title {
-    font-size: 13px; font-weight: 700; color: var(--navy);
-    text-transform: uppercase; letter-spacing: 0.6px;
+    font-size: 11px; font-weight: 700; color: var(--blue);
+    text-transform: uppercase; letter-spacing: 1px;
     margin-bottom: 12px;
     display: flex; align-items: center; gap: 8px;
-  }
-  .section-title::before {
-    content: ''; display: inline-block;
-    width: 3px; height: 14px;
-    background: var(--blue); border-radius: 2px;
   }
 
   .instruction {
@@ -182,7 +177,7 @@
     border: 1.5px solid var(--border);
     border-radius: 9px;
     padding: 12px 14px;
-    font-size: 14px;
+    font-size: 16px;
     font-family: inherit;
     color: #1A2A3A;
     background: var(--light);
@@ -225,6 +220,8 @@
     accent-color: var(--blue);
     height: 6px;
     cursor: pointer;
+    padding: 16px 0;
+    box-sizing: content-box;
   }
   .slider-labels {
     display: flex; justify-content: space-between;
@@ -332,7 +329,7 @@
     border-radius: 14px; padding: 24px 28px;
     text-align: center; color: #fff;
   }
-  .export-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+  .export-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
   .export-section p { font-size: 13px; color: #9DC4E8; margin-bottom: 20px; }
   .export-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
@@ -738,7 +735,7 @@
       <div class="section">
         <div class="section-title">Workbook exportieren</div>
         <div class="export-section">
-          <h3>🎉 Workbook abgeschlossen</h3>
+          <h3>Workbook abgeschlossen</h3>
           <p>Exportiere dein persönliches Workbook als Word-Dokument — zum Weiterbearbeiten, Ablegen oder Teilen.</p>
           <div class="export-btns">
             <button class="btn btn-accent" onclick="exportWord()">📄 Als Word herunterladen</button>
