@@ -775,9 +775,80 @@
 
 <script>
   const modules = 5;
+  const storageKey = 'hwz-ai-operating-model-workbook-v1';
+  const autosaveSelector = 'textarea, input[type="text"], input[type="range"], input[type="hidden"]';
   let current = 0;
   const completed = new Set();
   const tensionVals = {};
+
+  function collectWorkbookState() {
+    const fields = {};
+    document.querySelectorAll(autosaveSelector).forEach(el => {
+      if (el.id) fields[el.id] = el.value;
+    });
+
+    return {
+      fields,
+      current,
+      completed: Array.from(completed),
+      savedAt: new Date().toISOString()
+    };
+  }
+
+  function saveWorkbookState() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(collectWorkbookState()));
+    } catch (err) {
+      console.warn('Workbook konnte nicht lokal gespeichert werden.', err);
+    }
+  }
+
+  function restoreTensionSelection(id) {
+    const hidden = document.getElementById(id + '-val');
+    const row = hidden?.closest('.tension-row');
+    if (!hidden || !row) return;
+
+    row.querySelectorAll('.tension-btn').forEach(btn => {
+      const call = btn.getAttribute('onclick') || '';
+      btn.classList.toggle('selected', Boolean(hidden.value) && call.includes(hidden.value));
+    });
+  }
+
+  function restoreWorkbookState() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+
+      const state = JSON.parse(raw);
+      Object.entries(state.fields || {}).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el && 'value' in el) el.value = value;
+      });
+
+      [1, 2, 3, 4, 5].forEach(i => updateSlider('s' + i, document.getElementById('s' + i)?.value || 3));
+      ['t1', 't2', 't3'].forEach(restoreTensionSelection);
+
+      completed.clear();
+      (state.completed || []).forEach(i => {
+        if (Number.isInteger(i) && i >= 0 && i < modules) completed.add(i);
+      });
+
+      if (Number.isInteger(state.current) && state.current >= 0 && state.current < modules) {
+        goModule(state.current);
+      }
+    } catch (err) {
+      console.warn('Workbook konnte nicht lokal geladen werden.', err);
+    }
+  }
+
+  function initAutosave() {
+    restoreWorkbookState();
+
+    document.querySelectorAll(autosaveSelector).forEach(el => {
+      el.addEventListener('input', saveWorkbookState);
+      el.addEventListener('change', saveWorkbookState);
+    });
+  }
 
   function goModule(idx) {
     completed.add(current);
@@ -800,6 +871,7 @@
     document.getElementById('badge-progress').textContent = 'Modul ' + (idx + 1) + ' / ' + modules;
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    saveWorkbookState();
   }
 
   function updateSlider(id, val) {
@@ -810,6 +882,7 @@
     btn.closest('.tension-row').querySelectorAll('.tension-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     document.getElementById(id + '-val').value = val;
+    saveWorkbookState();
   }
 
   function getVal(id) {
@@ -1120,6 +1193,8 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
     a.click();
     URL.revokeObjectURL(url);
   }
+
+  initAutosave();
 
 </script>
 </body>
