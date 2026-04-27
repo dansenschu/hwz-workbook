@@ -736,7 +736,7 @@
       <div class="section">
         <div class="section-title">Meine Top-3-Learnings heute</div>
         <div class="field-wrap">
-          <textarea id="m5-learnings" rows="4" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+          <textarea id="m5-learnings" rows="4" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
         </div>
       </div>
 
@@ -818,105 +818,298 @@
   }
 
   function exportWord() {
-    const name = getVal('p-name') || 'Teilnehmende:r';
+    const name    = getVal('p-name')    || 'Teilnehmende:r';
     const company = getVal('p-company') || '—';
-    const role = getVal('p-role') || '—';
-    const date = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
+    const role    = getVal('p-role')    || '—';
+    const date    = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
 
-    const scores = [1,2,3,4,5].map(i => document.getElementById('s'+i)?.value || 3);
+    const scores   = [1,2,3,4,5].map(i => parseInt(document.getElementById('s'+i)?.value || 3));
+    const avgScore = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
     const dimNames = ['Governance & Entscheidung','Rollen & Capabilities','Prozesse & Workflows','Daten & Infrastruktur','Kultur & Change'];
+    const dimShort = ['Governance','Rollen','Prozesse','Daten','Kultur'];
+
+    // Score bar helper: renders a visual bar as colored table cells
+    function scoreBar(val) {
+      const pct = Math.round((val/5)*100);
+      const color = val<=2 ? '#DC2626' : val<=3 ? '#D97706' : '#1A7F4B';
+      return `<table style="border-collapse:collapse;width:120pt;display:inline-table"><tr>
+        <td style="width:${pct*1.2}pt;height:10pt;background:${color};border-radius:2pt"></td>
+        <td style="width:${(100-pct)*1.2}pt;height:10pt;background:#DDE3EC;border-radius:2pt"></td>
+        <td style="padding-left:5pt;font-weight:700;color:${color};font-size:11pt;white-space:nowrap">${val}/5</td>
+      </tr></table>`;
+    }
 
     const html = `
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'><title>AI Operating Model Workbook</title>
+<head><meta charset='utf-8'><title>AI Operating Model Workbook — ${name}</title>
 <style>
-body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1A2A3A;margin:2cm}
-h1{font-size:16pt;color:#002B5C;border-bottom:2pt solid #0055A5;padding-bottom:6pt}
-h2{font-size:13pt;color:#002B5C;margin-top:18pt;margin-bottom:6pt}
-h3{font-size:11pt;color:#0055A5;margin-bottom:4pt}
-.meta{background:#F4F7FB;border:1pt solid #D1DDED;padding:8pt;margin-bottom:14pt}
-.meta td{padding:3pt 8pt;font-size:10pt}
-.section{margin-bottom:14pt;border-left:3pt solid #0055A5;padding-left:10pt}
-.label{font-size:9pt;color:#64748B;font-weight:bold;margin-bottom:2pt}
-.answer{background:#F4F7FB;border:1pt solid #D1DDED;padding:7pt;min-height:30pt;margin-bottom:8pt}
-.score-table{border-collapse:collapse;width:100%;margin-bottom:10pt}
-.score-table td,.score-table th{border:1pt solid #D1DDED;padding:5pt 8pt;font-size:10pt}
-.score-table th{background:#002B5C;color:white;font-weight:bold}
-.commit-box{background:#EBF4FF;border:1pt solid #0055A5;padding:10pt;margin-bottom:8pt}
-</style></head><body>
-<h1>AI Operating Model — Personal Workbook</h1>
-<table class='meta'><tr>
-<td><b>Name:</b> ${name}</td>
-<td><b>Unternehmen:</b> ${company}</td>
-<td><b>Funktion:</b> ${role}</td>
-<td><b>Datum:</b> ${date}</td>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1A1A2E; margin: 2cm; line-height: 1.5; }
+  h1   { font-size: 20pt; color: #0055A5; margin: 0 0 4pt; }
+  h2   { font-size: 13pt; color: #0055A5; margin: 22pt 0 8pt;
+         border-bottom: 1.5pt solid #0055A5; padding-bottom: 4pt; }
+  h3   { font-size: 11pt; color: #003E7A; margin: 14pt 0 5pt; }
+  p    { margin: 0 0 8pt; }
+  .lbl { font-size: 9pt; font-weight: 700; color: #5A6478; text-transform: uppercase;
+         letter-spacing: 0.5pt; margin-bottom: 3pt; display: block; }
+  .ans { background: #F7F9FC; border: 1pt solid #DDE3EC; padding: 7pt 10pt;
+         margin-bottom: 10pt; min-height: 20pt; font-size: 11pt; }
+  .ans-blue { background: #EBF3FB; border: 1pt solid #D0E5F5; padding: 7pt 10pt; margin-bottom: 10pt; }
+  table { border-collapse: collapse; width: 100%; }
+  th    { background: #0055A5; color: #fff; padding: 6pt 10pt; font-size: 10pt; text-align: left; }
+  td    { border: 1pt solid #DDE3EC; padding: 6pt 10pt; font-size: 10pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #F7F9FC; }
+  .commit { background: #0055A5; color: #fff; padding: 14pt 16pt; margin: 10pt 0; }
+  .commit .lbl { color: rgba(255,255,255,0.7); }
+  .commit .ans { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: #fff; }
+  .road-now  { background: #F0FAF4; border-left: 4pt solid #1A7F4B; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-soon { background: #FFFBEB; border-left: 4pt solid #D97706; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-late { background: #EBF3FB; border-left: 4pt solid #0055A5; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-lbl  { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 5pt; }
+  .summary-card { border: 1.5pt solid #DDE3EC; padding: 12pt; margin-bottom: 8pt; background: #fff; }
+  .footer { margin-top: 24pt; border-top: 1pt solid #DDE3EC; padding-top: 8pt;
+            font-size: 9pt; color: #5A6478; text-align: center; }
+  .json-block { background: #1A1A2E; color: #E2E8F0; padding: 12pt; font-family: 'Courier New', monospace;
+                font-size: 9pt; line-height: 1.6; border-radius: 4pt; margin-top: 8pt; }
+  .json-key { color: #7AAFD4; }
+  .json-str { color: #A3E635; }
+  .json-num { color: #FB923C; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<table style="margin-bottom:18pt;border:none"><tr>
+  <td style="background:#0055A5;color:#fff;font-size:14pt;font-weight:700;
+             padding:6pt 12pt;width:55pt;border:none;letter-spacing:1pt">HWZ</td>
+  <td style="padding-left:14pt;border:none;vertical-align:middle">
+    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">AI Operating Model</span><br>
+    <h1>Personal Workbook</h1>
+  </td>
+  <td style="text-align:right;border:none;vertical-align:top;font-size:9pt;color:#5A6478">${date}</td>
 </tr></table>
 
-<h2>Modul 1 · Standortbestimmung</h2>
-<div class='section'>
-<div class='label'>Kontext: Mein Unternehmen</div>
-<div class='answer'>${getVal('m1-context').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Grösste AI-Herausforderung</div>
-<div class='answer'>${getVal('m1-challenge').replace(/\n/g,'<br/>') || '—'}</div>
-<h3>AI Maturity Scores</h3>
-<table class='score-table'><tr><th>Dimension</th><th>Score (1–5)</th><th>Notizen</th></tr>
-${dimNames.map((d,i) => `<tr><td>${d}</td><td style="text-align:center;font-weight:bold">${scores[i]}</td><td>${getVal('m1-d'+(i+1)+'-note').replace(/\n/g,'<br/>') || '—'}</td></tr>`).join('')}
+<!-- ── TEILNEHMER ── -->
+<table style="margin-bottom:20pt">
+  <tr style="background:#0055A5">
+    <th style="width:25%">Name</th><th style="width:25%">Unternehmen</th>
+    <th style="width:25%">Funktion</th><th style="width:25%">Datum</th>
+  </tr>
+  <tr><td><b>${name}</b></td><td>${company}</td><td>${role}</td><td>${date}</td></tr>
 </table>
-<div class='label'>Reflexion aus dem 2er-Austausch</div>
-<div class='answer'>${getVal('m1-reflection').replace(/\n/g,'<br/>') || '—'}</div>
-</div>
 
-<h2>Modul 2 · Anatomie AI Operating Model</h2>
-<div class='section'>
-<div class='label'>Zugeteilte Dimension</div>
-<div class='answer'>${getVal('m2-dim') || '—'}</div>
-<div class='label'>Was bedeutet diese Dimension konkret?</div>
-<div class='answer'>${getVal('m2-meaning').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Häufigster Fehler</div>
-<div class='answer'>${getVal('m2-mistake').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Meine Unternehmenseinschätzung</div>
-<div class='answer'>${getVal('m2-mycompany').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Relevante Inputs aus dem Plenum</div>
-<div class='answer'>${getVal('m2-plenum').replace(/\n/g,'<br/>') || '—'}</div>
-</div>
+<!-- ══════════════════════════════════════════
+     EXECUTIVE SUMMARY (Seite 1)
+══════════════════════════════════════════ -->
+<h2>Executive Summary</h2>
 
-<h2>Modul 3 · Spannungsfelder</h2>
-<div class='section'>
-<table class='score-table'><tr><th>Spannungsfeld</th><th>Meine Position</th><th>Begründung</th></tr>
-<tr><td>Zentralisierung vs. Dezentralisierung</td><td>${getVal('t1-val') || '—'}</td><td>${getVal('t1-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
-<tr><td>Build vs. Buy vs. Partner</td><td>${getVal('t2-val') || '—'}</td><td>${getVal('t2-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
-<tr><td>Effizienz vs. Transformation</td><td>${getVal('t3-val') || '—'}</td><td>${getVal('t3-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
+<table style="margin-bottom:16pt">
+  <tr style="background:#0055A5">
+    <th colspan="3">AI Maturity — Übersicht auf einen Blick</th>
+  </tr>
+  <tr><td colspan="3" style="padding:4pt 10pt;font-size:9pt;color:#5A6478;background:#EBF3FB">
+    Durchschnittlicher Reifegrad: <b style="color:#0055A5;font-size:13pt">${avgScore}</b> / 5.0
+  </td></tr>
+  ${dimNames.map((d,i) => `
+  <tr>
+    <td style="width:160pt;font-weight:600">${d}</td>
+    <td style="width:180pt">${scoreBar(scores[i])}</td>
+    <td style="font-size:10pt;color:#5A6478">${getVal('m1-d'+(i+1)+'-note').split('.')[0] || '—'}</td>
+  </tr>`).join('')}
 </table>
-<div class='label'>Top 3 Insights vom Gastredner</div>
-<div class='answer'>${getVal('m3-guest').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Was bedeutet das für mein Unternehmen?</div>
-<div class='answer'>${getVal('m3-apply').replace(/\n/g,'<br/>') || '—'}</div>
+
+<table style="margin-bottom:16pt">
+  <tr style="background:#0055A5">
+    <th>Spannungsfeld</th><th style="width:160pt">Position</th>
+  </tr>
+  <tr><td>Zentralisierung vs. Dezentralisierung</td>
+      <td style="font-weight:600;color:#0055A5">${getVal('t1-val')||'—'}</td></tr>
+  <tr><td>Build vs. Buy vs. Partner</td>
+      <td style="font-weight:600;color:#0055A5">${getVal('t2-val')||'—'}</td></tr>
+  <tr><td>Effizienz vs. Transformation</td>
+      <td style="font-weight:600;color:#0055A5">${getVal('t3-val')||'—'}</td></tr>
+</table>
+
+<div class="commit">
+  <span class="lbl">30-Tage-Commitment</span>
+  <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
+  <table style="border:none;margin-top:8pt">
+    <tr>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0">
+        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0;text-align:right">
+        <b>Check-in:</b> ${getVal('m5-date')||'—'}</td>
+    </tr>
+  </table>
 </div>
 
-<h2>Modul 4 · Roadmap</h2>
-<div class='section'>
-<div class='label'>Case-Analyse: Entscheidender Unterschied</div>
-<div class='answer'>${getVal('m4-diff').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>Transfer auf mein Unternehmen</div>
-<div class='answer'>${getVal('m4-transfer').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>🟢 Sofort (0–3 Monate)</div>
-<div class='answer'>${getVal('m4-now').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>🟡 Kurzfristig (3–12 Monate)</div>
-<div class='answer'>${getVal('m4-soon').replace(/\n/g,'<br/>') || '—'}</div>
-<div class='label'>🔵 Mittelfristig (1–3 Jahre)</div>
-<div class='answer'>${getVal('m4-later').replace(/\n/g,'<br/>') || '—'}</div>
+<!-- ══════════════════════════════════════════
+     MODUL 1
+══════════════════════════════════════════ -->
+<h2>Modul 1 · Standortbestimmung — AI Maturity Scan</h2>
+
+<span class="lbl">Kontext: Mein Unternehmen &amp; AI-Status quo</span>
+<div class="ans">${getVal('m1-context').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Grösste AI-Herausforderung</span>
+<div class="ans">${getVal('m1-challenge').replace(/\n/g,'<br>') || '—'}</div>
+
+<h3>AI Maturity Scan — 5 Dimensionen</h3>
+<table>
+  <tr><th>Dimension</th><th style="width:80pt;text-align:center">Score</th><th>Notizen &amp; Beobachtungen</th></tr>
+  ${dimNames.map((d,i) => `
+  <tr>
+    <td><b>${d}</b></td>
+    <td style="text-align:center">${scoreBar(scores[i])}</td>
+    <td>${getVal('m1-d'+(i+1)+'-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>`).join('')}
+</table>
+
+<br><span class="lbl">Wichtigste Erkenntnis aus dem 2er-Austausch</span>
+<div class="ans">${getVal('m1-reflection').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 2
+══════════════════════════════════════════ -->
+<h2>Modul 2 · Anatomie eines AI Operating Models</h2>
+
+<span class="lbl">Zugeteilte Dimension</span>
+<div class="ans-blue"><b>${getVal('m2-dim') || '—'}</b></div>
+
+<span class="lbl">Was bedeutet diese Dimension konkret?</span>
+<div class="ans">${getVal('m2-meaning').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Häufigster Fehler</span>
+<div class="ans">${getVal('m2-mistake').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Wie steht mein Unternehmen — wo ist die grösste Lücke?</span>
+<div class="ans">${getVal('m2-mycompany').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Relevante Inputs aus dem Plenum</span>
+<div class="ans">${getVal('m2-plenum').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 3
+══════════════════════════════════════════ -->
+<h2>Modul 3 · Spannungsfelder &amp; Trade-offs</h2>
+
+<table style="margin-bottom:14pt">
+  <tr><th>Spannungsfeld</th><th style="width:160pt">Meine Position</th><th>Begründung</th></tr>
+  <tr>
+    <td><b>Zentralisierung vs. Dezentralisierung</b></td>
+    <td style="color:#0055A5;font-weight:600">${getVal('t1-val')||'—'}</td>
+    <td>${getVal('t1-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+  <tr>
+    <td><b>Build vs. Buy vs. Partner</b></td>
+    <td style="color:#0055A5;font-weight:600">${getVal('t2-val')||'—'}</td>
+    <td>${getVal('t2-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+  <tr>
+    <td><b>Effizienz vs. Transformation</b></td>
+    <td style="color:#0055A5;font-weight:600">${getVal('t3-val')||'—'}</td>
+    <td>${getVal('t3-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+</table>
+
+<span class="lbl">Top-Insights vom Gastredner</span>
+<div class="ans">${getVal('m3-guest').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Was bedeutet das konkret für mein Unternehmen?</span>
+<div class="ans">${getVal('m3-apply').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 4
+══════════════════════════════════════════ -->
+<h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
+
+<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
+<span class="lbl">Entscheidender Unterschied im Operating Model</span>
+<div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
+<span class="lbl">Transfer auf mein Unternehmen</span>
+<div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
+
+<h3>Prioritäten-Roadmap</h3>
+<div class="road-now">
+  <div class="road-lbl" style="color:#1A7F4B">Sofort — 0 bis 3 Monate</div>
+  ${getVal('m4-now').replace(/\n/g,'<br>') || '—'}
+</div>
+<div class="road-soon">
+  <div class="road-lbl" style="color:#D97706">Kurzfristig — 3 bis 12 Monate</div>
+  ${getVal('m4-soon').replace(/\n/g,'<br>') || '—'}
+</div>
+<div class="road-late">
+  <div class="road-lbl" style="color:#0055A5">Mittelfristig — 1 bis 3 Jahre</div>
+  ${getVal('m4-later').replace(/\n/g,'<br>') || '—'}
 </div>
 
-<h2>Modul 5 · Commitment</h2>
-<div class='section'>
-<div class='commit-box'>
-<div class='label'>Mein 30-Tage-Commitment</div>
-<div class='answer'>${getVal('m5-commit').replace(/\n/g,'<br/>') || '—'}</div>
-<p><b>Accountability-Partner:</b> ${getVal('m5-partner') || '—'} &nbsp;&nbsp; <b>Check-in Datum:</b> ${getVal('m5-date') || '—'}</p>
+<!-- ══════════════════════════════════════════
+     MODUL 5
+══════════════════════════════════════════ -->
+<h2>Modul 5 · Persönliches Commitment &amp; Abschluss</h2>
+
+<div class="commit">
+  <span class="lbl">Was ich in den nächsten 30 Tagen konkret tue</span>
+  <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
+  <table style="border:none;margin-top:10pt">
+    <tr>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0">
+        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0;text-align:right">
+        <b>Check-in Datum:</b> ${getVal('m5-date')||'—'}</td>
+    </tr>
+  </table>
 </div>
-<div class='label'>Meine Top-3-Learnings heute</div>
-<div class='answer'>${getVal('m5-learnings').replace(/\n/g,'<br/>') || '—'}</div>
+
+<span class="lbl">Meine Top-3-Learnings heute</span>
+<div class="ans">${getVal('m5-learnings').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Was hat besonders gut funktioniert?</span>
+<div class="ans">${getVal('m5-good').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Was würdest du für nächstes Mal ändern?</span>
+<div class="ans">${getVal('m5-improve').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MASCHINENLESBARER APPENDIX (für LLMs)
+══════════════════════════════════════════ -->
+<h2>Appendix · Strukturierte Daten (LLM-lesbar)</h2>
+<p style="font-size:9pt;color:#5A6478">Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).</p>
+
+<div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"meta"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-str">"${name}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"company"</span>: <span class="json-str">"${company}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"role"</span>: <span class="json-str">"${role}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"date"</span>: <span class="json-str">"${date}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"maturity"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"average"</span>: <span class="json-num">${avgScore}</span>,<br>
+${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</span>: <span class="json-num">${scores[i]}</span>`).join(',<br>')}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"context"</span>: <span class="json-str">"${getVal('m1-context').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"challenge"</span>: <span class="json-str">"${getVal('m1-challenge').replace(/"/g,'\\"')}"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"tensions"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"structure"</span>: <span class="json-str">"${getVal('t1-val')||'—'}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"buildBuy"</span>: <span class="json-str">"${getVal('t2-val')||'—'}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"focus"</span>: <span class="json-str">"${getVal('t3-val')||'—'}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"roadmap"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"now_0_3m"</span>: <span class="json-str">"${getVal('m4-now').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"soon_3_12m"</span>: <span class="json-str">"${getVal('m4-soon').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"later_1_3y"</span>: <span class="json-str">"${getVal('m4-later').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"commitment"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"action"</span>: <span class="json-str">"${getVal('m5-commit').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"partner"</span>: <span class="json-str">"${getVal('m5-partner').replace(/"/g,'\\"')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"checkIn"</span>: <span class="json-str">"${getVal('m5-date').replace(/"/g,'\\"')}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"learnings"</span>: <span class="json-str">"${getVal('m5-learnings').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span><br>
+}
 </div>
+
+<div class="footer">HWZ Zürich · AI Operating Model Tageskurs · ${date}</div>
+
 </body></html>`;
 
     const blob = new Blob([html], { type: 'application/msword' });
@@ -927,6 +1120,7 @@ ${dimNames.map((d,i) => `<tr><td>${d}</td><td style="text-align:center;font-weig
     a.click();
     URL.revokeObjectURL(url);
   }
+
 </script>
 </body>
 </html>
