@@ -1,628 +1,915 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AI Operating Model — Personal Workbook | HWZ</title>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#F0F4F8;color:#1A2A3A;min-height:100vh;padding:24px 16px 60px}
-  .container{max-width:820px;margin:0 auto}
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
 
-  /* Header */
-  .header{background:#002D5C;border-radius:12px;padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
-  .logo{width:44px;height:44px;background:#0066B3;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:#fff;flex-shrink:0}
-  .header-text h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:2px}
-  .header-text p{font-size:13px;color:#7AAFD4}
-  .header-right{margin-left:auto;text-align:right}
-  .header-right span{font-size:12px;color:#7AAFD4;display:block}
-  .header-right strong{font-size:15px;color:#E8A838}
+  :root {
+    --navy: #002B5C;
+    --blue: #0055A5;
+    --light-blue: #E8F1FB;
+    --accent: #E8A838;
+    --green: #16A34A;
+    --red: #DC2626;
+    --gray: #64748B;
+    --light: #F4F7FB;
+    --white: #FFFFFF;
+    --border: #D1DDED;
+  }
 
-  /* Progress */
-  .progress-wrap{background:#fff;border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;border:1px solid #D8E4EF}
-  .progress-track{flex:1;height:6px;background:#E8EEF4;border-radius:3px;overflow:hidden}
-  .progress-fill{height:100%;background:#0066B3;border-radius:3px;transition:width 0.4s}
-  .progress-wrap span{font-size:13px;color:#64748B;white-space:nowrap}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Nav tabs */
-  .mod-nav{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
-  .mod-tab{padding:7px 14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;font-size:12px;font-weight:500;color:#64748B;cursor:pointer;transition:all 0.15s}
-  .mod-tab:hover{background:#EBF4FF;border-color:#0066B3;color:#0066B3}
-  .mod-tab.active{background:#0066B3;border-color:#0066B3;color:#fff}
-  .mod-tab.done{border-color:#16A34A;color:#15803D}
-  .mod-tab.done::after{content:" ✓"}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    color: #1A2A3A;
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+  }
 
-  /* Module card */
-  .module-card{background:#fff;border-radius:12px;border:1px solid #D8E4EF;overflow:hidden;margin-bottom:16px}
-  .mod-header{padding:16px 22px;border-bottom:1px solid #EBF0F6;display:flex;align-items:center;gap:14px;background:#F8FBFF}
-  .mod-num{width:32px;height:32px;border-radius:50%;background:#0066B3;color:#fff;font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .mod-info h2{font-size:16px;font-weight:600;color:#002D5C;margin-bottom:2px}
-  .mod-info p{font-size:12px;color:#64748B}
-  .mod-time{margin-left:auto;font-size:11px;color:#64748B;background:#EBF0F6;padding:4px 10px;border-radius:20px;white-space:nowrap}
-  .mod-body{padding:22px}
+  .container { max-width: 860px; margin: 0 auto; }
 
-  /* Fields */
-  .field-group{margin-bottom:18px}
-  .field-label{font-size:13px;font-weight:600;color:#1A2A3A;margin-bottom:4px;display:block}
-  .field-hint{font-size:12px;color:#64748B;margin-bottom:6px;display:block;line-height:1.5}
-  textarea{width:100%;min-height:72px;resize:vertical;padding:10px 12px;font-size:14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#1A2A3A;font-family:inherit;line-height:1.6;transition:border 0.15s}
-  textarea:focus{outline:none;border-color:#0066B3;box-shadow:0 0 0 3px rgba(0,102,179,0.12)}
-  input[type=text]{width:100%;padding:9px 12px;font-size:14px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#1A2A3A;font-family:inherit;transition:border 0.15s}
-  input[type=text]:focus{outline:none;border-color:#0066B3;box-shadow:0 0 0 3px rgba(0,102,179,0.12)}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  /* ── Header ── */
+  .header {
+    background: var(--navy);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .logo {
+    width: 52px; height: 52px;
+    background: var(--blue);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .header-text h1 { font-size: 21px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .header-text p { font-size: 13px; color: #7AAFD4; }
+  .header-badge {
+    margin-left: auto;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .header-badge span { font-size: 11px; color: #7AAFD4; display: block; }
+  .header-badge strong { font-size: 16px; color: var(--accent); }
 
-  /* Dimension blocks */
-  .dim-block{border:1px solid #D8E4EF;border-radius:10px;margin-bottom:10px;overflow:hidden}
-  .dim-top{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;background:#F8FBFF;transition:background 0.15s;user-select:none}
-  .dim-top:hover{background:#EBF4FF}
-  .dim-icon-wrap{width:30px;height:30px;border-radius:50%;background:#EBF4FF;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-  .dim-name{font-size:14px;font-weight:600;color:#002D5C;flex:1}
-  .dim-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:#E8EEF4;color:#64748B;transition:all 0.2s}
-  .dim-badge.rated{background:#D6E8F5;color:#003B6F}
-  .dim-chevron{font-size:11px;color:#94A3B8;margin-left:6px;transition:transform 0.2s}
-  .dim-chevron.open{transform:rotate(180deg)}
+  /* ── Participant info ── */
+  .participant-bar {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    display: flex; gap: 16px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .participant-bar label { font-size: 12px; font-weight: 600; color: var(--gray); display: block; margin-bottom: 4px; }
+  .participant-bar input {
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 220px;
+    background: var(--light);
+    color: #1A2A3A;
+  }
+  .participant-bar input:focus { outline: none; border-color: var(--blue); background: #fff; }
 
-  .dim-guide{display:none;padding:16px;border-top:1px solid #EBF0F6;background:#FAFCFF}
-  .dim-guide.open{display:block}
-  .anchor-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
-  .anchor{border-radius:8px;padding:11px 13px}
-  .anchor.a1{background:#FEF2F2;border:1px solid #FECACA}
-  .anchor.a3{background:#FFFBEB;border:1px solid #FDE68A}
-  .anchor.a5{background:#F0FDF4;border:1px solid #86EFAC}
-  .anchor-title{font-size:11px;font-weight:700;margin-bottom:5px}
-  .anchor.a1 .anchor-title{color:#991B1B}
-  .anchor.a3 .anchor-title{color:#92400E}
-  .anchor.a5 .anchor-title{color:#166534}
-  .anchor p{font-size:12px;line-height:1.55;color:#374151}
+  /* ── Progress ── */
+  .progress-wrap {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .progress-track { flex: 1; height: 7px; background: var(--light-blue); border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--blue); border-radius: 4px; transition: width 0.5s ease; }
+  .progress-wrap span { font-size: 12px; color: var(--gray); white-space: nowrap; font-weight: 500; }
 
-  .rating-row{display:flex;align-items:center;gap:6px}
-  .r-dot{width:34px;height:34px;border-radius:50%;border:2px solid #0066B3;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#0066B3;transition:all 0.12s;flex-shrink:0}
-  .r-dot:hover{background:#EBF4FF}
-  .r-dot.on{background:#0066B3;color:#fff}
-  .r-text{font-size:12px;color:#64748B;margin-left:8px;font-style:italic}
+  /* ── Module nav ── */
+  .mod-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .mod-tab {
+    padding: 8px 15px; border-radius: 9px;
+    border: 1.5px solid var(--border);
+    background: #fff; font-size: 12px; font-weight: 500;
+    color: var(--gray); cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .mod-tab:hover { background: var(--light-blue); border-color: var(--blue); color: var(--blue); }
+  .mod-tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .mod-tab.done { border-color: var(--green); color: var(--green); }
+  .mod-tab.done.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-  .dim-note{margin-top:10px}
-  .dim-note textarea{min-height:52px;font-size:13px;background:#fff}
+  /* ── Module panels ── */
+  .module { display: none; }
+  .module.active { display: block; }
 
-  /* Tension */
-  .tension-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #EBF0F6}
-  .tension-item:last-child{border-bottom:none}
-  .tension-name{font-size:13px;font-weight:600;color:#1A2A3A;width:220px;flex-shrink:0}
-  .t-dots{display:flex;gap:5px}
-  .t-dot{width:22px;height:22px;border-radius:50%;border:2px solid #C5D8ED;cursor:pointer;transition:all 0.12s}
-  .t-dot.on{background:#E8A838;border-color:#E8A838}
-  .t-score{font-size:12px;color:#64748B;min-width:18px;margin-left:4px}
+  .module-header {
+    background: var(--navy);
+    border-radius: 14px 14px 0 0;
+    padding: 20px 28px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .module-num {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--accent);
+    flex-shrink: 0;
+  }
+  .module-header h2 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 3px; }
+  .module-header p { font-size: 12px; color: #7AAFD4; }
+  .module-time {
+    margin-left: auto;
+    background: rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 12px; color: var(--accent); font-weight: 600; white-space: nowrap;
+  }
 
-  /* Commitment */
-  .commitment-card{background:#F0F7FF;border:1px solid #BFDBFE;border-left:4px solid #0066B3;border-radius:8px;padding:18px;margin-bottom:16px}
-  .commitment-card .field-label{color:#002D5C}
+  .module-body {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+  }
 
-  /* Nav buttons */
-  .nav-btns{display:flex;justify-content:space-between;align-items:center;margin-top:22px;padding-top:18px;border-top:1px solid #EBF0F6}
-  .btn-prev{padding:9px 20px;border-radius:8px;border:1px solid #C5D8ED;background:#fff;color:#64748B;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s}
-  .btn-prev:hover{background:#F0F4F8;border-color:#94A3B8}
-  .btn-next{padding:9px 22px;border-radius:8px;border:none;background:#0066B3;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:background 0.15s}
-  .btn-next:hover{background:#005A9E}
-  .btn-export{padding:9px 20px;border-radius:8px;border:1px solid #16A34A;background:#F0FDF4;color:#15803D;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.15s}
-  .btn-export:hover{background:#DCFCE7}
+  /* ── Sections ── */
+  .section { margin-bottom: 28px; }
+  .section:last-child { margin-bottom: 0; }
 
-  /* Export section */
-  .export-section{background:#fff;border:1px solid #D8E4EF;border-radius:12px;padding:22px;margin-bottom:20px}
-  .export-section h3{font-size:15px;font-weight:600;color:#002D5C;margin-bottom:6px}
-  .export-section p{font-size:13px;color:#64748B;margin-bottom:14px;line-height:1.6}
-  .export-btns{display:flex;gap:10px;flex-wrap:wrap}
+  .section-title {
+    font-size: 13px; font-weight: 700; color: var(--navy);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before {
+    content: ''; display: inline-block;
+    width: 3px; height: 14px;
+    background: var(--blue); border-radius: 2px;
+  }
 
-  @media(max-width:600px){
-    .anchor-grid{grid-template-columns:1fr}
-    .grid2{grid-template-columns:1fr}
-    .tension-name{width:140px}
-    .header{flex-wrap:wrap}
-    .header-right{margin-left:0}
+  .instruction {
+    background: var(--light-blue);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 11px 16px;
+    font-size: 13px; color: #334;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* ── Inputs ── */
+  textarea, input[type="text"] {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: #1A2A3A;
+    background: var(--light);
+    resize: vertical;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.6;
+  }
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--blue);
+    background: #fff;
+  }
+  .field-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--gray); margin-bottom: 6px;
+    display: block;
+  }
+  .field-wrap { margin-bottom: 14px; }
+
+  /* ── Maturity slider ── */
+  .maturity-grid { display: flex; flex-direction: column; gap: 14px; }
+  .maturity-row {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .maturity-row-top {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 8px;
+  }
+  .dim-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .dim-score {
+    background: var(--blue); color: #fff;
+    border-radius: 6px; padding: 2px 10px;
+    font-size: 13px; font-weight: 700; min-width: 36px; text-align: center;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--blue);
+    height: 6px;
+    cursor: pointer;
+  }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--gray); margin-top: 4px;
+  }
+  .dim-desc { font-size: 11px; color: var(--gray); margin-top: 5px; font-style: italic; }
+
+  /* ── Tension rating ── */
+  .tension-grid { display: flex; flex-direction: column; gap: 10px; }
+  .tension-row {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 9px;
+    padding: 12px 14px;
+  }
+  .tension-label { font-size: 12px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
+  .tension-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tension-btn {
+    padding: 5px 12px; border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: #fff; font-size: 11px; font-weight: 500;
+    color: var(--gray); cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tension-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .tension-btn.selected { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* ── Commitment ── */
+  .commitment-box {
+    background: linear-gradient(135deg, #002B5C 0%, #0055A5 100%);
+    border-radius: 12px;
+    padding: 22px 24px;
+    color: #fff;
+  }
+  .commitment-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--accent); }
+  .commitment-box p { font-size: 12px; color: #9DC4E8; margin-bottom: 16px; }
+  .commitment-box textarea {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: #fff;
+    border-radius: 9px;
+  }
+  .commitment-box textarea::placeholder { color: rgba(255,255,255,0.4); }
+  .commitment-box textarea:focus { background: rgba(255,255,255,0.15); border-color: var(--accent); }
+  .commitment-meta {
+    display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .commitment-meta input {
+    background: rgba(255,255,255,0.1);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: #fff;
+    flex: 1; min-width: 180px;
+  }
+  .commitment-meta input::placeholder { color: rgba(255,255,255,0.4); }
+  .commitment-meta input:focus { background: rgba(255,255,255,0.15); border-color: var(--accent); }
+
+  /* ── Nav buttons ── */
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 11px 22px; border-radius: 9px;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-primary:hover { background: #004494; }
+  .btn-secondary { background: var(--light); border: 1.5px solid var(--border); color: var(--gray); }
+  .btn-secondary:hover { background: #fff; color: var(--navy); }
+  .btn-accent { background: var(--accent); color: var(--navy); }
+  .btn-accent:hover { background: #d4962e; }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-success:hover { background: #138a3e; }
+
+  /* ── Summary ── */
+  .summary-block {
+    background: var(--light);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .summary-block h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .summary-block p { font-size: 13px; color: #334; line-height: 1.6; }
+
+  .score-summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px; margin-bottom: 16px;
+  }
+  .score-card {
+    background: #fff; border: 1.5px solid var(--border);
+    border-radius: 9px; padding: 12px;
+    text-align: center;
+  }
+  .score-card .dim { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+  .score-card .val { font-size: 22px; font-weight: 700; color: var(--blue); }
+  .score-card .bar { height: 4px; border-radius: 2px; background: var(--light-blue); margin-top: 6px; overflow: hidden; }
+  .score-card .bar-fill { height: 100%; background: var(--blue); border-radius: 2px; }
+
+  .export-section {
+    background: linear-gradient(135deg, #002B5C, #003E7A);
+    border-radius: 14px; padding: 24px 28px;
+    text-align: center; color: #fff;
+  }
+  .export-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--accent); }
+  .export-section p { font-size: 13px; color: #9DC4E8; margin-bottom: 20px; }
+  .export-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* print */
+  @media print {
+    body { background: white; }
+    .nav-bar, .mod-nav, .progress-wrap, .export-section, .btn { display: none !important; }
+    .module { display: block !important; }
+    .module-body { border: 1px solid #ddd; }
   }
 </style>
 </head>
 <body>
 <div class="container">
 
+  <!-- Header -->
   <div class="header">
-    <div class="logo">HWZ</div>
+    <div class="logo">🤖</div>
     <div class="header-text">
       <h1>AI Operating Model — Personal Workbook</h1>
-      <p>CAS AI in Marketing · Fill this out throughout the day</p>
+      <p>HWZ Zürich · Tageskurs · Begleitmaterial</p>
     </div>
-    <div class="header-right">
-      <span>Kurs</span>
-      <strong>MCA-MAI26-1</strong>
+    <div class="header-badge">
+      <span>Module</span>
+      <strong id="badge-progress">1 / 5</strong>
     </div>
   </div>
 
+  <!-- Participant -->
+  <div class="participant-bar">
+    <div>
+      <label>Dein Name</label>
+      <input type="text" id="p-name" placeholder="Vorname Nachname"/>
+    </div>
+    <div>
+      <label>Unternehmen</label>
+      <input type="text" id="p-company" placeholder="Firma / Organisation"/>
+    </div>
+    <div>
+      <label>Funktion</label>
+      <input type="text" id="p-role" placeholder="Deine Rolle"/>
+    </div>
+  </div>
+
+  <!-- Progress -->
   <div class="progress-wrap">
-    <span id="prog-label">Module 1 of 6</span>
-    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:16.6%"></div></div>
-    <span id="prog-pct">17%</span>
+    <div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:20%"></div></div>
+    <span id="progress-label">Modul 1 von 5</span>
   </div>
 
-  <div class="mod-nav" id="nav"></div>
-  <div id="module-container"></div>
+  <!-- Module Tabs -->
+  <div class="mod-nav">
+    <button class="mod-tab active" onclick="goModule(0)">1 · Standort</button>
+    <button class="mod-tab" onclick="goModule(1)">2 · Dimensionen</button>
+    <button class="mod-tab" onclick="goModule(2)">3 · Spannungsfelder</button>
+    <button class="mod-tab" onclick="goModule(3)">4 · Roadmap</button>
+    <button class="mod-tab" onclick="goModule(4)">5 · Commitment</button>
+  </div>
+
+  <!-- ══════════════ MODULE 1 ══════════════ -->
+  <div class="module active" id="mod-0">
+    <div class="module-header">
+      <div class="module-num">1</div>
+      <div>
+        <h2>Standortbestimmung — AI Maturity Scan</h2>
+        <p>Wo steht dein Unternehmen heute auf den 5 Dimensionen eines AI Operating Models?</p>
+      </div>
+      <div class="module-time">90 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Kontext: Mein Unternehmen</div>
+        <div class="instruction">Beschreibe kurz dein Unternehmen und den Status quo von AI in deiner Organisation. Was läuft bereits? Was sind die grössten Hürden?</div>
+        <div class="field-wrap">
+          <label class="field-label">Kurzbeschreibung meines Unternehmens & AI-Status quo</label>
+          <textarea id="m1-context" rows="4" placeholder="z.B. Wir sind ein mittelgrosses Finanzunternehmen mit ca. 1'200 FTE. AI wird bisher hauptsächlich im Fraud Detection Bereich genutzt. Die grösste Hürde ist aktuell fehlende Datenverfügbarkeit und unklare Governance..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Meine grösste AI-Herausforderung (1 Satz)</label>
+          <textarea id="m1-challenge" rows="2" placeholder="Was ist das eine Ding, das euch am meisten bremst?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">AI Maturity Scan — 5 Dimensionen</div>
+        <div class="instruction">Bewerte dein Unternehmen auf jeder Dimension ehrlich. Skala: 1 = Anfänger, 5 = Vorreiter.</div>
+        <div class="maturity-grid">
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">1 · Governance & Entscheidungsstrukturen</div>
+              <div class="dim-score" id="s1-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s1',this.value)" id="s1"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Gibt es klare AI-Verantwortlichkeiten, Risikorahmen und Entscheidungsprozesse?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d1-note" rows="2" placeholder="Was fehlt konkret bei euch? Was funktioniert bereits?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">2 · Rollen & Capabilities</div>
+              <div class="dim-score" id="s2-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s2',this.value)" id="s2"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Haben wir die richtigen Rollen, Skills und Weiterbildungsprogramme für AI?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d2-note" rows="2" placeholder="Welche Rollen fehlen? Wo investiert ihr in Skills?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">3 · Prozesse & Workflows</div>
+              <div class="dim-score" id="s3-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s3',this.value)" id="s3"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Sind AI-Prozesse und Human-AI-Workflows klar definiert und skaliert?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d3-note" rows="2" placeholder="Wo setzt ihr AI in Prozessen ein? Wo ist es noch ad-hoc?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">4 · Daten & Infrastruktur</div>
+              <div class="dim-score" id="s4-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s4',this.value)" id="s4"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Ist die Datengrundlage und technische Infrastruktur für skalierbare AI vorhanden?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d4-note" rows="2" placeholder="Welche Datenprobleme habt ihr? Wie ist die Cloud/AI-Infrastruktur?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">5 · Kultur & Change</div>
+              <div class="dim-score" id="s5-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s5',this.value)" id="s5"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Wie hoch ist die AI-Bereitschaft und das Vertrauen der Mitarbeitenden?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d5-note" rows="2" placeholder="Wie reagiert eure Belegschaft auf AI? Gibt es Widerstände? Enabler?"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reflexion (2er-Austausch)</div>
+        <div class="instruction">Tausch dich mit einer Person aus: Was überrascht dich an deiner Selbsteinschätzung? Was deckt sich nicht mit der offiziellen Darstellung?</div>
+        <div class="field-wrap">
+          <label class="field-label">Meine wichtigste Erkenntnis aus dem Austausch</label>
+          <textarea id="m1-reflection" rows="3" placeholder="Was habe ich im Gespräch gelernt oder bestätigt bekommen?"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <span style="font-size:12px;color:var(--gray)">Modul 1 von 5</span>
+        <button class="btn btn-primary" onclick="goModule(1)">Weiter → Dimensionen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 2 ══════════════ -->
+  <div class="module" id="mod-1">
+    <div class="module-header">
+      <div class="module-num">2</div>
+      <div>
+        <h2>Anatomie eines AI Operating Models</h2>
+        <p>Was muss sich in deiner Organisation konkret verändern?</p>
+      </div>
+      <div class="module-time">60 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Dimension Deep-Dive (Gruppenarbeit)</div>
+        <div class="instruction">Du hast eine Dimension zugeteilt bekommen. Erarbeite mit deiner Gruppe: Was bedeutet diese Dimension konkret — und was ist der häufigste Fehler? Notiere parallel deine eigene Unternehmenseinschätzung.</div>
+        <div class="field-wrap">
+          <label class="field-label">Meine zugeteilte Dimension</label>
+          <input type="text" id="m2-dim" placeholder="z.B. Governance & Entscheidungsstrukturen"/>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was bedeutet diese Dimension konkret? (Gruppe)</label>
+          <textarea id="m2-meaning" rows="3" placeholder="Welche konkreten Elemente, Rollen, Prozesse gehören dazu?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Häufigster Fehler bei dieser Dimension</label>
+          <textarea id="m2-mistake" rows="3" placeholder="Was machen Unternehmen typischerweise falsch?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Wie steht mein Unternehmen bei dieser Dimension? Was ist die grösste Lücke?</label>
+          <textarea id="m2-mycompany" rows="3" placeholder="Eigene Einschätzung — was fehlt konkret bei uns?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Best Practice aus dem Plenum</div>
+        <div class="instruction">Notiere 2–3 Insights aus den Kurzpräsentationen der anderen Gruppen, die für dein Unternehmen relevant sind.</div>
+        <div class="field-wrap">
+          <label class="field-label">Relevante Inputs aus dem Plenum</label>
+          <textarea id="m2-plenum" rows="4" placeholder="Welche Erkenntnisse der anderen Gruppen treffen auch auf meine Organisation zu?"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(0)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(2)">Weiter → Spannungsfelder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 3 ══════════════ -->
+  <div class="module" id="mod-2">
+    <div class="module-header">
+      <div class="module-num">3</div>
+      <div>
+        <h2>Spannungsfelder & Trade-offs</h2>
+        <p>Wo reibt es in eurer Organisation — und warum?</p>
+      </div>
+      <div class="module-time">90 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Spannungsfeld-Assessment</div>
+        <div class="instruction">Wo steht dein Unternehmen bei den drei zentralen Spannungsfeldern? Wähle die treffendste Position und notiere deine Begründung.</div>
+
+        <div class="tension-grid">
+
+          <div class="tension-row">
+            <div class="tension-label">1 · AI-Struktur: Zentralisierung vs. Dezentralisierung</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig zentral (AI CoE)')">Vollständig zentral (AI CoE)</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Hybrid (CoE + embedded)')">Hybrid (CoE + embedded)</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig dezentral')">Vollständig dezentral</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t1-note" rows="2" placeholder="Warum diese Position? Was spricht dafür/dagegen?"></textarea>
+            </div>
+            <input type="hidden" id="t1-val"/>
+          </div>
+
+          <div class="tension-row">
+            <div class="tension-label">2 · Build vs. Buy vs. Partner</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Build (intern)')">Primär Build (intern)</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Buy (Vendor)')">Primär Buy (Vendor)</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Hybrid')">Hybrid</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t2-note" rows="2" placeholder="Was ist eure aktuelle Strategie? Was würdest du ändern?"></textarea>
+            </div>
+            <input type="hidden" id="t2-val"/>
+          </div>
+
+          <div class="tension-row">
+            <div class="tension-label">3 · Effizienz vs. Transformation</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Fokus Effizienz (do more with less)')">Fokus Effizienz</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Ausgewogen')">Ausgewogen</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Fokus Transformation')">Fokus Transformation</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t3-note" rows="2" placeholder="Wo drückt der Schuh? Was sollte anders gewichtet werden?"></textarea>
+            </div>
+            <input type="hidden" id="t3-val"/>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Inputs vom Gastredner / Top Management Consulting</div>
+        <div class="instruction">Notiere die für dich wichtigsten Erkenntnisse aus dem Impuls (30 min + Q&A).</div>
+        <div class="field-wrap">
+          <label class="field-label">Top 3 Insights aus dem Gastimpuls</label>
+          <textarea id="m3-guest" rows="4" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was bedeutet das konkret für mein Unternehmen?</label>
+          <textarea id="m3-apply" rows="3" placeholder="Welcher Insight ist für meine Situation am relevantesten?"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(1)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(3)">Weiter → Roadmap</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 4 ══════════════ -->
+  <div class="module" id="mod-3">
+    <div class="module-header">
+      <div class="module-num">4</div>
+      <div>
+        <h2>Roadmap — Von Analyse zu Aktion</h2>
+        <p>Wie kommen wir von der Diagnose zu konkreten Massnahmen?</p>
+      </div>
+      <div class="module-time">60 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Case-Analyse (Gruppenarbeit)</div>
+        <div class="instruction">Ihr analysiert einen Unternehmens-Case: Gleiche Technologie, unterschiedliche Operating Models — unterschiedliche Outcomes. Was war der Unterschied?</div>
+        <div class="field-wrap">
+          <label class="field-label">Case-Name / Unternehmen</label>
+          <input type="text" id="m4-case" placeholder="Welcher Case wurde analysiert?"/>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was war der entscheidende Unterschied im Operating Model?</label>
+          <textarea id="m4-diff" rows="3" placeholder="Was hat das erfolgreiche Unternehmen anders gemacht?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was würde das für mein Unternehmen bedeuten?</label>
+          <textarea id="m4-transfer" rows="3" placeholder="Welche 1–2 Dinge könnte ich direkt übernehmen?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Meine Prioritäten-Roadmap</div>
+        <div class="instruction">Definiere 3 konkrete Prioritäten für dein Unternehmen — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
+        <div class="field-wrap">
+          <label class="field-label">🟢 Sofort (0–3 Monate): Was kann ich / mein Team direkt anschieben?</label>
+          <textarea id="m4-now" rows="3" placeholder="z.B. AI Governance Working Group einberufen, Daten-Audit starten..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">🟡 Kurzfristig (3–12 Monate): Was braucht Planung und Ressourcen?</label>
+          <textarea id="m4-soon" rows="3" placeholder="z.B. Pilot AI CoE aufbauen, erste Reskilling-Programme starten..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">🔵 Mittelfristig (1–3 Jahre): Was ist die transformative Vision?</label>
+          <textarea id="m4-later" rows="3" placeholder="z.B. Vollständig skaliertes AI Operating Model, AI-native Prozesse in allen BUs..."></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(2)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(4)">Weiter → Commitment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 5 ══════════════ -->
+  <div class="module" id="mod-4">
+    <div class="module-header">
+      <div class="module-num">5</div>
+      <div>
+        <h2>Persönliches Commitment & Abschluss</h2>
+        <p>Was nimmst du heute mit — und was wirst du konkret tun?</p>
+      </div>
+      <div class="module-time">30 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Mein 30-Tage-Commitment</div>
+        <div class="commitment-box">
+          <h3>Was ich in den nächsten 30 Tagen konkret tue</h3>
+          <p>Sei spezifisch: Was, mit wem, bis wann? Je konkreter, desto wahrscheinlicher wird es passieren.</p>
+          <textarea id="m5-commit" rows="4" placeholder="In den nächsten 30 Tagen werde ich... konkret erreichen, indem ich..."></textarea>
+          <div class="commitment-meta">
+            <input type="text" id="m5-partner" placeholder="👥 Accountability-Partner (Name)"/>
+            <input type="text" id="m5-date" placeholder="📅 Datum meines Check-ins"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Meine Top-3-Learnings heute</div>
+        <div class="field-wrap">
+          <textarea id="m5-learnings" rows="4" placeholder="1. ...\n2. ...\n3. ..."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Feedback zum Kurs</div>
+        <div class="field-wrap">
+          <label class="field-label">Was hat besonders gut funktioniert?</label>
+          <textarea id="m5-good" rows="2" placeholder=""></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was würdest du für nächstes Mal ändern?</label>
+          <textarea id="m5-improve" rows="2" placeholder=""></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Workbook exportieren</div>
+        <div class="export-section">
+          <h3>🎉 Workbook abgeschlossen</h3>
+          <p>Exportiere dein persönliches Workbook als Word-Dokument — zum Weiterbearbeiten, Ablegen oder Teilen.</p>
+          <div class="export-btns">
+            <button class="btn btn-accent" onclick="exportWord()">📄 Als Word herunterladen</button>
+            <button class="btn btn-secondary" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.3)" onclick="window.print()">🖨️ Drucken / PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(3)">← Zurück</button>
+        <span style="font-size:12px;color:var(--gray)">Modul 5 von 5 — Fast fertig! 🎯</span>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
-const DIMS = [
-  {
-    name:"Governance & Decision-making", icon:"⚖️",
-    anchors:[
-      {cls:"a1",title:"1 — Ad hoc",txt:"No clear owner for AI decisions. Each team decides independently. No guidelines, no escalation path. AI initiatives start and stop without structure."},
-      {cls:"a3",title:"3 — Developing",txt:"An AI steering group exists but meets irregularly. Some guidelines in place for high-risk use cases. Decisions often made reactively rather than proactively."},
-      {cls:"a5",title:"5 — Leading",txt:"Clear AI governance framework with defined owners, decision rights, and escalation paths. Regular review cycles. Policies cover data, ethics, compliance and brand risk."}
-    ]
-  },
-  {
-    name:"Roles & Capabilities", icon:"👥",
-    anchors:[
-      {cls:"a1",title:"1 — Ad hoc",txt:"No dedicated AI roles. A few curious individuals use AI tools privately. No structured upskilling. Heavy dependence on external agencies for AI work."},
-      {cls:"a3",title:"3 — Developing",txt:"First AI-specific roles hired (e.g. data analyst, prompt specialist). Sporadic training. Most teams still rely on traditional skill sets."},
-      {cls:"a5",title:"5 — Leading",txt:"AI fluency embedded across marketing. Defined career paths for AI roles. Regular skill assessments. Mix of embedded experts and central CoE with clear interfaces."}
-    ]
-  },
-  {
-    name:"Processes & Workflows", icon:"⚙️",
-    anchors:[
-      {cls:"a1",title:"1 — Ad hoc",txt:"Core processes (campaign planning, content production, reporting) run as they always have. AI tools used sporadically, not integrated. Manual steps dominate."},
-      {cls:"a3",title:"3 — Developing",txt:"Some processes partially automated (e.g. content drafting, A/B testing). AI integrated in 1–2 workflows but not end-to-end. Efficiency gains visible but not scaled."},
-      {cls:"a5",title:"5 — Leading",txt:"AI embedded in core marketing workflows end-to-end: selection, personalisation, execution, measurement. Humans focus on strategy and exceptions, not execution."}
-    ]
-  },
-  {
-    name:"Data & Infrastructure", icon:"🗄️",
-    anchors:[
-      {cls:"a1",title:"1 — Ad hoc",txt:"Data is siloed across platforms. No unified customer profile. First-party data not systematically collected. AI tools work on incomplete or stale data."},
-      {cls:"a3",title:"3 — Developing",txt:"A CDP or data lake in place but not fully integrated. First-party data strategy defined but not fully executed. Some personalisation possible but limited in real-time."},
-      {cls:"a5",title:"5 — Leading",txt:"Unified real-time customer data platform. First-party data strategy fully executed. AI models feed off clean, governed, fresh data. Infrastructure supports personalisation at scale."}
-    ]
-  },
-  {
-    name:"Culture & Change", icon:"❤️",
-    anchors:[
-      {cls:"a1",title:"1 — Ad hoc",txt:"Significant scepticism or fear around AI in the team. Creative identity feels threatened. Change driven top-down with little buy-in. Experimentation is not encouraged."},
-      {cls:"a3",title:"3 — Developing",txt:"Openness growing but inconsistent. Some champions visible. Failures tolerated in pilot context. Cultural shift in progress but not yet embedded in ways of working."},
-      {cls:"a5",title:"5 — Leading",txt:"AI is part of the team's identity, not a threat. Psychological safety is high. Experimentation is celebrated. Learning from AI failures built into retrospectives."}
-    ]
+  const modules = 5;
+  let current = 0;
+  const completed = new Set();
+  const tensionVals = {};
+
+  function goModule(idx) {
+    completed.add(current);
+    document.getElementById('mod-' + current).classList.remove('active');
+    document.getElementById('mod-' + idx).classList.add('active');
+    current = idx;
+
+    // Update tabs
+    document.querySelectorAll('.mod-tab').forEach((t, i) => {
+      t.classList.remove('active');
+      if (completed.has(i) && i !== idx) t.classList.add('done');
+      else t.classList.remove('done');
+    });
+    document.querySelectorAll('.mod-tab')[idx].classList.add('active');
+
+    // Progress
+    const pct = Math.round(((idx + 1) / modules) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = 'Modul ' + (idx + 1) + ' von ' + modules;
+    document.getElementById('badge-progress').textContent = (idx + 1) + ' / ' + modules;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-];
 
-const RLABELS = {1:"Early stage",2:"Developing",3:"Established",4:"Advanced",5:"Leading"};
-const state = { current:0, ratings:{}, tensions:{}, guideOpen:{} };
+  function updateSlider(id, val) {
+    document.getElementById(id + '-val').textContent = val;
+  }
 
-// ── IDs for all inputs (for export) ──────────────────────────────────────────
-// We'll query by data-field attribute
+  function selectTension(id, btn, val) {
+    btn.closest('.tension-row').querySelectorAll('.tension-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(id + '-val').value = val;
+  }
 
-// ── MODULES ──────────────────────────────────────────────────────────────────
-function m1(){
-  return `
-    <div class="field-group">
-      <span class="field-label">Your company & role</span>
-      <div class="grid2" style="margin-top:6px">
-        <input type="text" data-field="company" placeholder="Company name..."/>
-        <input type="text" data-field="role" placeholder="Your role in marketing..."/>
-      </div>
-    </div>
-    <div class="field-group">
-      <span class="field-label">Rate your organisation on each dimension</span>
-      <span class="field-hint">Click a dimension to expand the guidance — then pick your score (1 = early stage, 5 = leading).</span>
-      ${DIMS.map((d,i)=>`
-        <div class="dim-block">
-          <div class="dim-top" onclick="toggleDim(${i})">
-            <div class="dim-icon-wrap">${d.icon}</div>
-            <span class="dim-name">${d.name}</span>
-            <span class="dim-badge${state.ratings[i]?' rated':''}" id="badge${i}">${state.ratings[i]?'Score: '+state.ratings[i]:'Not rated'}</span>
-            <span class="dim-chevron${state.guideOpen[i]?' open':''}" id="chev${i}">▼</span>
-          </div>
-          <div class="dim-guide${state.guideOpen[i]?' open':''}" id="guide${i}">
-            <div class="anchor-grid">
-              ${d.anchors.map(a=>`
-                <div class="anchor ${a.cls}">
-                  <div class="anchor-title">${a.title}</div>
-                  <p>${a.txt}</p>
-                </div>`).join('')}
-            </div>
-            <div class="rating-row" id="dimrate${i}">
-              ${[1,2,3,4,5].map(n=>`<div class="r-dot${(state.ratings[i]||0)>=n?' on':''}" onclick="rate(${i},${n})">${n}</div>`).join('')}
-              <span class="r-text" id="rtxt${i}">${state.ratings[i]?RLABELS[state.ratings[i]]:''}</span>
-            </div>
-            <div class="dim-note">
-              <span class="field-hint" style="margin-bottom:4px;display:block">Why this score?</span>
-              <textarea data-field="dimnote${i}" placeholder="e.g. We have guidelines but they're rarely applied in day-to-day decisions..." style="min-height:50px"></textarea>
-            </div>
-          </div>
-        </div>`).join('')}
-    </div>
-    <div class="field-group">
-      <span class="field-label">Your biggest observation from this scan</span>
-      <span class="field-hint">What surprised you? What confirms what you already suspected?</span>
-      <textarea data-field="scan_obs" placeholder="Write here..."></textarea>
-    </div>`;
-}
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
 
-function m2(){
-  return DIMS.map((d,i)=>`
-    <div class="field-group">
-      <span class="field-label">${d.icon}&nbsp; ${d.name}</span>
-      <div class="grid2" style="margin-top:6px">
-        <div>
-          <span class="field-hint">What is already working well?</span>
-          <textarea data-field="dim2_good${i}" placeholder="Strengths in your company..." style="min-height:64px"></textarea>
-        </div>
-        <div>
-          <span class="field-hint">What is clearly missing or broken?</span>
-          <textarea data-field="dim2_gap${i}" placeholder="Gaps or pain points..." style="min-height:64px"></textarea>
-        </div>
-      </div>
-    </div>`).join('')+`
-    <div class="field-group">
-      <span class="field-label">Your most critical dimension — and why</span>
-      <textarea data-field="crit_dim" placeholder="Which dimension is the biggest lever for YOUR organisation?"></textarea>
-    </div>`;
-}
+  function exportWord() {
+    const name = getVal('p-name') || 'Teilnehmende:r';
+    const company = getVal('p-company') || '—';
+    const role = getVal('p-role') || '—';
+    const date = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
 
-function m3(){
-  return `
-    <div class="field-group">
-      <span class="field-label">Your biggest tension (the one you put on the sticky)</span>
-      <input type="text" data-field="own_tension" placeholder="Describe in 1 sentence..."/>
-    </div>
-    <div class="field-group" style="margin-top:1rem">
-      <span class="field-label">How hot is each tension for your organisation?</span>
-      <span class="field-hint">1 = not really a problem · 5 = burning issue right now</span>
-      <div style="margin-top:10px">
-        ${['Centralisation vs. Decentralisation','Efficiency vs. Creativity','Governance & AI Risk'].map((t,i)=>`
-          <div class="tension-item">
-            <span class="tension-name">${t}</span>
-            <div class="t-dots">
-              ${[1,2,3,4,5].map(n=>`<div class="t-dot${(state.tensions[i]||0)>=n?' on':''}" onclick="rateTension(${i},${n})"></div>`).join('')}
-            </div>
-            <span class="t-score" id="tscore${i}">${state.tensions[i]?state.tensions[i]+'/5':''}</span>
-          </div>`).join('')}
-      </div>
-    </div>
-    <div class="field-group" style="margin-top:1.2rem">
-      <span class="field-label">3 impulses from the Hot Seat round</span>
-      <span class="field-hint">What did you hear from others that was useful for your situation?</span>
-      ${[1,2,3].map(n=>`
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:13px;color:#64748B;min-width:18px;font-weight:600">${n}.</span>
-          <input type="text" data-field="impulse${n}" placeholder="Impulse from the group..."/>
-        </div>`).join('')}
-    </div>`;
-}
+    const scores = [1,2,3,4,5].map(i => document.getElementById('s'+i)?.value || 3);
+    const dimNames = ['Governance & Entscheidung','Rollen & Capabilities','Prozesse & Workflows','Daten & Infrastruktur','Kultur & Change'];
 
-function m4(){
-  return `
-    <div class="field-group">
-      <span class="field-label">Most surprising insight from the consulting session</span>
-      <textarea data-field="guest_surprise" placeholder="Something you didn't expect to hear..."></textarea>
-    </div>
-    <div class="field-group">
-      <span class="field-label">Most directly relevant point for YOUR company</span>
-      <textarea data-field="guest_relevant" placeholder="The thing you could act on immediately..."></textarea>
-    </div>
-    <div class="field-group">
-      <span class="field-label">The pattern that distinguishes scalers from pilots — in your own words</span>
-      <textarea data-field="guest_pattern" placeholder="Based on what the consultant described..."></textarea>
-    </div>
-    <div class="field-group">
-      <span class="field-label">One question you still have</span>
-      <input type="text" data-field="guest_question" placeholder="Something left open after the session..."/>
-    </div>`;
-}
-
-function m5(){
-  return `
-    <div class="field-group">
-      <span class="field-label">What should be concretely different in 18–24 months?</span>
-      <span class="field-hint">Be specific — not "more AI" but "our campaign selection runs without manual intervention".</span>
-      <textarea data-field="target_vision" placeholder="In 18–24 months, my marketing organisation will..." style="min-height:90px"></textarea>
-    </div>
-    <div class="field-group">
-      <span class="field-label">Your critical lever — the one dimension you must change first</span>
-      <input type="text" data-field="crit_lever" placeholder="e.g. Governance — because nothing else can move without it"/>
-    </div>
-    <div class="field-group">
-      <span class="field-label">Target state per dimension in 18–24 months</span>
-      <div style="margin-top:10px">
-        ${DIMS.map((d,i)=>`
-          <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:9px">
-            <span style="font-size:15px;margin-top:8px;flex-shrink:0">${d.icon}</span>
-            <span style="font-size:12px;font-weight:600;color:#64748B;min-width:115px;padding-top:9px;flex-shrink:0">${d.name.split('&')[0].trim()}</span>
-            <input type="text" data-field="target_dim${i}" placeholder="Target state..."/>
-          </div>`).join('')}
-      </div>
-    </div>
-    <div class="field-group">
-      <span class="field-label">First realistic step you can take next week</span>
-      <input type="text" data-field="first_step" placeholder="Something specific, not abstract..."/>
-    </div>
-    <div class="field-group">
-      <span class="field-label">Peer review feedback received</span>
-      <textarea data-field="peer_feedback" placeholder="What did your review partner say? What will you act on?"></textarea>
-    </div>`;
-}
-
-function m6(){
-  return `
-    <div class="commitment-card">
-      <div class="field-group">
-        <span class="field-label">My 30-day commitment</span>
-        <span class="field-hint">One action. Concrete. Something you can actually do in the next 30 days.</span>
-        <textarea data-field="commitment" placeholder="In the next 30 days, I will..." style="min-height:80px;background:#fff"></textarea>
-      </div>
-      <div class="grid2" style="margin-top:4px">
-        <div class="field-group" style="margin-bottom:0">
-          <span class="field-label">By when?</span>
-          <input type="text" data-field="commit_date" placeholder="e.g. 20 May 2026"/>
-        </div>
-        <div class="field-group" style="margin-bottom:0">
-          <span class="field-label">Accountability partner</span>
-          <input type="text" data-field="commit_partner" placeholder="Name of your tandem from today"/>
-        </div>
-      </div>
-    </div>
-    <div class="field-group">
-      <span class="field-label">My 3 key learnings from the day</span>
-      ${[1,2,3].map(n=>`
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <span style="font-size:13px;color:#64748B;min-width:18px;font-weight:600">${n}.</span>
-          <input type="text" data-field="learning${n}" placeholder="Learning ${n}..."/>
-        </div>`).join('')}
-    </div>
-    <div class="field-group">
-      <span class="field-label">One open question I am leaving with</span>
-      <input type="text" data-field="open_question" placeholder="Something I still need to figure out..."/>
-    </div>
-    <div style="margin-top:20px;padding-top:18px;border-top:1px solid #EBF0F6">
-      <p style="font-size:13px;color:#64748B;margin-bottom:14px">When you are done, download your workbook as a Word document to save, edit and share your results.</p>
-      <div class="export-btns">
-        <button class="btn-export" onclick="exportWord()">⬇ Download as Word (.doc)</button>
-      </div>
-    </div>`;
-}
-
-const MODULES = [
-  {num:1,time:"08:30–10:00",title:"AI Maturity Scan",sub:"Where does your organisation stand today?",fn:m1},
-  {num:2,time:"10:00–11:00",title:"Dimension Profile",sub:"Deep dive on each of the 5 dimensions",fn:m2},
-  {num:3,time:"11:00–12:30",title:"Tensions & Peer Impulses",sub:"Hot Seat — what did you learn from others?",fn:m3},
-  {num:4,time:"13:30–14:30",title:"Guest Impulse",sub:"Key take-aways from the consulting session",fn:m4},
-  {num:5,time:"14:30–16:00",title:"Target Operating Model",sub:"From now to 18–24 months — your sketch",fn:m5},
-  {num:6,time:"16:00–16:30",title:"My 30-Day Commitment",sub:"One concrete action — specific and measurable",fn:m6},
-];
-
-// ── RATINGS ───────────────────────────────────────────────────────────────────
-function rate(dim,val){
-  state.ratings[dim]=val;
-  const row=document.getElementById('dimrate'+dim);
-  if(row) row.querySelectorAll('.r-dot').forEach((d,i)=>d.classList.toggle('on',i<val));
-  const b=document.getElementById('badge'+dim);
-  if(b){b.textContent='Score: '+val;b.classList.add('rated');}
-  const t=document.getElementById('rtxt'+dim);
-  if(t) t.textContent=RLABELS[val]||'';
-}
-function rateTension(t,v){
-  state.tensions[t]=v;
-  const row=document.getElementById('module-container').querySelectorAll('.tension-item')[t];
-  if(row) row.querySelectorAll('.t-dot').forEach((d,i)=>d.classList.toggle('on',i<v));
-  const sc=document.getElementById('tscore'+t);
-  if(sc) sc.textContent=v+'/5';
-}
-function toggleDim(i){
-  state.guideOpen[i]=!state.guideOpen[i];
-  const g=document.getElementById('guide'+i);
-  const c=document.getElementById('chev'+i);
-  if(g) g.classList.toggle('open',state.guideOpen[i]);
-  if(c) c.classList.toggle('open',state.guideOpen[i]);
-}
-
-// ── SAVE INPUT STATE ──────────────────────────────────────────────────────────
-function saveInputs(){
-  document.querySelectorAll('[data-field]').forEach(el=>{
-    state[el.dataset.field]=el.value;
-  });
-}
-function restoreInputs(){
-  document.querySelectorAll('[data-field]').forEach(el=>{
-    if(state[el.dataset.field]!==undefined) el.value=state[el.dataset.field];
-  });
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function renderNav(){
-  document.getElementById('nav').innerHTML=MODULES.map((m,i)=>`
-    <button class="mod-tab${i===state.current?' active':''}" onclick="goTo(${i})">M${m.num} ${m.title}</button>`).join('');
-}
-function renderModule(){
-  const m=MODULES[state.current];
-  document.getElementById('module-container').innerHTML=`
-    <div class="module-card">
-      <div class="mod-header">
-        <div class="mod-num">${m.num}</div>
-        <div class="mod-info"><h2>${m.title}</h2><p>${m.sub}</p></div>
-        <span class="mod-time">${m.time}</span>
-      </div>
-      <div class="mod-body">
-        ${m.fn()}
-        <div class="nav-btns">
-          ${state.current>0?`<button class="btn-prev" onclick="goTo(${state.current-1})">← Previous</button>`:'<div></div>'}
-          ${state.current<MODULES.length-1
-            ?`<button class="btn-next" onclick="goTo(${state.current+1})">Next module →</button>`
-            :'<div></div>'}
-        </div>
-      </div>
-    </div>`;
-  const pct=Math.round((state.current+1)/MODULES.length*100);
-  document.getElementById('prog-fill').style.width=pct+'%';
-  document.getElementById('prog-label').textContent='Module '+(state.current+1)+' of '+MODULES.length;
-  document.getElementById('prog-pct').textContent=pct+'%';
-  restoreInputs();
-  Object.keys(state.ratings).forEach(i=>rate(parseInt(i),state.ratings[i]));
-  Object.keys(state.tensions).forEach(t=>rateTension(parseInt(t),state.tensions[t]));
-}
-function goTo(i){saveInputs();state.current=i;renderNav();renderModule();window.scrollTo({top:0,behavior:'smooth'});}
-
-// ── WORD EXPORT ───────────────────────────────────────────────────────────────
-function v(key,fallback='—'){return(state[key]&&state[key].trim())||fallback;}
-function dimScore(i){return state.ratings[i]?(state.ratings[i]+'/5 — '+RLABELS[state.ratings[i]]):'Not rated';}
-function tensionScore(i){return state.tensions[i]?(state.tensions[i]+'/5'):'Not rated';}
-
-function exportWord(){
-  saveInputs();
-  const name=v('company','Your Company')+' · '+v('role','Your Role');
-  const today=new Date().toLocaleDateString('en-CH',{day:'2-digit',month:'long',year:'numeric'});
-
-  const html=`
-<html xmlns:o='urn:schemas-microsoft-com:office:office'
-      xmlns:w='urn:schemas-microsoft-com:office:word'
-      xmlns='http://www.w3.org/TR/REC-html40'>
-<head><meta charset='utf-8'>
-<title>AI Operating Model Workbook</title>
+    const html = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>AI Operating Model Workbook</title>
 <style>
-  body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1A2A3A;margin:2cm}
-  h1{font-size:20pt;color:#002D5C;border-bottom:3px solid #0066B3;padding-bottom:6pt;margin-bottom:4pt}
-  h2{font-size:14pt;color:#0066B3;margin-top:18pt;margin-bottom:4pt}
-  h3{font-size:12pt;color:#002D5C;margin-top:12pt;margin-bottom:2pt}
-  p,td{font-size:11pt;line-height:1.5}
-  .meta{color:#64748B;font-size:10pt;margin-bottom:16pt}
-  table{width:100%;border-collapse:collapse;margin:8pt 0}
-  th{background:#002D5C;color:#fff;padding:8pt 10pt;text-align:left;font-size:10pt}
-  td{padding:7pt 10pt;border-bottom:1px solid #D8E4EF;vertical-align:top}
-  tr:nth-child(even) td{background:#F8FBFF}
-  .score{font-weight:bold;color:#0066B3}
-  .section-rule{border:none;border-top:1px solid #C5D8ED;margin:14pt 0}
-  .answer{background:#F8FBFF;border-left:3px solid #0066B3;padding:8pt 12pt;margin:4pt 0}
-  .commitment{background:#F0F7FF;border-left:4px solid #0066B3;padding:12pt;margin:8pt 0}
-  .commitment p{margin:4pt 0}
-  .footer{color:#94A3B8;font-size:9pt;text-align:center;margin-top:30pt;border-top:1px solid #D8E4EF;padding-top:8pt}
-</style>
-</head>
-<body>
-
+body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#1A2A3A;margin:2cm}
+h1{font-size:16pt;color:#002B5C;border-bottom:2pt solid #0055A5;padding-bottom:6pt}
+h2{font-size:13pt;color:#002B5C;margin-top:18pt;margin-bottom:6pt}
+h3{font-size:11pt;color:#0055A5;margin-bottom:4pt}
+.meta{background:#F4F7FB;border:1pt solid #D1DDED;padding:8pt;margin-bottom:14pt}
+.meta td{padding:3pt 8pt;font-size:10pt}
+.section{margin-bottom:14pt;border-left:3pt solid #0055A5;padding-left:10pt}
+.label{font-size:9pt;color:#64748B;font-weight:bold;margin-bottom:2pt}
+.answer{background:#F4F7FB;border:1pt solid #D1DDED;padding:7pt;min-height:30pt;margin-bottom:8pt}
+.score-table{border-collapse:collapse;width:100%;margin-bottom:10pt}
+.score-table td,.score-table th{border:1pt solid #D1DDED;padding:5pt 8pt;font-size:10pt}
+.score-table th{background:#002B5C;color:white;font-weight:bold}
+.commit-box{background:#EBF4FF;border:1pt solid #0055A5;padding:10pt;margin-bottom:8pt}
+</style></head><body>
 <h1>AI Operating Model — Personal Workbook</h1>
-<p class="meta">HWZ · CAS AI in Marketing · MCA-MAI26-1 · Exported: ${today}</p>
-<p class="meta"><strong>${name}</strong></p>
+<table class='meta'><tr>
+<td><b>Name:</b> ${name}</td>
+<td><b>Unternehmen:</b> ${company}</td>
+<td><b>Funktion:</b> ${role}</td>
+<td><b>Datum:</b> ${date}</td>
+</tr></table>
 
-<hr class="section-rule"/>
-
-<h2>Module 1 — AI Maturity Scan</h2>
-
-<h3>Dimension Scores</h3>
-<table>
-  <tr><th>Dimension</th><th>Score</th><th>Notes</th></tr>
-  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td class="score">${dimScore(i)}</td><td>${v('dimnote'+i,'—')}</td></tr>`).join('')}
+<h2>Modul 1 · Standortbestimmung</h2>
+<div class='section'>
+<div class='label'>Kontext: Mein Unternehmen</div>
+<div class='answer'>${getVal('m1-context').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Grösste AI-Herausforderung</div>
+<div class='answer'>${getVal('m1-challenge').replace(/\n/g,'<br/>') || '—'}</div>
+<h3>AI Maturity Scores</h3>
+<table class='score-table'><tr><th>Dimension</th><th>Score (1–5)</th><th>Notizen</th></tr>
+${dimNames.map((d,i) => `<tr><td>${d}</td><td style="text-align:center;font-weight:bold">${scores[i]}</td><td>${getVal('m1-d'+(i+1)+'-note').replace(/\n/g,'<br/>') || '—'}</td></tr>`).join('')}
 </table>
-
-<h3>Biggest observation from the maturity scan</h3>
-<div class="answer"><p>${v('scan_obs')}</p></div>
-
-<hr class="section-rule"/>
-
-<h2>Module 2 — Dimension Profile</h2>
-<table>
-  <tr><th>Dimension</th><th>What is working well</th><th>What is missing / broken</th></tr>
-  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td>${v('dim2_good'+i)}</td><td>${v('dim2_gap'+i)}</td></tr>`).join('')}
-</table>
-<h3>Most critical dimension</h3>
-<div class="answer"><p>${v('crit_dim')}</p></div>
-
-<hr class="section-rule"/>
-
-<h2>Module 3 — Tensions &amp; Peer Impulses</h2>
-
-<h3>My biggest tension</h3>
-<div class="answer"><p>${v('own_tension')}</p></div>
-
-<h3>Tension ratings</h3>
-<table>
-  <tr><th>Tension</th><th>Score</th></tr>
-  ${['Centralisation vs. Decentralisation','Efficiency vs. Creativity','Governance &amp; AI Risk'].map((t,i)=>`<tr><td>${t}</td><td class="score">${tensionScore(i)}</td></tr>`).join('')}
-</table>
-
-<h3>3 impulses from the Hot Seat round</h3>
-<table>
-  ${[1,2,3].map(n=>`<tr><td style="width:24pt;font-weight:bold;color:#0066B3">${n}.</td><td>${v('impulse'+n)}</td></tr>`).join('')}
-</table>
-
-<hr class="section-rule"/>
-
-<h2>Module 4 — Guest Impulse</h2>
-
-<h3>Most surprising insight</h3>
-<div class="answer"><p>${v('guest_surprise')}</p></div>
-
-<h3>Most directly relevant point for my company</h3>
-<div class="answer"><p>${v('guest_relevant')}</p></div>
-
-<h3>The pattern that distinguishes scalers from pilots</h3>
-<div class="answer"><p>${v('guest_pattern')}</p></div>
-
-<h3>One question still open</h3>
-<div class="answer"><p>${v('guest_question')}</p></div>
-
-<hr class="section-rule"/>
-
-<h2>Module 5 — Target Operating Model</h2>
-
-<h3>Vision for 18–24 months</h3>
-<div class="answer"><p>${v('target_vision')}</p></div>
-
-<h3>Critical lever</h3>
-<div class="answer"><p>${v('crit_lever')}</p></div>
-
-<h3>Target state per dimension</h3>
-<table>
-  <tr><th>Dimension</th><th>Target state in 18–24 months</th></tr>
-  ${DIMS.map((d,i)=>`<tr><td>${d.icon} ${d.name}</td><td>${v('target_dim'+i)}</td></tr>`).join('')}
-</table>
-
-<h3>First step next week</h3>
-<div class="answer"><p>${v('first_step')}</p></div>
-
-<h3>Peer review feedback</h3>
-<div class="answer"><p>${v('peer_feedback')}</p></div>
-
-<hr class="section-rule"/>
-
-<h2>Module 6 — My 30-Day Commitment</h2>
-
-<div class="commitment">
-  <p><strong>Commitment:</strong> ${v('commitment')}</p>
-  <p><strong>By:</strong> ${v('commit_date')}</p>
-  <p><strong>Accountability partner:</strong> ${v('commit_partner')}</p>
+<div class='label'>Reflexion aus dem 2er-Austausch</div>
+<div class='answer'>${getVal('m1-reflection').replace(/\n/g,'<br/>') || '—'}</div>
 </div>
 
-<h3>3 key learnings from the day</h3>
-<table>
-  ${[1,2,3].map(n=>`<tr><td style="width:24pt;font-weight:bold;color:#0066B3">${n}.</td><td>${v('learning'+n)}</td></tr>`).join('')}
+<h2>Modul 2 · Anatomie AI Operating Model</h2>
+<div class='section'>
+<div class='label'>Zugeteilte Dimension</div>
+<div class='answer'>${getVal('m2-dim') || '—'}</div>
+<div class='label'>Was bedeutet diese Dimension konkret?</div>
+<div class='answer'>${getVal('m2-meaning').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Häufigster Fehler</div>
+<div class='answer'>${getVal('m2-mistake').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Meine Unternehmenseinschätzung</div>
+<div class='answer'>${getVal('m2-mycompany').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Relevante Inputs aus dem Plenum</div>
+<div class='answer'>${getVal('m2-plenum').replace(/\n/g,'<br/>') || '—'}</div>
+</div>
+
+<h2>Modul 3 · Spannungsfelder</h2>
+<div class='section'>
+<table class='score-table'><tr><th>Spannungsfeld</th><th>Meine Position</th><th>Begründung</th></tr>
+<tr><td>Zentralisierung vs. Dezentralisierung</td><td>${getVal('t1-val') || '—'}</td><td>${getVal('t1-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
+<tr><td>Build vs. Buy vs. Partner</td><td>${getVal('t2-val') || '—'}</td><td>${getVal('t2-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
+<tr><td>Effizienz vs. Transformation</td><td>${getVal('t3-val') || '—'}</td><td>${getVal('t3-note').replace(/\n/g,'<br/>') || '—'}</td></tr>
 </table>
+<div class='label'>Top 3 Insights vom Gastredner</div>
+<div class='answer'>${getVal('m3-guest').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Was bedeutet das für mein Unternehmen?</div>
+<div class='answer'>${getVal('m3-apply').replace(/\n/g,'<br/>') || '—'}</div>
+</div>
 
-<h3>One open question I am leaving with</h3>
-<div class="answer"><p>${v('open_question')}</p></div>
+<h2>Modul 4 · Roadmap</h2>
+<div class='section'>
+<div class='label'>Case-Analyse: Entscheidender Unterschied</div>
+<div class='answer'>${getVal('m4-diff').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>Transfer auf mein Unternehmen</div>
+<div class='answer'>${getVal('m4-transfer').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>🟢 Sofort (0–3 Monate)</div>
+<div class='answer'>${getVal('m4-now').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>🟡 Kurzfristig (3–12 Monate)</div>
+<div class='answer'>${getVal('m4-soon').replace(/\n/g,'<br/>') || '—'}</div>
+<div class='label'>🔵 Mittelfristig (1–3 Jahre)</div>
+<div class='answer'>${getVal('m4-later').replace(/\n/g,'<br/>') || '—'}</div>
+</div>
 
-<p class="footer">HWZ · CAS AI in Marketing · AI Operating Model Tageskurs · ${today}</p>
-
+<h2>Modul 5 · Commitment</h2>
+<div class='section'>
+<div class='commit-box'>
+<div class='label'>Mein 30-Tage-Commitment</div>
+<div class='answer'>${getVal('m5-commit').replace(/\n/g,'<br/>') || '—'}</div>
+<p><b>Accountability-Partner:</b> ${getVal('m5-partner') || '—'} &nbsp;&nbsp; <b>Check-in Datum:</b> ${getVal('m5-date') || '—'}</p>
+</div>
+<div class='label'>Meine Top-3-Learnings heute</div>
+<div class='answer'>${getVal('m5-learnings').replace(/\n/g,'<br/>') || '—'}</div>
+</div>
 </body></html>`;
 
-  const blob=new Blob(['\ufeff'+html],{type:'application/msword;charset=utf-8'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
-  a.download='AI_OM_Workbook_'+v('company','HWZ').replace(/\s+/g,'_')+'.doc';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-renderNav();
-renderModule();
+    const blob = new Blob([html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'AI_OM_Workbook_' + (name.replace(/\s+/g,'_') || 'HWZ') + '.doc';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 </body>
 </html>
