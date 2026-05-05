@@ -668,23 +668,6 @@
     <div class="module-body">
 
       <div class="section">
-        <div class="section-title">Case-Analyse (Gruppenarbeit)</div>
-        <div class="instruction">Ihr analysiert einen Unternehmens-Case: Gleiche Technologie, unterschiedliche Operating Models — unterschiedliche Outcomes. Was war der Unterschied?</div>
-        <div class="field-wrap">
-          <label class="field-label">Case-Name / Unternehmen</label>
-          <input type="text" id="m4-case" placeholder="Welcher Case wurde analysiert?"/>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Was war der entscheidende Unterschied im Operating Model?</label>
-          <textarea id="m4-diff" rows="3" placeholder="Was hat das erfolgreiche Unternehmen anders gemacht?"></textarea>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Was würde das für mein Unternehmen bedeuten?</label>
-          <textarea id="m4-transfer" rows="3" placeholder="Welche 1–2 Dinge könnte ich direkt übernehmen?"></textarea>
-        </div>
-      </div>
-
-      <div class="section">
         <div class="section-title">Meine Prioritäten-Roadmap</div>
         <div class="instruction">Definiere 3 konkrete Prioritäten für dein Unternehmen — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
         <div class="field-wrap">
@@ -1094,12 +1077,6 @@
      MODUL 4
 ══════════════════════════════════════════ -->
 <h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
-
-<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
-<span class="lbl">Entscheidender Unterschied im Operating Model</span>
-<div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
-<span class="lbl">Transfer auf mein Unternehmen</span>
-<div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
 
 <h3>Prioritäten-Roadmap</h3>
 <div class="road-now">
