@@ -42,6 +42,8 @@
   .btn-primary:hover { background: #004088; }
   .btn-secondary { background: #fff; color: #64748B; border: 1px solid #C5D8ED; }
   .btn-secondary:hover { background: #F0F4F8; }
+  .btn-danger { background: #fff; color: #DC2626; border: 1px solid #FECACA; }
+  .btn-danger:hover { background: #FEF2F2; }
 
   .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
 
@@ -194,6 +196,7 @@
 <div class="drawer" id="drawer">
   <div class="drawer-head">
     <h2 id="drawer-title">—</h2>
+    <button class="btn btn-danger" id="drawer-delete-btn" onclick="deleteCurrentRow()">🗑 Löschen</button>
     <button class="btn btn-secondary" onclick="closeDrawer()">✕ Schliessen</button>
   </div>
   <div class="drawer-body" id="drawer-body"></div>
@@ -336,6 +339,9 @@
   function openDrawer(id) {
     const r = allRows.find(x => x.id === id);
     if (!r) return;
+    _currentDrawerId = id;
+    const btn = document.getElementById('drawer-delete-btn');
+    btn.textContent = '🗑 Löschen'; btn.disabled = false;
     const d = r.data || {};
 
     document.getElementById('drawer-title').textContent = r.name || 'Unbekannte Person';
@@ -418,9 +424,36 @@
     `;
   }
 
+  let _currentDrawerId = null;
+
   function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+    _currentDrawerId = null;
+  }
+
+  async function deleteCurrentRow() {
+    if (!_currentDrawerId) return;
+    const row = allRows.find(r => r.id === _currentDrawerId);
+    const name = row?.name || 'diesen Eintrag';
+    if (!confirm(`«${name}» wirklich löschen?`)) return;
+
+    const btn = document.getElementById('drawer-delete-btn');
+    btn.textContent = 'Löscht…'; btn.disabled = true;
+
+    const res = await fetch(SB_URL + '/rest/v1/workbook_results?id=eq.' + _currentDrawerId, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+
+    if (res.ok) {
+      allRows = allRows.filter(r => r.id !== _currentDrawerId);
+      closeDrawer();
+      updateStats();
+      renderTable();
+    } else {
+      btn.textContent = '⚠ Fehler'; btn.disabled = false;
+    }
   }
 
   // ── CSV Export ───────────────────────────────────────────────────────────
