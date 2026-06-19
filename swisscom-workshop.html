@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AI im HR — Workshop Workbook | Swisscom</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_400_.woff2') format('woff2');
+    font-weight: 400; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_500_.woff2') format('woff2');
+    font-weight: 500; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_600_.woff2') format('woff2');
+    font-weight: 600; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_700_.woff2') format('woff2');
+    font-weight: 700; font-display: swap;
+  }
+
+  /* ── SDX Design Tokens (https://sdx.swisscom.com — sdx.min.css) ── */
+  :root {
+    --hwz-blue: #001155;            /* --sdx-color-text-heading */
+    --hwz-blue-dark: #00072E;
+    --hwz-blue-light: #e8f1ff;      /* --sdx-color-surface-general-muted */
+    --hwz-blue-mid: #a2cdf4;        /* --sdx-color-blue-tint-2 */
+    --swisscom-red: #d12;           /* --sdx-color-int-red */
+    --swisscom-red-dark: #be0000;   /* --sdx-color-int-red--active */
+    --swisscom-red-light: #fbe6e6;
+    --green: #1b8712;               /* --sdx-color-int-green */
+    --green-light: #d7ffd2;         /* --sdx-color-surface-success-muted */
+    --text: #222126;                /* --sdx-color-text-body */
+    --text-secondary: #55545b;      /* --sdx-color-text-neutral-default */
+    --border: #cecdd3;              /* --sdx-color-border-neutral-2 */
+    --surface: #f6f6f9;             /* --sdx-color-surface-ui-2 */
+    --white: #ffffff;               /* --sdx-color-surface-ui-1 */
+    --radius-s: 4px;                /* --sdx-border-radius-small */
+    --radius-m: 8px;                /* --sdx-border-radius-medium */
+    --radius-l: 12px;               /* --sdx-border-radius-large */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'TheSans', 'Inter', system-ui, sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+
+  /* ── Top bar (HWZ CI) ── */
+  .topbar {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    margin-bottom: 28px;
+  }
+  .topbar-inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; align-items: center;
+    height: 56px; gap: 16px;
+  }
+  .hwz-logo {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .hwz-logo svg { width: 22px; height: 28.6px; flex-shrink: 0; }
+  .hwz-logo span {
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--hwz-blue);
+  }
+  .topbar-divider {
+    width: 1px; height: 24px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .topbar-title {
+    font-size: 14px; font-weight: 500;
+    color: var(--text); flex: 1;
+  }
+  .topbar-badge {
+    font-size: 12px; font-weight: 600;
+    color: var(--swisscom-red);
+    background: var(--swisscom-red-light);
+    padding: 4px 12px; border-radius: 20px;
+    flex-shrink: 0;
+  }
+
+  /* ── Participant bar ── */
+  .participant-bar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-l);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex; gap: 12px; flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .participant-bar label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    display: block; margin-bottom: 5px;
+  }
+  .participant-bar input {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 210px;
+    background: var(--white);
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  .participant-bar input:focus { outline: none; border-color: var(--hwz-blue); }
+
+  /* ── Progress ── */
+  .progress-wrap {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .progress-track {
+    flex: 1; height: 3px;
+    background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--swisscom-red);
+    border-radius: 2px; transition: width 0.4s ease;
+  }
+  .progress-wrap span {
+    font-size: 12px; color: var(--text-secondary);
+    white-space: nowrap; font-weight: 500;
+  }
+
+  /* ── Module nav ── */
+  .mod-nav { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
+  .mod-tab {
+    padding: 10px 16px;
+    border-radius: var(--radius-s);
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer; transition: all 0.15s;
+    font-family: inherit; min-height: 44px;
+  }
+  .mod-tab:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); background: var(--swisscom-red-light); }
+  .mod-tab.active { background: var(--swisscom-red); border-color: var(--swisscom-red); color: #fff; font-weight: 600; }
+  .mod-tab.done { border-color: var(--green); color: var(--green); }
+  .mod-tab.done.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* ── Module panels ── */
+  .module { display: none; }
+  .module.active { display: block; }
+
+  .module-header {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-bottom: 3px solid var(--hwz-blue);
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    padding: 20px 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .module-num {
+    width: 36px; height: 36px;
+    background: var(--hwz-blue);
+    border-radius: var(--radius-s);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .module-header h2 {
+    font-size: 16px; font-weight: 700;
+    color: var(--text); margin-bottom: 2px;
+  }
+  .module-header p { font-size: 13px; color: var(--text-secondary); }
+  .module-time {
+    margin-left: auto;
+    font-size: 12px; font-weight: 600;
+    color: var(--swisscom-red);
+    background: var(--swisscom-red-light);
+    padding: 5px 12px; border-radius: 20px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .module-body {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-l) var(--radius-l);
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  /* ── Sections ── */
+  .section { margin-bottom: 32px; }
+  .section:last-child { margin-bottom: 0; }
+
+  .section-title {
+    font-size: 11px; font-weight: 700;
+    color: var(--hwz-blue);
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 14px;
+  }
+
+  .instruction {
+    background: var(--hwz-blue-light);
+    border-radius: var(--radius-m);
+    padding: 12px 16px;
+    font-size: 13px; color: #2A3A5A;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  /* ── Inputs ── */
+  textarea, input[type="text"] {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 11px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text);
+    background: var(--white);
+    resize: vertical;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    line-height: 1.6;
+  }
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--hwz-blue);
+    box-shadow: 0 0 0 3px rgba(0,85,165,0.08);
+  }
+  .field-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); margin-bottom: 6px;
+    display: block;
+  }
+  .field-wrap { margin-bottom: 14px; }
+
+  /* ── Maturity slider ── */
+  .maturity-grid { display: flex; flex-direction: column; gap: 12px; }
+  .maturity-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 16px 18px;
+    transition: border-color 0.15s;
+  }
+  .maturity-row:focus-within { border-color: var(--hwz-blue); }
+  .maturity-row-top {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-bottom: 10px;
+  }
+  .dim-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .dim-score {
+    background: var(--swisscom-red); color: #fff;
+    border-radius: var(--radius-s); padding: 2px 10px;
+    font-size: 13px; font-weight: 700; min-width: 36px; text-align: center;
+  }
+  input[type="range"] {
+    width: 100%;
+    accent-color: var(--swisscom-red);
+    height: 4px;
+    cursor: pointer;
+    padding: 14px 0;
+    box-sizing: content-box;
+  }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--text-secondary); margin-top: 2px;
+  }
+  .dim-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+  /* ── Tension rating ── */
+  .tension-grid { display: flex; flex-direction: column; gap: 10px; }
+  .tension-row {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 14px 16px;
+  }
+  .tension-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
+  .tension-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tension-btn {
+    padding: 7px 14px; border-radius: var(--radius-s);
+    border: 1.5px solid var(--border);
+    background: var(--white); font-size: 12px; font-weight: 500;
+    color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tension-btn:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); }
+  .tension-btn.selected { background: var(--swisscom-red); border-color: var(--swisscom-red); color: #fff; font-weight: 600; }
+
+  /* ── Commitment ── */
+  .commitment-box {
+    background: var(--hwz-blue);
+    border-radius: var(--radius-l);
+    padding: 24px;
+    color: #fff;
+  }
+  .commitment-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 5px; color: #fff; }
+  .commitment-box p { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 16px; }
+  .commitment-box textarea {
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: #fff;
+    border-radius: var(--radius-m);
+  }
+  .commitment-box textarea::placeholder { color: rgba(255,255,255,0.45); }
+  .commitment-box textarea:focus {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.7);
+    box-shadow: none;
+  }
+  .commitment-meta { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .commitment-meta input {
+    background: rgba(255,255,255,0.12);
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: #fff; flex: 1; min-width: 180px;
+  }
+  .commitment-meta input::placeholder { color: rgba(255,255,255,0.45); }
+  .commitment-meta input:focus {
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.7);
+    box-shadow: none;
+  }
+
+  /* ── Nav buttons ── */
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 20px; border-top: 1px solid var(--border);
+    margin-top: 24px;
+  }
+  .btn {
+    padding: 11px 22px; border-radius: var(--radius-m);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; font-family: inherit;
+    transition: all 0.15s; min-height: 44px;
+  }
+  .btn-primary { background: var(--swisscom-red); color: #fff; }
+  .btn-primary:hover { background: var(--swisscom-red-dark); }
+  .btn-secondary { background: var(--white); border: 1.5px solid var(--border); color: var(--text-secondary); }
+  .btn-secondary:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); }
+  .btn-accent { background: var(--hwz-blue); color: #fff; }
+  .btn-accent:hover { background: var(--hwz-blue-dark); }
+  .btn-success { background: var(--green); color: #fff; }
+  .btn-success:hover { background: #136038; }
+
+  /* ── Export section ── */
+  .export-section {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-l); padding: 24px 28px;
+    text-align: center;
+  }
+  .export-section h3 {
+    font-size: 16px; font-weight: 700;
+    margin-bottom: 6px; color: var(--text);
+  }
+  .export-section p { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
+  .export-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .submission-note {
+    max-width: 560px;
+    margin: 16px auto 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .submission-status {
+    min-height: 20px;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .submission-status.success { color: var(--green); }
+  .submission-status.error { color: #B42318; }
+  .submission-status.info { color: var(--swisscom-red); }
+
+  /* print */
+  @media print {
+    body { background: white; }
+    .topbar, .nav-bar, .mod-nav, .progress-wrap, .export-section, .btn { display: none !important; }
+    .module { display: block !important; }
+    .module-header { border-bottom: 2px solid #0A1A6E; }
+  }
+
+  @media (max-width: 600px) {
+    .topbar-title { display: none; }
+    .module-header { flex-wrap: wrap; }
+    .module-time { margin-left: 0; }
+    .participant-bar input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HWZ Top Bar -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="hwz-logo">
+        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="scBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3FA9F5"/>
+              <stop offset="100%" stop-color="#0A1A6E"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 5 C25 15 10 40 10 65 C10 95 30 120 50 125 L50 5 Z" fill="#FF0000"/>
+          <path d="M50 5 C75 15 90 40 90 65 C90 95 70 120 50 125 L50 5 Z" fill="url(#scBlue)"/>
+        </svg>
+        <span>swisscom</span>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-title">AI im HR — Workshop Workbook</div>
+      <div class="topbar-badge" id="badge-progress">Modul 1 / 5</div>
+    </div>
+  </div>
+
+<div class="container">
+
+  <!-- Participant -->
+  <div class="participant-bar">
+    <div>
+      <label>Dein Name</label>
+      <input type="text" id="p-name" placeholder="Vorname Nachname"/>
+    </div>
+    <div>
+      <label>Team / Bereich</label>
+      <input type="text" id="p-team" placeholder="z.B. Recruiting, People Development"/>
+    </div>
+    <div>
+      <label>Funktion</label>
+      <input type="text" id="p-role" placeholder="Deine Rolle"/>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progress-bar" style="width:20%"></div></div>
+    <span id="progress-label">Modul 1 von 5</span>
+  </div>
+
+  <!-- Module Tabs -->
+  <div class="mod-nav">
+    <button class="mod-tab active" onclick="goModule(0)">1 · Standort</button>
+    <button class="mod-tab" onclick="goModule(1)">2 · Dimensionen</button>
+    <button class="mod-tab" onclick="goModule(2)">3 · Spannungsfelder</button>
+    <button class="mod-tab" onclick="goModule(3)">4 · Roadmap</button>
+    <button class="mod-tab" onclick="goModule(4)">5 · Commitment</button>
+  </div>
+
+  <!-- ══════════════ MODULE 1 ══════════════ -->
+  <div class="module active" id="mod-0">
+    <div class="module-header">
+      <div class="module-num">1</div>
+      <div>
+        <h2>Standortbestimmung — AI Maturity Scan</h2>
+        <p>Wo steht unser HR-Bereich heute auf den 5 Dimensionen von AI im HR?</p>
+      </div>
+      <div class="module-time">90 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Kontext: Meine HR-Herausforderung</div>
+        <div class="instruction">Beschreibe den aktuellen Status quo von AI in deinem HR-Bereich und deine grösste Herausforderung dabei. Was läuft bereits? Was bremst am meisten?</div>
+        <div class="field-wrap">
+          <label class="field-label">Aktueller Stand: AI in meinem HR-Bereich</label>
+          <textarea id="m1-context" rows="4" placeholder="z.B. Wir nutzen AI bisher punktuell im Recruiting (CV-Screening). Die grösste Hürde ist aktuell fehlende Datenqualität in unseren HR-Systemen und Unsicherheit bei den Mitarbeitenden..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Meine grösste Herausforderung mit AI im HR (1 Satz)</label>
+          <textarea id="m1-challenge" rows="2" placeholder="Was ist das eine Ding, das uns am meisten bremst?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">AI Maturity Scan — 5 Dimensionen</div>
+        <div class="instruction">Bewerte unseren HR-Bereich auf jeder Dimension ehrlich. Skala: 1 = Anfänger, 5 = Vorreiter.</div>
+        <div class="maturity-grid">
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">1 · AI in Recruiting & Talent Acquisition</div>
+              <div class="dim-score" id="s1-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s1',this.value)" id="s1"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Wird AI im Recruiting genutzt (Sourcing, Screening, Matching) — und wie reif ist das?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d1-note" rows="2" placeholder="Was fehlt konkret bei uns? Was funktioniert bereits?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">2 · AI in People Analytics & Daten</div>
+              <div class="dim-score" id="s2-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s2',this.value)" id="s2"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Nutzen wir People Data und AI für fundierte HR-Entscheidungen (Fluktuation, Skills, Performance)?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d2-note" rows="2" placeholder="Welche Daten/Analysen fehlen? Was wird bereits ausgewertet?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">3 · Skills & Enablement der HR-Community</div>
+              <div class="dim-score" id="s3-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s3',this.value)" id="s3"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Haben HR-Mitarbeitende die Skills und Tools, um AI sinnvoll im Alltag einzusetzen?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d3-note" rows="2" placeholder="Wo setzen wir AI im HR-Alltag ein? Wo ist es noch ad-hoc?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">4 · HR-Tech-Infrastruktur & Datenqualität</div>
+              <div class="dim-score" id="s4-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s4',this.value)" id="s4"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Ist die Datengrundlage in unseren HR-Systemen (z.B. Workday/SAP) für AI nutzbar?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d4-note" rows="2" placeholder="Welche Datenprobleme haben wir? Wie gut sind unsere HR-Systeme vernetzt?"></textarea>
+            </div>
+          </div>
+
+          <div class="maturity-row">
+            <div class="maturity-row-top">
+              <div class="dim-name">5 · Akzeptanz, Vertrauen & Change</div>
+              <div class="dim-score" id="s5-val">3</div>
+            </div>
+            <input type="range" min="1" max="5" value="3" oninput="updateSlider('s5',this.value)" id="s5"/>
+            <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
+            <div class="dim-desc">Wie hoch ist das Vertrauen der Mitarbeitenden in AI-gestützte HR-Entscheidungen?</div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="m1-d5-note" rows="2" placeholder="Wie reagieren Mitarbeitende auf AI im HR? Gibt es Widerstände? Enabler?"></textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Reflexion (2er-Austausch)</div>
+        <div class="instruction">Tausch dich mit einer Person aus: Was überrascht dich an deiner Selbsteinschätzung? Was deckt sich nicht mit der offiziellen Darstellung?</div>
+        <div class="field-wrap">
+          <label class="field-label">Meine wichtigste Erkenntnis aus dem Austausch</label>
+          <textarea id="m1-reflection" rows="3" placeholder="Was habe ich im Gespräch gelernt oder bestätigt bekommen?"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <span style="font-size:12px;color:var(--gray)">Modul 1 von 5</span>
+        <button class="btn btn-primary" onclick="goModule(1)">Weiter → Dimensionen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 2 ══════════════ -->
+  <div class="module" id="mod-1">
+    <div class="module-header">
+      <div class="module-num">2</div>
+      <div>
+        <h2>Anatomie von AI im HR</h2>
+        <p>Was muss sich in unserem HR-Bereich konkret verändern?</p>
+      </div>
+      <div class="module-time">60 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Dimension Deep-Dive</div>
+        <div class="instruction">Vertiefe eine Dimension aus dem Maturity Scan: Was bedeutet sie konkret für unser HR — und was ist der häufigste Fehler? Notiere parallel deine eigene Einschätzung.</div>
+        <div class="field-wrap">
+          <label class="field-label">Meine vertiefte Dimension</label>
+          <input type="text" id="m2-dim" placeholder="z.B. AI in Recruiting & Talent Acquisition"/>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was bedeutet diese Dimension konkret?</label>
+          <textarea id="m2-meaning" rows="3" placeholder="Welche konkreten Elemente, Rollen, Prozesse gehören dazu?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Häufigster Fehler bei dieser Dimension</label>
+          <textarea id="m2-mistake" rows="3" placeholder="Was machen HR-Organisationen typischerweise falsch?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Wie steht unser HR bei dieser Dimension? Was ist die grösste Lücke?</label>
+          <textarea id="m2-mycompany" rows="3" placeholder="Eigene Einschätzung — was fehlt konkret bei uns?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Best Practice aus dem Plenum</div>
+        <div class="instruction">Notiere 2–3 Insights aus den Kurzinputs im Plenum, die für unser HR relevant sind.</div>
+        <div class="field-wrap">
+          <label class="field-label">Relevante Inputs aus dem Plenum</label>
+          <textarea id="m2-plenum" rows="4" placeholder="Welche Erkenntnisse treffen auch auf unser HR zu?"></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(0)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(2)">Weiter → Spannungsfelder</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 3 ══════════════ -->
+  <div class="module" id="mod-2">
+    <div class="module-header">
+      <div class="module-num">3</div>
+      <div>
+        <h2>Spannungsfelder & Trade-offs</h2>
+        <p>Wo reibt es bei AI im HR — und warum?</p>
+      </div>
+      <div class="module-time">90 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Spannungsfeld-Assessment</div>
+        <div class="instruction">Wo steht unser HR bei den drei zentralen Spannungsfeldern? Wähle die treffendste Position und notiere deine Begründung.</div>
+
+        <div class="tension-grid">
+
+          <div class="tension-row">
+            <div class="tension-label">1 · AI-Struktur: Zentrales AI-Team vs. AI in jedem HR-Team</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig zentral (HR AI CoE)')">Vollständig zentral (HR AI CoE)</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Hybrid (CoE + embedded)')">Hybrid (CoE + embedded)</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig dezentral')">Vollständig dezentral</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t1-note" rows="2" placeholder="Warum diese Position? Was spricht dafür/dagegen?"></textarea>
+            </div>
+            <input type="hidden" id="t1-val"/>
+          </div>
+
+          <div class="tension-row">
+            <div class="tension-label">2 · Standard-HR-Tools (z.B. Workday/SAP AI-Module) vs. Eigenbau</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Build (intern)')">Primär Build (intern)</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Buy (Standard-Tools)')">Primär Buy (Standard-Tools)</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Hybrid')">Hybrid</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t2-note" rows="2" placeholder="Was ist unsere aktuelle Strategie? Was würdest du ändern?"></textarea>
+            </div>
+            <input type="hidden" id="t2-val"/>
+          </div>
+
+          <div class="tension-row">
+            <div class="tension-label">3 · Effizienz im Backoffice vs. Transformation der Employee Experience</div>
+            <div class="tension-options">
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Fokus Effizienz (do more with less)')">Fokus Effizienz</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Ausgewogen')">Ausgewogen</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Fokus Transformation')">Fokus Transformation</button>
+              <button class="tension-btn" onclick="selectTension('t3', this, 'Noch unklar')">Noch unklar</button>
+            </div>
+            <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
+              <textarea id="t3-note" rows="2" placeholder="Wo drückt der Schuh? Was sollte anders gewichtet werden?"></textarea>
+            </div>
+            <input type="hidden" id="t3-val"/>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(1)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(3)">Weiter → Roadmap</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 4 ══════════════ -->
+  <div class="module" id="mod-3">
+    <div class="module-header">
+      <div class="module-num">4</div>
+      <div>
+        <h2>Roadmap — Von Analyse zu Aktion</h2>
+        <p>Wie kommen wir von der Diagnose zu konkreten Massnahmen?</p>
+      </div>
+      <div class="module-time">60 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Case-Analyse</div>
+        <div class="instruction">Analysiere einen HR-Case: Gleiche Technologie, unterschiedliche Operating Models — unterschiedliche Outcomes. Was war der Unterschied?</div>
+        <div class="field-wrap">
+          <label class="field-label">Case-Name / Beispiel</label>
+          <input type="text" id="m4-case" placeholder="Welcher Case wurde analysiert?"/>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was war der entscheidende Unterschied im Operating Model?</label>
+          <textarea id="m4-diff" rows="3" placeholder="Was hat die erfolgreiche HR-Organisation anders gemacht?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was würde das für unser HR bedeuten?</label>
+          <textarea id="m4-transfer" rows="3" placeholder="Welche 1–2 Dinge könnte ich direkt übernehmen?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Meine Prioritäten-Roadmap</div>
+        <div class="instruction">Definiere 3 konkrete Prioritäten für unser HR — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
+        <div class="field-wrap">
+          <label class="field-label">Sofort (0–3 Monate): Was kann ich / mein Team direkt anschieben?</label>
+          <textarea id="m4-now" rows="3" placeholder="z.B. AI Pilotprojekt im Recruiting starten, Datenqualität in HR-Systemen prüfen..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Kurzfristig (3–12 Monate): Was braucht Planung und Ressourcen?</label>
+          <textarea id="m4-soon" rows="3" placeholder="z.B. AI-Guidelines für HR-Community erarbeiten, erste Skill-Trainings starten..."></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Mittelfristig (1–3 Jahre): Was ist die transformative Vision?</label>
+          <textarea id="m4-later" rows="3" placeholder="z.B. AI-gestützte People Analytics flächendeckend, AI-native HR-Prozesse..."></textarea>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(2)">← Zurück</button>
+        <button class="btn btn-primary" onclick="goModule(4)">Weiter → Commitment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ MODULE 5 ══════════════ -->
+  <div class="module" id="mod-4">
+    <div class="module-header">
+      <div class="module-num">5</div>
+      <div>
+        <h2>Persönliches Commitment & Abschluss</h2>
+        <p>Was nimmst du heute mit — und was wirst du konkret tun?</p>
+      </div>
+      <div class="module-time">30 min</div>
+    </div>
+    <div class="module-body">
+
+      <div class="section">
+        <div class="section-title">Mein 30-Tage-Commitment</div>
+        <div class="commitment-box">
+          <h3>Was ich in den nächsten 30 Tagen konkret tue</h3>
+          <p>Sei spezifisch: Was, mit wem, bis wann? Je konkreter, desto wahrscheinlicher wird es passieren.</p>
+          <textarea id="m5-commit" rows="4" placeholder="In den nächsten 30 Tagen werde ich... konkret erreichen, indem ich..."></textarea>
+          <div class="commitment-meta">
+            <input type="text" id="m5-partner" placeholder="Accountability-Partner (Name)"/>
+            <input type="text" id="m5-date" placeholder="Datum meines Check-ins"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Meine Top-3-Learnings heute</div>
+        <div class="field-wrap">
+          <textarea id="m5-learnings" rows="4" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Feedback zum Kurs</div>
+        <div class="field-wrap">
+          <label class="field-label">Was hat besonders gut funktioniert?</label>
+          <textarea id="m5-good" rows="2" placeholder=""></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was würdest du für nächstes Mal ändern?</label>
+          <textarea id="m5-improve" rows="2" placeholder=""></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">Workbook exportieren</div>
+        <div class="export-section">
+          <h3>Workbook abgeschlossen</h3>
+          <p>Exportiere dein persönliches Workbook als Word-Dokument — zum Weiterbearbeiten, Ablegen oder Teilen.</p>
+          <div class="export-btns">
+            <button class="btn btn-accent" onclick="exportWord()">📄 Als Word herunterladen</button>
+            <button class="btn btn-success" id="submit-supabase" onclick="submitWorkbook()">Antworten einreichen</button>
+            <button class="btn btn-secondary" style="background:rgba(255,255,255,0.1);color:#fff;border-color:rgba(255,255,255,0.3)" onclick="window.print()">🖨️ Drucken / PDF</button>
+          </div>
+          <div class="submission-note">Beim Einreichen werden deine Workbook-Antworten in der Kursdatenbank gespeichert.</div>
+          <div class="submission-status" id="submission-status" aria-live="polite"></div>
+        </div>
+      </div>
+
+      <div class="nav-bar">
+        <button class="btn btn-secondary" onclick="goModule(3)">← Zurück</button>
+        <span style="font-size:12px;color:var(--text-secondary)">Modul 5 von 5</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const modules = 5;
+  const storageKey = 'swisscom-ai-operating-model-workbook-v1';
+  const autosaveSelector = 'textarea, input[type="text"], input[type="range"], input[type="hidden"]';
+  const supabaseConfig = {
+    url: 'https://YOUR-PROJECT.supabase.co',
+    anonKey: 'YOUR_SUPABASE_ANON_KEY',
+    table: 'workbook_submissions',
+    courseId: 'swisscom-ai-operating-model'
+  };
+  let current = 0;
+  const completed = new Set();
+  const tensionVals = {};
+
+  function collectWorkbookState() {
+    const fields = {};
+    document.querySelectorAll(autosaveSelector).forEach(el => {
+      if (el.id) fields[el.id] = el.value;
+    });
+
+    return {
+      fields,
+      current,
+      completed: Array.from(completed),
+      savedAt: new Date().toISOString()
+    };
+  }
+
+  function saveWorkbookState() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(collectWorkbookState()));
+    } catch (err) {
+      console.warn('Workbook konnte nicht lokal gespeichert werden.', err);
+    }
+  }
+
+  function restoreTensionSelection(id) {
+    const hidden = document.getElementById(id + '-val');
+    const row = hidden?.closest('.tension-row');
+    if (!hidden || !row) return;
+
+    row.querySelectorAll('.tension-btn').forEach(btn => {
+      const call = btn.getAttribute('onclick') || '';
+      btn.classList.toggle('selected', Boolean(hidden.value) && call.includes(hidden.value));
+    });
+  }
+
+  function restoreWorkbookState() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+
+      const state = JSON.parse(raw);
+      Object.entries(state.fields || {}).forEach(([id, value]) => {
+        const el = document.getElementById(id);
+        if (el && 'value' in el) el.value = value;
+      });
+
+      [1, 2, 3, 4, 5].forEach(i => updateSlider('s' + i, document.getElementById('s' + i)?.value || 3));
+      ['t1', 't2', 't3'].forEach(restoreTensionSelection);
+
+      completed.clear();
+      (state.completed || []).forEach(i => {
+        if (Number.isInteger(i) && i >= 0 && i < modules) completed.add(i);
+      });
+
+      if (Number.isInteger(state.current) && state.current >= 0 && state.current < modules) {
+        goModule(state.current);
+      }
+    } catch (err) {
+      console.warn('Workbook konnte nicht lokal geladen werden.', err);
+    }
+  }
+
+  function initAutosave() {
+    restoreWorkbookState();
+
+    document.querySelectorAll(autosaveSelector).forEach(el => {
+      el.addEventListener('input', saveWorkbookState);
+      el.addEventListener('change', saveWorkbookState);
+    });
+  }
+
+  function goModule(idx) {
+    completed.add(current);
+    document.getElementById('mod-' + current).classList.remove('active');
+    document.getElementById('mod-' + idx).classList.add('active');
+    current = idx;
+
+    // Update tabs
+    document.querySelectorAll('.mod-tab').forEach((t, i) => {
+      t.classList.remove('active');
+      if (completed.has(i) && i !== idx) t.classList.add('done');
+      else t.classList.remove('done');
+    });
+    document.querySelectorAll('.mod-tab')[idx].classList.add('active');
+
+    // Progress
+    const pct = Math.round(((idx + 1) / modules) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = 'Modul ' + (idx + 1) + ' von ' + modules;
+    document.getElementById('badge-progress').textContent = 'Modul ' + (idx + 1) + ' / ' + modules;
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    saveWorkbookState();
+  }
+
+  function updateSlider(id, val) {
+    document.getElementById(id + '-val').textContent = val;
+  }
+
+  function selectTension(id, btn, val) {
+    btn.closest('.tension-row').querySelectorAll('.tension-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById(id + '-val').value = val;
+    saveWorkbookState();
+  }
+
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function nullIfBlank(value) {
+    return value && value.trim() ? value.trim() : null;
+  }
+
+  function setSubmissionStatus(message, type = 'info') {
+    const el = document.getElementById('submission-status');
+    if (!el) return;
+
+    el.textContent = message;
+    el.className = 'submission-status ' + type;
+  }
+
+  function isSupabaseConfigured() {
+    return supabaseConfig.url.includes('.supabase.co')
+      && !supabaseConfig.url.includes('YOUR-PROJECT')
+      && !supabaseConfig.anonKey.includes('YOUR_SUPABASE_ANON_KEY')
+      && supabaseConfig.anonKey.length > 20;
+  }
+
+  function getMaturityScores() {
+    return {
+      recruiting_talent: parseInt(document.getElementById('s1')?.value || 3),
+      people_analytics: parseInt(document.getElementById('s2')?.value || 3),
+      skills_enablement: parseInt(document.getElementById('s3')?.value || 3),
+      hr_tech_infrastructure: parseInt(document.getElementById('s4')?.value || 3),
+      trust_change: parseInt(document.getElementById('s5')?.value || 3)
+    };
+  }
+
+  function getTensions() {
+    return {
+      structure: nullIfBlank(getVal('t1-val')),
+      build_buy_partner: nullIfBlank(getVal('t2-val')),
+      focus: nullIfBlank(getVal('t3-val'))
+    };
+  }
+
+  function buildSubmissionPayload() {
+    return {
+      course_id: supabaseConfig.courseId,
+      participant_name: nullIfBlank(getVal('p-name')),
+      team: nullIfBlank(getVal('p-team')),
+      role: nullIfBlank(getVal('p-role')),
+      maturity_scores: getMaturityScores(),
+      tensions: getTensions(),
+      answers: collectWorkbookState().fields,
+      page_url: window.location.href,
+      user_agent: navigator.userAgent,
+      app_version: '2026-04-27-supabase-v1'
+    };
+  }
+
+  async function submitWorkbook() {
+    const btn = document.getElementById('submit-supabase');
+
+    if (!isSupabaseConfigured()) {
+      setSubmissionStatus('Supabase ist noch nicht konfiguriert.', 'error');
+      return;
+    }
+
+    try {
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Wird eingereicht...';
+      }
+      setSubmissionStatus('Antworten werden gespeichert...', 'info');
+
+      const endpoint = supabaseConfig.url.replace(/\/$/, '') + '/rest/v1/' + supabaseConfig.table;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          apikey: supabaseConfig.anonKey,
+          Authorization: 'Bearer ' + supabaseConfig.anonKey,
+          'Content-Type': 'application/json',
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify(buildSubmissionPayload())
+      });
+
+      if (!response.ok) {
+        const detail = await response.text();
+        throw new Error(detail || ('HTTP ' + response.status));
+      }
+
+      setSubmissionStatus('Antworten wurden gespeichert.', 'success');
+    } catch (err) {
+      console.error('Supabase submission failed:', err);
+      setSubmissionStatus('Speichern fehlgeschlagen. Bitte Word-Dokument exportieren und später erneut versuchen.', 'error');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Antworten einreichen';
+      }
+    }
+  }
+
+  function exportWord() {
+    const name    = getVal('p-name')    || 'Teilnehmende:r';
+    const team    = getVal('p-team')    || '—';
+    const role    = getVal('p-role')    || '—';
+    const date    = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
+
+    const scores   = [1,2,3,4,5].map(i => parseInt(document.getElementById('s'+i)?.value || 3));
+    const avgScore = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
+    const dimNames = ['Recruiting & Talent Acquisition','People Analytics & Daten','Skills & Enablement HR','HR-Tech-Infrastruktur','Akzeptanz & Change'];
+    const dimShort = ['Recruiting','PeopleAnalytics','Skills','HRTech','Akzeptanz'];
+
+    // Score bar helper: renders a visual bar as colored table cells
+    function scoreBar(val) {
+      const pct = Math.round((val/5)*100);
+      const color = val<=2 ? '#DC2626' : val<=3 ? '#D97706' : '#1A7F4B';
+      return `<table style="border-collapse:collapse;width:120pt;display:inline-table"><tr>
+        <td style="width:${pct*1.2}pt;height:10pt;background:${color};border-radius:2pt"></td>
+        <td style="width:${(100-pct)*1.2}pt;height:10pt;background:#DDE3EC;border-radius:2pt"></td>
+        <td style="padding-left:5pt;font-weight:700;color:${color};font-size:11pt;white-space:nowrap">${val}/5</td>
+      </tr></table>`;
+    }
+
+    const html = `
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head><meta charset='utf-8'><title>AI Operating Model Workbook — ${name}</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1A1A2E; margin: 2cm; line-height: 1.5; }
+  h1   { font-size: 20pt; color: #0A1A6E; margin: 0 0 4pt; }
+  h2   { font-size: 13pt; color: #0A1A6E; margin: 22pt 0 8pt;
+         border-bottom: 1.5pt solid #0A1A6E; padding-bottom: 4pt; }
+  h3   { font-size: 11pt; color: #003E7A; margin: 14pt 0 5pt; }
+  p    { margin: 0 0 8pt; }
+  .lbl { font-size: 9pt; font-weight: 700; color: #5A6478; text-transform: uppercase;
+         letter-spacing: 0.5pt; margin-bottom: 3pt; display: block; }
+  .ans { background: #F7F9FC; border: 1pt solid #DDE3EC; padding: 7pt 10pt;
+         margin-bottom: 10pt; min-height: 20pt; font-size: 11pt; }
+  .ans-blue { background: #EBF3FB; border: 1pt solid #D0E5F5; padding: 7pt 10pt; margin-bottom: 10pt; }
+  table { border-collapse: collapse; width: 100%; }
+  th    { background: #0A1A6E; color: #fff; padding: 6pt 10pt; font-size: 10pt; text-align: left; }
+  td    { border: 1pt solid #DDE3EC; padding: 6pt 10pt; font-size: 10pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #F7F9FC; }
+  .commit { background: #0A1A6E; color: #fff; padding: 14pt 16pt; margin: 10pt 0; }
+  .commit .lbl { color: rgba(255,255,255,0.7); }
+  .commit .ans { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: #fff; }
+  .road-now  { background: #F0FAF4; border-left: 4pt solid #1A7F4B; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-soon { background: #FFFBEB; border-left: 4pt solid #D97706; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-late { background: #EBF3FB; border-left: 4pt solid #0A1A6E; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-lbl  { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 5pt; }
+  .summary-card { border: 1.5pt solid #DDE3EC; padding: 12pt; margin-bottom: 8pt; background: #fff; }
+  .footer { margin-top: 24pt; border-top: 1pt solid #DDE3EC; padding-top: 8pt;
+            font-size: 9pt; color: #5A6478; text-align: center; }
+  .json-block { background: #1A1A2E; color: #E2E8F0; padding: 12pt; font-family: 'Courier New', monospace;
+                font-size: 9pt; line-height: 1.6; border-radius: 4pt; margin-top: 8pt; }
+  .json-key { color: #7AAFD4; }
+  .json-str { color: #A3E635; }
+  .json-num { color: #FB923C; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<table style="margin-bottom:18pt;border:none"><tr>
+  <td style="background:#0A1A6E;color:#fff;font-size:14pt;font-weight:700;
+             padding:6pt 12pt;width:90pt;border:none;letter-spacing:0.3pt">swisscom</td>
+  <td style="padding-left:14pt;border:none;vertical-align:middle">
+    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">AI im HR</span><br>
+    <h1>Workshop Workbook</h1>
+  </td>
+  <td style="text-align:right;border:none;vertical-align:top;font-size:9pt;color:#5A6478">${date}</td>
+</tr></table>
+
+<!-- ── TEILNEHMER ── -->
+<table style="margin-bottom:20pt">
+  <tr style="background:#0A1A6E">
+    <th style="width:25%">Name</th><th style="width:25%">Team / Bereich</th>
+    <th style="width:25%">Funktion</th><th style="width:25%">Datum</th>
+  </tr>
+  <tr><td><b>${name}</b></td><td>${team}</td><td>${role}</td><td>${date}</td></tr>
+</table>
+
+<!-- ══════════════════════════════════════════
+     EXECUTIVE SUMMARY (Seite 1)
+══════════════════════════════════════════ -->
+<h2>Executive Summary</h2>
+
+<table style="margin-bottom:16pt">
+  <tr style="background:#0A1A6E">
+    <th colspan="3">AI Maturity — Übersicht auf einen Blick</th>
+  </tr>
+  <tr><td colspan="3" style="padding:4pt 10pt;font-size:9pt;color:#5A6478;background:#EBF3FB">
+    Durchschnittlicher Reifegrad: <b style="color:#0A1A6E;font-size:13pt">${avgScore}</b> / 5.0
+  </td></tr>
+  ${dimNames.map((d,i) => `
+  <tr>
+    <td style="width:160pt;font-weight:600">${d}</td>
+    <td style="width:180pt">${scoreBar(scores[i])}</td>
+    <td style="font-size:10pt;color:#5A6478">${getVal('m1-d'+(i+1)+'-note').split('.')[0] || '—'}</td>
+  </tr>`).join('')}
+</table>
+
+<table style="margin-bottom:16pt">
+  <tr style="background:#0A1A6E">
+    <th>Spannungsfeld</th><th style="width:160pt">Position</th>
+  </tr>
+  <tr><td>Zentrales AI-Team vs. AI in jedem HR-Team</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t1-val')||'—'}</td></tr>
+  <tr><td>Standard-HR-Tools vs. Eigenbau</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t2-val')||'—'}</td></tr>
+  <tr><td>Effizienz Backoffice vs. Transformation Employee Experience</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t3-val')||'—'}</td></tr>
+</table>
+
+<div class="commit">
+  <span class="lbl">30-Tage-Commitment</span>
+  <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
+  <table style="border:none;margin-top:8pt">
+    <tr>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0">
+        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0;text-align:right">
+        <b>Check-in:</b> ${getVal('m5-date')||'—'}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 1
+══════════════════════════════════════════ -->
+<h2>Modul 1 · Standortbestimmung — AI Maturity Scan</h2>
+
+<span class="lbl">Kontext: Aktueller Stand AI im HR</span>
+<div class="ans">${getVal('m1-context').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Grösste Herausforderung mit AI im HR</span>
+<div class="ans">${getVal('m1-challenge').replace(/\n/g,'<br>') || '—'}</div>
+
+<h3>AI Maturity Scan — 5 Dimensionen</h3>
+<table>
+  <tr><th>Dimension</th><th style="width:80pt;text-align:center">Score</th><th>Notizen &amp; Beobachtungen</th></tr>
+  ${dimNames.map((d,i) => `
+  <tr>
+    <td><b>${d}</b></td>
+    <td style="text-align:center">${scoreBar(scores[i])}</td>
+    <td>${getVal('m1-d'+(i+1)+'-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>`).join('')}
+</table>
+
+<br><span class="lbl">Wichtigste Erkenntnis aus dem 2er-Austausch</span>
+<div class="ans">${getVal('m1-reflection').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 2
+══════════════════════════════════════════ -->
+<h2>Modul 2 · Anatomie von AI im HR</h2>
+
+<span class="lbl">Vertiefte Dimension</span>
+<div class="ans-blue"><b>${getVal('m2-dim') || '—'}</b></div>
+
+<span class="lbl">Was bedeutet diese Dimension konkret?</span>
+<div class="ans">${getVal('m2-meaning').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Häufigster Fehler</span>
+<div class="ans">${getVal('m2-mistake').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Wie steht unser HR — wo ist die grösste Lücke?</span>
+<div class="ans">${getVal('m2-mycompany').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Relevante Inputs aus dem Plenum</span>
+<div class="ans">${getVal('m2-plenum').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 3
+══════════════════════════════════════════ -->
+<h2>Modul 3 · Spannungsfelder &amp; Trade-offs</h2>
+
+<table style="margin-bottom:14pt">
+  <tr><th>Spannungsfeld</th><th style="width:160pt">Meine Position</th><th>Begründung</th></tr>
+  <tr>
+    <td><b>Zentrales AI-Team vs. AI in jedem HR-Team</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t1-val')||'—'}</td>
+    <td>${getVal('t1-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+  <tr>
+    <td><b>Standard-HR-Tools vs. Eigenbau</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t2-val')||'—'}</td>
+    <td>${getVal('t2-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+  <tr>
+    <td><b>Effizienz Backoffice vs. Transformation Employee Experience</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t3-val')||'—'}</td>
+    <td>${getVal('t3-note').replace(/\n/g,'<br>') || '—'}</td>
+  </tr>
+</table>
+
+<!-- ══════════════════════════════════════════
+     MODUL 4
+══════════════════════════════════════════ -->
+<h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
+
+<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
+<span class="lbl">Entscheidender Unterschied im Operating Model</span>
+<div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
+<span class="lbl">Transfer auf unser HR</span>
+<div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
+
+<h3>Prioritäten-Roadmap</h3>
+<div class="road-now">
+  <div class="road-lbl" style="color:#1A7F4B">Sofort — 0 bis 3 Monate</div>
+  ${getVal('m4-now').replace(/\n/g,'<br>') || '—'}
+</div>
+<div class="road-soon">
+  <div class="road-lbl" style="color:#D97706">Kurzfristig — 3 bis 12 Monate</div>
+  ${getVal('m4-soon').replace(/\n/g,'<br>') || '—'}
+</div>
+<div class="road-late">
+  <div class="road-lbl" style="color:#0A1A6E">Mittelfristig — 1 bis 3 Jahre</div>
+  ${getVal('m4-later').replace(/\n/g,'<br>') || '—'}
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODUL 5
+══════════════════════════════════════════ -->
+<h2>Modul 5 · Persönliches Commitment &amp; Abschluss</h2>
+
+<div class="commit">
+  <span class="lbl">Was ich in den nächsten 30 Tagen konkret tue</span>
+  <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
+  <table style="border:none;margin-top:10pt">
+    <tr>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0">
+        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+      <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0;text-align:right">
+        <b>Check-in Datum:</b> ${getVal('m5-date')||'—'}</td>
+    </tr>
+  </table>
+</div>
+
+<span class="lbl">Meine Top-3-Learnings heute</span>
+<div class="ans">${getVal('m5-learnings').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Was hat besonders gut funktioniert?</span>
+<div class="ans">${getVal('m5-good').replace(/\n/g,'<br>') || '—'}</div>
+
+<span class="lbl">Was würdest du für nächstes Mal ändern?</span>
+<div class="ans">${getVal('m5-improve').replace(/\n/g,'<br>') || '—'}</div>
+
+<!-- ══════════════════════════════════════════
+     MASCHINENLESBARER APPENDIX (für LLMs)
+══════════════════════════════════════════ -->
+<h2>Appendix · Strukturierte Daten (LLM-lesbar)</h2>
+<p style="font-size:9pt;color:#5A6478">Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).</p>
+
+<div class="json-block">
+{<br>
+&nbsp;&nbsp;<span class="json-key">"meta"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-str">"${name}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"team"</span>: <span class="json-str">"${team}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"role"</span>: <span class="json-str">"${role}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"date"</span>: <span class="json-str">"${date}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"maturity"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"average"</span>: <span class="json-num">${avgScore}</span>,<br>
+${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</span>: <span class="json-num">${scores[i]}</span>`).join(',<br>')}<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"context"</span>: <span class="json-str">"${getVal('m1-context').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"challenge"</span>: <span class="json-str">"${getVal('m1-challenge').replace(/"/g,'\\"')}"</span>,<br>
+&nbsp;&nbsp;<span class="json-key">"tensions"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"structure"</span>: <span class="json-str">"${getVal('t1-val')||'—'}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"buildBuy"</span>: <span class="json-str">"${getVal('t2-val')||'—'}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"focus"</span>: <span class="json-str">"${getVal('t3-val')||'—'}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"roadmap"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"now_0_3m"</span>: <span class="json-str">"${getVal('m4-now').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"soon_3_12m"</span>: <span class="json-str">"${getVal('m4-soon').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"later_1_3y"</span>: <span class="json-str">"${getVal('m4-later').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"commitment"</span>: {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"action"</span>: <span class="json-str">"${getVal('m5-commit').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"partner"</span>: <span class="json-str">"${getVal('m5-partner').replace(/"/g,'\\"')}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"checkIn"</span>: <span class="json-str">"${getVal('m5-date').replace(/"/g,'\\"')}"</span><br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;<span class="json-key">"learnings"</span>: <span class="json-str">"${getVal('m5-learnings').replace(/"/g,'\\"').replace(/\n/g,' ')}"</span><br>
+}
+</div>
+
+<div class="footer">Swisscom · AI Operating Model Workshop · ${date}</div>
+
+</body></html>`;
+
+    const blob = new Blob([html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Swisscom_AI_OM_Workbook_' + (name.replace(/\s+/g,'_') || 'Swisscom') + '.doc';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  initAutosave();
+
+</script>
+</body>
+</html>
