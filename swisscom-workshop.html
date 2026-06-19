@@ -3,28 +3,56 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>AI Operating Model — Personal Workbook | HWZ</title>
+<title>AI im HR — Workshop Workbook | Swisscom</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_400_.woff2') format('woff2');
+    font-weight: 400; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_500_.woff2') format('woff2');
+    font-weight: 500; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_600_.woff2') format('woff2');
+    font-weight: 600; font-display: swap;
+  }
+  @font-face {
+    font-family: 'TheSans';
+    src: url('https://sdx.scsstatic.ch/v3.19.0/fonts/TheSans/TheSansB_700_.woff2') format('woff2');
+    font-weight: 700; font-display: swap;
+  }
+
+  /* ── SDX Design Tokens (https://sdx.swisscom.com — sdx.min.css) ── */
   :root {
-    --hwz-blue: #0055A5;
-    --hwz-blue-dark: #004088;
-    --hwz-blue-light: #EBF3FB;
-    --hwz-blue-mid: #D0E5F5;
-    --green: #1A7F4B;
-    --green-light: #E8F5EE;
-    --text: #1A1A2E;
-    --text-secondary: #5A6478;
-    --border: #DDE3EC;
-    --surface: #F7F9FC;
-    --white: #FFFFFF;
+    --hwz-blue: #001155;            /* --sdx-color-text-heading */
+    --hwz-blue-dark: #00072E;
+    --hwz-blue-light: #e8f1ff;      /* --sdx-color-surface-general-muted */
+    --hwz-blue-mid: #a2cdf4;        /* --sdx-color-blue-tint-2 */
+    --swisscom-red: #d12;           /* --sdx-color-int-red */
+    --swisscom-red-dark: #be0000;   /* --sdx-color-int-red--active */
+    --swisscom-red-light: #fbe6e6;
+    --green: #1b8712;               /* --sdx-color-int-green */
+    --green-light: #d7ffd2;         /* --sdx-color-surface-success-muted */
+    --text: #222126;                /* --sdx-color-text-body */
+    --text-secondary: #55545b;      /* --sdx-color-text-neutral-default */
+    --border: #cecdd3;              /* --sdx-color-border-neutral-2 */
+    --surface: #f6f6f9;             /* --sdx-color-surface-ui-2 */
+    --white: #ffffff;               /* --sdx-color-surface-ui-1 */
+    --radius-s: 4px;                /* --sdx-border-radius-small */
+    --radius-m: 8px;                /* --sdx-border-radius-medium */
+    --radius-l: 12px;               /* --sdx-border-radius-large */
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'TheSans', 'Inter', system-ui, sans-serif;
     background: var(--surface);
     color: var(--text);
     min-height: 100vh;
@@ -46,14 +74,15 @@
     height: 56px; gap: 16px;
   }
   .hwz-logo {
-    background: var(--hwz-blue);
-    color: #fff;
-    font-size: 15px; font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 6px 11px;
-    border-radius: 3px;
+    display: flex; align-items: center; gap: 8px;
     flex-shrink: 0;
     line-height: 1;
+  }
+  .hwz-logo svg { width: 22px; height: 28.6px; flex-shrink: 0; }
+  .hwz-logo span {
+    font-size: 17px; font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--hwz-blue);
   }
   .topbar-divider {
     width: 1px; height: 24px;
@@ -66,8 +95,8 @@
   }
   .topbar-badge {
     font-size: 12px; font-weight: 600;
-    color: var(--hwz-blue);
-    background: var(--hwz-blue-light);
+    color: var(--swisscom-red);
+    background: var(--swisscom-red-light);
     padding: 4px 12px; border-radius: 20px;
     flex-shrink: 0;
   }
@@ -76,7 +105,7 @@
   .participant-bar {
     background: var(--white);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: var(--radius-l);
     padding: 16px 20px;
     margin-bottom: 20px;
     display: flex; gap: 12px; flex-wrap: wrap;
@@ -90,7 +119,7 @@
   }
   .participant-bar input {
     border: 1.5px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius-m);
     padding: 9px 12px;
     font-size: 14px;
     font-family: inherit;
@@ -111,7 +140,7 @@
     background: var(--border); border-radius: 2px; overflow: hidden;
   }
   .progress-fill {
-    height: 100%; background: var(--hwz-blue);
+    height: 100%; background: var(--swisscom-red);
     border-radius: 2px; transition: width 0.4s ease;
   }
   .progress-wrap span {
@@ -123,7 +152,7 @@
   .mod-nav { display: flex; gap: 6px; margin-bottom: 24px; flex-wrap: wrap; }
   .mod-tab {
     padding: 10px 16px;
-    border-radius: 6px;
+    border-radius: var(--radius-s);
     border: 1.5px solid var(--border);
     background: var(--white);
     font-size: 12px; font-weight: 500;
@@ -131,8 +160,8 @@
     cursor: pointer; transition: all 0.15s;
     font-family: inherit; min-height: 44px;
   }
-  .mod-tab:hover { border-color: var(--hwz-blue); color: var(--hwz-blue); background: var(--hwz-blue-light); }
-  .mod-tab.active { background: var(--hwz-blue); border-color: var(--hwz-blue); color: #fff; font-weight: 600; }
+  .mod-tab:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); background: var(--swisscom-red-light); }
+  .mod-tab.active { background: var(--swisscom-red); border-color: var(--swisscom-red); color: #fff; font-weight: 600; }
   .mod-tab.done { border-color: var(--green); color: var(--green); }
   .mod-tab.done.active { background: var(--green); border-color: var(--green); color: #fff; }
 
@@ -144,14 +173,14 @@
     background: var(--white);
     border: 1px solid var(--border);
     border-bottom: 3px solid var(--hwz-blue);
-    border-radius: 10px 10px 0 0;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
     padding: 20px 28px;
     display: flex; align-items: center; gap: 16px;
   }
   .module-num {
     width: 36px; height: 36px;
     background: var(--hwz-blue);
-    border-radius: 6px;
+    border-radius: var(--radius-s);
     display: flex; align-items: center; justify-content: center;
     font-size: 15px; font-weight: 700; color: #fff;
     flex-shrink: 0;
@@ -164,8 +193,8 @@
   .module-time {
     margin-left: auto;
     font-size: 12px; font-weight: 600;
-    color: var(--hwz-blue);
-    background: var(--hwz-blue-light);
+    color: var(--swisscom-red);
+    background: var(--swisscom-red-light);
     padding: 5px 12px; border-radius: 20px;
     white-space: nowrap; flex-shrink: 0;
   }
@@ -174,7 +203,7 @@
     background: var(--white);
     border: 1px solid var(--border);
     border-top: none;
-    border-radius: 0 0 10px 10px;
+    border-radius: 0 0 var(--radius-l) var(--radius-l);
     padding: 28px;
     margin-bottom: 24px;
   }
@@ -192,7 +221,7 @@
 
   .instruction {
     background: var(--hwz-blue-light);
-    border-radius: 8px;
+    border-radius: var(--radius-m);
     padding: 12px 16px;
     font-size: 13px; color: #2A3A5A;
     margin-bottom: 16px;
@@ -203,7 +232,7 @@
   textarea, input[type="text"] {
     width: 100%;
     border: 1.5px solid var(--border);
-    border-radius: 7px;
+    border-radius: var(--radius-m);
     padding: 11px 14px;
     font-size: 15px;
     font-family: inherit;
@@ -230,7 +259,7 @@
   .maturity-row {
     background: var(--surface);
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-m);
     padding: 16px 18px;
     transition: border-color 0.15s;
   }
@@ -241,13 +270,13 @@
   }
   .dim-name { font-size: 13px; font-weight: 600; color: var(--text); }
   .dim-score {
-    background: var(--hwz-blue); color: #fff;
-    border-radius: 5px; padding: 2px 10px;
+    background: var(--swisscom-red); color: #fff;
+    border-radius: var(--radius-s); padding: 2px 10px;
     font-size: 13px; font-weight: 700; min-width: 36px; text-align: center;
   }
   input[type="range"] {
     width: 100%;
-    accent-color: var(--hwz-blue);
+    accent-color: var(--swisscom-red);
     height: 4px;
     cursor: pointer;
     padding: 14px 0;
@@ -264,25 +293,25 @@
   .tension-row {
     background: var(--surface);
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-m);
     padding: 14px 16px;
   }
   .tension-label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; }
   .tension-options { display: flex; gap: 8px; flex-wrap: wrap; }
   .tension-btn {
-    padding: 7px 14px; border-radius: 5px;
+    padding: 7px 14px; border-radius: var(--radius-s);
     border: 1.5px solid var(--border);
     background: var(--white); font-size: 12px; font-weight: 500;
     color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
     font-family: inherit;
   }
-  .tension-btn:hover { border-color: var(--hwz-blue); color: var(--hwz-blue); }
-  .tension-btn.selected { background: var(--hwz-blue); border-color: var(--hwz-blue); color: #fff; font-weight: 600; }
+  .tension-btn:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); }
+  .tension-btn.selected { background: var(--swisscom-red); border-color: var(--swisscom-red); color: #fff; font-weight: 600; }
 
   /* ── Commitment ── */
   .commitment-box {
     background: var(--hwz-blue);
-    border-radius: 10px;
+    border-radius: var(--radius-l);
     padding: 24px;
     color: #fff;
   }
@@ -292,7 +321,7 @@
     background: rgba(255,255,255,0.12);
     border: 1.5px solid rgba(255,255,255,0.3);
     color: #fff;
-    border-radius: 7px;
+    border-radius: var(--radius-m);
   }
   .commitment-box textarea::placeholder { color: rgba(255,255,255,0.45); }
   .commitment-box textarea:focus {
@@ -320,15 +349,15 @@
     margin-top: 24px;
   }
   .btn {
-    padding: 11px 22px; border-radius: 7px;
+    padding: 11px 22px; border-radius: var(--radius-m);
     font-size: 13px; font-weight: 600;
     cursor: pointer; border: none; font-family: inherit;
     transition: all 0.15s; min-height: 44px;
   }
-  .btn-primary { background: var(--hwz-blue); color: #fff; }
-  .btn-primary:hover { background: var(--hwz-blue-dark); }
+  .btn-primary { background: var(--swisscom-red); color: #fff; }
+  .btn-primary:hover { background: var(--swisscom-red-dark); }
   .btn-secondary { background: var(--white); border: 1.5px solid var(--border); color: var(--text-secondary); }
-  .btn-secondary:hover { border-color: var(--hwz-blue); color: var(--hwz-blue); }
+  .btn-secondary:hover { border-color: var(--swisscom-red); color: var(--swisscom-red); }
   .btn-accent { background: var(--hwz-blue); color: #fff; }
   .btn-accent:hover { background: var(--hwz-blue-dark); }
   .btn-success { background: var(--green); color: #fff; }
@@ -338,7 +367,7 @@
   .export-section {
     background: var(--surface);
     border: 1.5px solid var(--border);
-    border-radius: 10px; padding: 24px 28px;
+    border-radius: var(--radius-l); padding: 24px 28px;
     text-align: center;
   }
   .export-section h3 {
@@ -362,14 +391,14 @@
   }
   .submission-status.success { color: var(--green); }
   .submission-status.error { color: #B42318; }
-  .submission-status.info { color: var(--hwz-blue); }
+  .submission-status.info { color: var(--swisscom-red); }
 
   /* print */
   @media print {
     body { background: white; }
     .topbar, .nav-bar, .mod-nav, .progress-wrap, .export-section, .btn { display: none !important; }
     .module { display: block !important; }
-    .module-header { border-bottom: 2px solid #0055A5; }
+    .module-header { border-bottom: 2px solid #0A1A6E; }
   }
 
   @media (max-width: 600px) {
@@ -378,17 +407,6 @@
     .module-time { margin-left: 0; }
     .participant-bar input { width: 100%; }
   }
-
-  /* ── Save status indicator ── */
-  .save-status {
-    font-size: 11px; font-weight: 600;
-    padding: 4px 12px; border-radius: 20px;
-    transition: all 0.4s; white-space: nowrap; flex-shrink: 0;
-    opacity: 0;
-  }
-  .save-status.saving { opacity: 1; background: #FFF8E1; color: #D97706; }
-  .save-status.saved  { opacity: 1; background: #E8F5EE; color: #1A7F4B; }
-  .save-status.error  { opacity: 1; background: #FEE2E2; color: #DC2626; }
 </style>
 </head>
 <body>
@@ -396,11 +414,22 @@
   <!-- HWZ Top Bar -->
   <div class="topbar">
     <div class="topbar-inner">
-      <div class="hwz-logo">HWZ</div>
+      <div class="hwz-logo">
+        <svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="scBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3FA9F5"/>
+              <stop offset="100%" stop-color="#0A1A6E"/>
+            </linearGradient>
+          </defs>
+          <path d="M50 5 C25 15 10 40 10 65 C10 95 30 120 50 125 L50 5 Z" fill="#FF0000"/>
+          <path d="M50 5 C75 15 90 40 90 65 C90 95 70 120 50 125 L50 5 Z" fill="url(#scBlue)"/>
+        </svg>
+        <span>swisscom</span>
+      </div>
       <div class="topbar-divider"></div>
-      <div class="topbar-title">AI Operating Model — Personal Workbook</div>
+      <div class="topbar-title">AI im HR — Workshop Workbook</div>
       <div class="topbar-badge" id="badge-progress">Modul 1 / 5</div>
-      <span class="save-status" id="save-status"></span>
     </div>
   </div>
 
@@ -413,8 +442,8 @@
       <input type="text" id="p-name" placeholder="Vorname Nachname"/>
     </div>
     <div>
-      <label>Unternehmen</label>
-      <input type="text" id="p-company" placeholder="Firma / Organisation"/>
+      <label>Team / Bereich</label>
+      <input type="text" id="p-team" placeholder="z.B. Recruiting, People Development"/>
     </div>
     <div>
       <label>Funktion</label>
@@ -443,92 +472,92 @@
       <div class="module-num">1</div>
       <div>
         <h2>Standortbestimmung — AI Maturity Scan</h2>
-        <p>Wo steht dein Unternehmen heute auf den 5 Dimensionen eines AI Operating Models?</p>
+        <p>Wo steht unser HR-Bereich heute auf den 5 Dimensionen von AI im HR?</p>
       </div>
       <div class="module-time">90 min</div>
     </div>
     <div class="module-body">
 
       <div class="section">
-        <div class="section-title">Kontext: Mein Unternehmen</div>
-        <div class="instruction">Beschreibe kurz dein Unternehmen und den Status quo von AI in deiner Organisation. Was läuft bereits? Was sind die grössten Hürden?</div>
+        <div class="section-title">Kontext: Meine HR-Herausforderung</div>
+        <div class="instruction">Beschreibe den aktuellen Status quo von AI in deinem HR-Bereich und deine grösste Herausforderung dabei. Was läuft bereits? Was bremst am meisten?</div>
         <div class="field-wrap">
-          <label class="field-label">Kurzbeschreibung meines Unternehmens & AI-Status quo</label>
-          <textarea id="m1-context" rows="4" placeholder="z.B. Wir sind ein mittelgrosses Finanzunternehmen mit ca. 1'200 FTE. AI wird bisher hauptsächlich im Fraud Detection Bereich genutzt. Die grösste Hürde ist aktuell fehlende Datenverfügbarkeit und unklare Governance..."></textarea>
+          <label class="field-label">Aktueller Stand: AI in meinem HR-Bereich</label>
+          <textarea id="m1-context" rows="4" placeholder="z.B. Wir nutzen AI bisher punktuell im Recruiting (CV-Screening). Die grösste Hürde ist aktuell fehlende Datenqualität in unseren HR-Systemen und Unsicherheit bei den Mitarbeitenden..."></textarea>
         </div>
         <div class="field-wrap">
-          <label class="field-label">Meine grösste AI-Herausforderung (1 Satz)</label>
-          <textarea id="m1-challenge" rows="2" placeholder="Was ist das eine Ding, das euch am meisten bremst?"></textarea>
+          <label class="field-label">Meine grösste Herausforderung mit AI im HR (1 Satz)</label>
+          <textarea id="m1-challenge" rows="2" placeholder="Was ist das eine Ding, das uns am meisten bremst?"></textarea>
         </div>
       </div>
 
       <div class="section">
         <div class="section-title">AI Maturity Scan — 5 Dimensionen</div>
-        <div class="instruction">Bewerte dein Unternehmen auf jeder Dimension ehrlich. Skala: 1 = Anfänger, 5 = Vorreiter.</div>
+        <div class="instruction">Bewerte unseren HR-Bereich auf jeder Dimension ehrlich. Skala: 1 = Anfänger, 5 = Vorreiter.</div>
         <div class="maturity-grid">
 
           <div class="maturity-row">
             <div class="maturity-row-top">
-              <div class="dim-name">1 · Governance & Entscheidungsstrukturen</div>
+              <div class="dim-name">1 · AI in Recruiting & Talent Acquisition</div>
               <div class="dim-score" id="s1-val">3</div>
             </div>
             <input type="range" min="1" max="5" value="3" oninput="updateSlider('s1',this.value)" id="s1"/>
             <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
-            <div class="dim-desc">Gibt es klare AI-Verantwortlichkeiten, Risikorahmen und Entscheidungsprozesse?</div>
+            <div class="dim-desc">Wird AI im Recruiting genutzt (Sourcing, Screening, Matching) — und wie reif ist das?</div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="m1-d1-note" rows="2" placeholder="Was fehlt konkret bei euch? Was funktioniert bereits?"></textarea>
+              <textarea id="m1-d1-note" rows="2" placeholder="Was fehlt konkret bei uns? Was funktioniert bereits?"></textarea>
             </div>
           </div>
 
           <div class="maturity-row">
             <div class="maturity-row-top">
-              <div class="dim-name">2 · Rollen & Capabilities</div>
+              <div class="dim-name">2 · AI in People Analytics & Daten</div>
               <div class="dim-score" id="s2-val">3</div>
             </div>
             <input type="range" min="1" max="5" value="3" oninput="updateSlider('s2',this.value)" id="s2"/>
             <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
-            <div class="dim-desc">Haben wir die richtigen Rollen, Skills und Weiterbildungsprogramme für AI?</div>
+            <div class="dim-desc">Nutzen wir People Data und AI für fundierte HR-Entscheidungen (Fluktuation, Skills, Performance)?</div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="m1-d2-note" rows="2" placeholder="Welche Rollen fehlen? Wo investiert ihr in Skills?"></textarea>
+              <textarea id="m1-d2-note" rows="2" placeholder="Welche Daten/Analysen fehlen? Was wird bereits ausgewertet?"></textarea>
             </div>
           </div>
 
           <div class="maturity-row">
             <div class="maturity-row-top">
-              <div class="dim-name">3 · Prozesse & Workflows</div>
+              <div class="dim-name">3 · Skills & Enablement der HR-Community</div>
               <div class="dim-score" id="s3-val">3</div>
             </div>
             <input type="range" min="1" max="5" value="3" oninput="updateSlider('s3',this.value)" id="s3"/>
             <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
-            <div class="dim-desc">Sind AI-Prozesse und Human-AI-Workflows klar definiert und skaliert?</div>
+            <div class="dim-desc">Haben HR-Mitarbeitende die Skills und Tools, um AI sinnvoll im Alltag einzusetzen?</div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="m1-d3-note" rows="2" placeholder="Wo setzt ihr AI in Prozessen ein? Wo ist es noch ad-hoc?"></textarea>
+              <textarea id="m1-d3-note" rows="2" placeholder="Wo setzen wir AI im HR-Alltag ein? Wo ist es noch ad-hoc?"></textarea>
             </div>
           </div>
 
           <div class="maturity-row">
             <div class="maturity-row-top">
-              <div class="dim-name">4 · Daten & Infrastruktur</div>
+              <div class="dim-name">4 · HR-Tech-Infrastruktur & Datenqualität</div>
               <div class="dim-score" id="s4-val">3</div>
             </div>
             <input type="range" min="1" max="5" value="3" oninput="updateSlider('s4',this.value)" id="s4"/>
             <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
-            <div class="dim-desc">Ist die Datengrundlage und technische Infrastruktur für skalierbare AI vorhanden?</div>
+            <div class="dim-desc">Ist die Datengrundlage in unseren HR-Systemen (z.B. Workday/SAP) für AI nutzbar?</div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="m1-d4-note" rows="2" placeholder="Welche Datenprobleme habt ihr? Wie ist die Cloud/AI-Infrastruktur?"></textarea>
+              <textarea id="m1-d4-note" rows="2" placeholder="Welche Datenprobleme haben wir? Wie gut sind unsere HR-Systeme vernetzt?"></textarea>
             </div>
           </div>
 
           <div class="maturity-row">
             <div class="maturity-row-top">
-              <div class="dim-name">5 · Kultur & Change</div>
+              <div class="dim-name">5 · Akzeptanz, Vertrauen & Change</div>
               <div class="dim-score" id="s5-val">3</div>
             </div>
             <input type="range" min="1" max="5" value="3" oninput="updateSlider('s5',this.value)" id="s5"/>
             <div class="slider-labels"><span>1 – Kaum vorhanden</span><span>3 – Im Aufbau</span><span>5 – Voll etabliert</span></div>
-            <div class="dim-desc">Wie hoch ist die AI-Bereitschaft und das Vertrauen der Mitarbeitenden?</div>
+            <div class="dim-desc">Wie hoch ist das Vertrauen der Mitarbeitenden in AI-gestützte HR-Entscheidungen?</div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="m1-d5-note" rows="2" placeholder="Wie reagiert eure Belegschaft auf AI? Gibt es Widerstände? Enabler?"></textarea>
+              <textarea id="m1-d5-note" rows="2" placeholder="Wie reagieren Mitarbeitende auf AI im HR? Gibt es Widerstände? Enabler?"></textarea>
             </div>
           </div>
 
@@ -556,40 +585,40 @@
     <div class="module-header">
       <div class="module-num">2</div>
       <div>
-        <h2>Anatomie eines AI Operating Models</h2>
-        <p>Was muss sich in deiner Organisation konkret verändern?</p>
+        <h2>Anatomie von AI im HR</h2>
+        <p>Was muss sich in unserem HR-Bereich konkret verändern?</p>
       </div>
       <div class="module-time">60 min</div>
     </div>
     <div class="module-body">
 
       <div class="section">
-        <div class="section-title">Dimension Deep-Dive (Gruppenarbeit)</div>
-        <div class="instruction">Du hast eine Dimension zugeteilt bekommen. Erarbeite mit deiner Gruppe: Was bedeutet diese Dimension konkret — und was ist der häufigste Fehler? Notiere parallel deine eigene Unternehmenseinschätzung.</div>
+        <div class="section-title">Dimension Deep-Dive</div>
+        <div class="instruction">Vertiefe eine Dimension aus dem Maturity Scan: Was bedeutet sie konkret für unser HR — und was ist der häufigste Fehler? Notiere parallel deine eigene Einschätzung.</div>
         <div class="field-wrap">
-          <label class="field-label">Meine zugeteilte Dimension</label>
-          <input type="text" id="m2-dim" placeholder="z.B. Governance & Entscheidungsstrukturen"/>
+          <label class="field-label">Meine vertiefte Dimension</label>
+          <input type="text" id="m2-dim" placeholder="z.B. AI in Recruiting & Talent Acquisition"/>
         </div>
         <div class="field-wrap">
-          <label class="field-label">Was bedeutet diese Dimension konkret? (Gruppe)</label>
+          <label class="field-label">Was bedeutet diese Dimension konkret?</label>
           <textarea id="m2-meaning" rows="3" placeholder="Welche konkreten Elemente, Rollen, Prozesse gehören dazu?"></textarea>
         </div>
         <div class="field-wrap">
           <label class="field-label">Häufigster Fehler bei dieser Dimension</label>
-          <textarea id="m2-mistake" rows="3" placeholder="Was machen Unternehmen typischerweise falsch?"></textarea>
+          <textarea id="m2-mistake" rows="3" placeholder="Was machen HR-Organisationen typischerweise falsch?"></textarea>
         </div>
         <div class="field-wrap">
-          <label class="field-label">Wie steht mein Unternehmen bei dieser Dimension? Was ist die grösste Lücke?</label>
+          <label class="field-label">Wie steht unser HR bei dieser Dimension? Was ist die grösste Lücke?</label>
           <textarea id="m2-mycompany" rows="3" placeholder="Eigene Einschätzung — was fehlt konkret bei uns?"></textarea>
         </div>
       </div>
 
       <div class="section">
         <div class="section-title">Best Practice aus dem Plenum</div>
-        <div class="instruction">Notiere 2–3 Insights aus den Kurzpräsentationen der anderen Gruppen, die für dein Unternehmen relevant sind.</div>
+        <div class="instruction">Notiere 2–3 Insights aus den Kurzinputs im Plenum, die für unser HR relevant sind.</div>
         <div class="field-wrap">
           <label class="field-label">Relevante Inputs aus dem Plenum</label>
-          <textarea id="m2-plenum" rows="4" placeholder="Welche Erkenntnisse der anderen Gruppen treffen auch auf meine Organisation zu?"></textarea>
+          <textarea id="m2-plenum" rows="4" placeholder="Welche Erkenntnisse treffen auch auf unser HR zu?"></textarea>
         </div>
       </div>
 
@@ -606,7 +635,7 @@
       <div class="module-num">3</div>
       <div>
         <h2>Spannungsfelder & Trade-offs</h2>
-        <p>Wo reibt es in eurer Organisation — und warum?</p>
+        <p>Wo reibt es bei AI im HR — und warum?</p>
       </div>
       <div class="module-time">90 min</div>
     </div>
@@ -614,14 +643,14 @@
 
       <div class="section">
         <div class="section-title">Spannungsfeld-Assessment</div>
-        <div class="instruction">Wo steht dein Unternehmen bei den drei zentralen Spannungsfeldern? Wähle die treffendste Position und notiere deine Begründung.</div>
+        <div class="instruction">Wo steht unser HR bei den drei zentralen Spannungsfeldern? Wähle die treffendste Position und notiere deine Begründung.</div>
 
         <div class="tension-grid">
 
           <div class="tension-row">
-            <div class="tension-label">1 · AI-Struktur: Zentralisierung vs. Dezentralisierung</div>
+            <div class="tension-label">1 · AI-Struktur: Zentrales AI-Team vs. AI in jedem HR-Team</div>
             <div class="tension-options">
-              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig zentral (AI CoE)')">Vollständig zentral (AI CoE)</button>
+              <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig zentral (HR AI CoE)')">Vollständig zentral (HR AI CoE)</button>
               <button class="tension-btn" onclick="selectTension('t1', this, 'Hybrid (CoE + embedded)')">Hybrid (CoE + embedded)</button>
               <button class="tension-btn" onclick="selectTension('t1', this, 'Vollständig dezentral')">Vollständig dezentral</button>
               <button class="tension-btn" onclick="selectTension('t1', this, 'Noch unklar')">Noch unklar</button>
@@ -633,21 +662,21 @@
           </div>
 
           <div class="tension-row">
-            <div class="tension-label">2 · Build vs. Buy vs. Partner</div>
+            <div class="tension-label">2 · Standard-HR-Tools (z.B. Workday/SAP AI-Module) vs. Eigenbau</div>
             <div class="tension-options">
               <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Build (intern)')">Primär Build (intern)</button>
-              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Buy (Vendor)')">Primär Buy (Vendor)</button>
+              <button class="tension-btn" onclick="selectTension('t2', this, 'Primär Buy (Standard-Tools)')">Primär Buy (Standard-Tools)</button>
               <button class="tension-btn" onclick="selectTension('t2', this, 'Hybrid')">Hybrid</button>
               <button class="tension-btn" onclick="selectTension('t2', this, 'Noch unklar')">Noch unklar</button>
             </div>
             <div class="field-wrap" style="margin-top:10px;margin-bottom:0">
-              <textarea id="t2-note" rows="2" placeholder="Was ist eure aktuelle Strategie? Was würdest du ändern?"></textarea>
+              <textarea id="t2-note" rows="2" placeholder="Was ist unsere aktuelle Strategie? Was würdest du ändern?"></textarea>
             </div>
             <input type="hidden" id="t2-val"/>
           </div>
 
           <div class="tension-row">
-            <div class="tension-label">3 · Effizienz vs. Transformation</div>
+            <div class="tension-label">3 · Effizienz im Backoffice vs. Transformation der Employee Experience</div>
             <div class="tension-options">
               <button class="tension-btn" onclick="selectTension('t3', this, 'Fokus Effizienz (do more with less)')">Fokus Effizienz</button>
               <button class="tension-btn" onclick="selectTension('t3', this, 'Ausgewogen')">Ausgewogen</button>
@@ -660,19 +689,6 @@
             <input type="hidden" id="t3-val"/>
           </div>
 
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">Inputs vom Gastredner / Top Management Consulting</div>
-        <div class="instruction">Notiere die für dich wichtigsten Erkenntnisse aus dem Impuls (30 min + Q&A).</div>
-        <div class="field-wrap">
-          <label class="field-label">Top 3 Insights aus dem Gastimpuls</label>
-          <textarea id="m3-guest" rows="4" placeholder="1. ...\n2. ...\n3. ..."></textarea>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Was bedeutet das konkret für mein Unternehmen?</label>
-          <textarea id="m3-apply" rows="3" placeholder="Welcher Insight ist für meine Situation am relevantesten?"></textarea>
         </div>
       </div>
 
@@ -696,19 +712,36 @@
     <div class="module-body">
 
       <div class="section">
+        <div class="section-title">Case-Analyse</div>
+        <div class="instruction">Analysiere einen HR-Case: Gleiche Technologie, unterschiedliche Operating Models — unterschiedliche Outcomes. Was war der Unterschied?</div>
+        <div class="field-wrap">
+          <label class="field-label">Case-Name / Beispiel</label>
+          <input type="text" id="m4-case" placeholder="Welcher Case wurde analysiert?"/>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was war der entscheidende Unterschied im Operating Model?</label>
+          <textarea id="m4-diff" rows="3" placeholder="Was hat die erfolgreiche HR-Organisation anders gemacht?"></textarea>
+        </div>
+        <div class="field-wrap">
+          <label class="field-label">Was würde das für unser HR bedeuten?</label>
+          <textarea id="m4-transfer" rows="3" placeholder="Welche 1–2 Dinge könnte ich direkt übernehmen?"></textarea>
+        </div>
+      </div>
+
+      <div class="section">
         <div class="section-title">Meine Prioritäten-Roadmap</div>
-        <div class="instruction">Definiere 3 konkrete Prioritäten für dein Unternehmen — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
+        <div class="instruction">Definiere 3 konkrete Prioritäten für unser HR — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
         <div class="field-wrap">
           <label class="field-label">Sofort (0–3 Monate): Was kann ich / mein Team direkt anschieben?</label>
-          <textarea id="m4-now" rows="3" placeholder="z.B. AI Governance Working Group einberufen, Daten-Audit starten..."></textarea>
+          <textarea id="m4-now" rows="3" placeholder="z.B. AI Pilotprojekt im Recruiting starten, Datenqualität in HR-Systemen prüfen..."></textarea>
         </div>
         <div class="field-wrap">
           <label class="field-label">Kurzfristig (3–12 Monate): Was braucht Planung und Ressourcen?</label>
-          <textarea id="m4-soon" rows="3" placeholder="z.B. Pilot AI CoE aufbauen, erste Reskilling-Programme starten..."></textarea>
+          <textarea id="m4-soon" rows="3" placeholder="z.B. AI-Guidelines für HR-Community erarbeiten, erste Skill-Trainings starten..."></textarea>
         </div>
         <div class="field-wrap">
           <label class="field-label">Mittelfristig (1–3 Jahre): Was ist die transformative Vision?</label>
-          <textarea id="m4-later" rows="3" placeholder="z.B. Vollständig skaliertes AI Operating Model, AI-native Prozesse in allen BUs..."></textarea>
+          <textarea id="m4-later" rows="3" placeholder="z.B. AI-gestützte People Analytics flächendeckend, AI-native HR-Prozesse..."></textarea>
         </div>
       </div>
 
@@ -789,13 +822,13 @@
 
 <script>
   const modules = 5;
-  const storageKey = 'hwz-ai-operating-model-workbook-v1';
+  const storageKey = 'swisscom-ai-operating-model-workbook-v1';
   const autosaveSelector = 'textarea, input[type="text"], input[type="range"], input[type="hidden"]';
   const supabaseConfig = {
     url: 'https://YOUR-PROJECT.supabase.co',
     anonKey: 'YOUR_SUPABASE_ANON_KEY',
     table: 'workbook_submissions',
-    courseId: 'hwz-ai-operating-model'
+    courseId: 'swisscom-ai-operating-model'
   };
   let current = 0;
   const completed = new Set();
@@ -861,75 +894,13 @@
     }
   }
 
-  // ── Supabase auto-save ────────────────────────────────────────────────────
-  const SB_URL = 'https://dbmhzsnqzjdwscssimhg.supabase.co';
-  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWh6c25xempkd3Njc3NpbWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5ODQ3MDYsImV4cCI6MjA5MzU2MDcwNn0.kGl0ffmbQs5lBJXpob36jZCR8B_VKug61FQ41K5H6Ww';
-
-  function getSessionId() {
-    let sid = localStorage.getItem('hwz-session-id');
-    if (!sid) { sid = crypto.randomUUID(); localStorage.setItem('hwz-session-id', sid); }
-    return sid;
-  }
-
-  let _saveTimer = null;
-  let _lastHash  = null;
-
-  function setSaveStatus(s) {
-    const el = document.getElementById('save-status');
-    if (!el) return;
-    el.className = 'save-status ' + s;
-    el.textContent = s === 'saving' ? 'Speichert…' : s === 'saved' ? '✓ Gespeichert' : '⚠ Fehler';
-    if (s === 'saved') setTimeout(() => { if (el) el.style.opacity = '0'; }, 3000);
-  }
-
-  async function saveToSupabase() {
-    const state = collectWorkbookState();
-    const hash  = JSON.stringify(state.fields);
-    if (hash === _lastHash) return;
-
-    setSaveStatus('saving');
-    try {
-      const res = await fetch(SB_URL + '/rest/v1/workbook_results', {
-        method:  'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'apikey':         SB_KEY,
-          'Authorization': 'Bearer ' + SB_KEY,
-          'Prefer':         'resolution=merge-duplicates'
-        },
-        body: JSON.stringify({
-          session_id: getSessionId(),
-          name:       getVal('p-name')    || null,
-          company:    getVal('p-company') || null,
-          role:       getVal('p-role')    || null,
-          updated_at: new Date().toISOString(),
-          data:       state.fields
-        })
-      });
-      if (res.ok || res.status === 201) { _lastHash = hash; setSaveStatus('saved'); }
-      else setSaveStatus('error');
-    } catch { setSaveStatus('error'); }
-  }
-
-  function scheduleSave() {
-    clearTimeout(_saveTimer);
-    _saveTimer = setTimeout(saveToSupabase, 2500);
-  }
-
   function initAutosave() {
     restoreWorkbookState();
 
     document.querySelectorAll(autosaveSelector).forEach(el => {
-      el.addEventListener('input',  () => { saveWorkbookState(); scheduleSave(); });
-      el.addEventListener('change', () => { saveWorkbookState(); scheduleSave(); });
+      el.addEventListener('input', saveWorkbookState);
+      el.addEventListener('change', saveWorkbookState);
     });
-
-    // Save when switching modules
-    const _origGoModule = goModule;
-    window.goModule = function(idx) { _origGoModule(idx); saveToSupabase(); };
-
-    // Save on page close/refresh
-    window.addEventListener('beforeunload', () => saveToSupabase());
   }
 
   function goModule(idx) {
@@ -993,11 +964,11 @@
 
   function getMaturityScores() {
     return {
-      governance: parseInt(document.getElementById('s1')?.value || 3),
-      roles_capabilities: parseInt(document.getElementById('s2')?.value || 3),
-      processes_workflows: parseInt(document.getElementById('s3')?.value || 3),
-      data_infrastructure: parseInt(document.getElementById('s4')?.value || 3),
-      culture_change: parseInt(document.getElementById('s5')?.value || 3)
+      recruiting_talent: parseInt(document.getElementById('s1')?.value || 3),
+      people_analytics: parseInt(document.getElementById('s2')?.value || 3),
+      skills_enablement: parseInt(document.getElementById('s3')?.value || 3),
+      hr_tech_infrastructure: parseInt(document.getElementById('s4')?.value || 3),
+      trust_change: parseInt(document.getElementById('s5')?.value || 3)
     };
   }
 
@@ -1013,7 +984,7 @@
     return {
       course_id: supabaseConfig.courseId,
       participant_name: nullIfBlank(getVal('p-name')),
-      company: nullIfBlank(getVal('p-company')),
+      team: nullIfBlank(getVal('p-team')),
       role: nullIfBlank(getVal('p-role')),
       maturity_scores: getMaturityScores(),
       tensions: getTensions(),
@@ -1070,14 +1041,14 @@
 
   function exportWord() {
     const name    = getVal('p-name')    || 'Teilnehmende:r';
-    const company = getVal('p-company') || '—';
+    const team    = getVal('p-team')    || '—';
     const role    = getVal('p-role')    || '—';
     const date    = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
 
     const scores   = [1,2,3,4,5].map(i => parseInt(document.getElementById('s'+i)?.value || 3));
     const avgScore = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
-    const dimNames = ['Governance & Entscheidung','Rollen & Capabilities','Prozesse & Workflows','Daten & Infrastruktur','Kultur & Change'];
-    const dimShort = ['Governance','Rollen','Prozesse','Daten','Kultur'];
+    const dimNames = ['Recruiting & Talent Acquisition','People Analytics & Daten','Skills & Enablement HR','HR-Tech-Infrastruktur','Akzeptanz & Change'];
+    const dimShort = ['Recruiting','PeopleAnalytics','Skills','HRTech','Akzeptanz'];
 
     // Score bar helper: renders a visual bar as colored table cells
     function scoreBar(val) {
@@ -1095,9 +1066,9 @@
 <head><meta charset='utf-8'><title>AI Operating Model Workbook — ${name}</title>
 <style>
   body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; color: #1A1A2E; margin: 2cm; line-height: 1.5; }
-  h1   { font-size: 20pt; color: #0055A5; margin: 0 0 4pt; }
-  h2   { font-size: 13pt; color: #0055A5; margin: 22pt 0 8pt;
-         border-bottom: 1.5pt solid #0055A5; padding-bottom: 4pt; }
+  h1   { font-size: 20pt; color: #0A1A6E; margin: 0 0 4pt; }
+  h2   { font-size: 13pt; color: #0A1A6E; margin: 22pt 0 8pt;
+         border-bottom: 1.5pt solid #0A1A6E; padding-bottom: 4pt; }
   h3   { font-size: 11pt; color: #003E7A; margin: 14pt 0 5pt; }
   p    { margin: 0 0 8pt; }
   .lbl { font-size: 9pt; font-weight: 700; color: #5A6478; text-transform: uppercase;
@@ -1106,15 +1077,15 @@
          margin-bottom: 10pt; min-height: 20pt; font-size: 11pt; }
   .ans-blue { background: #EBF3FB; border: 1pt solid #D0E5F5; padding: 7pt 10pt; margin-bottom: 10pt; }
   table { border-collapse: collapse; width: 100%; }
-  th    { background: #0055A5; color: #fff; padding: 6pt 10pt; font-size: 10pt; text-align: left; }
+  th    { background: #0A1A6E; color: #fff; padding: 6pt 10pt; font-size: 10pt; text-align: left; }
   td    { border: 1pt solid #DDE3EC; padding: 6pt 10pt; font-size: 10pt; vertical-align: top; }
   tr:nth-child(even) td { background: #F7F9FC; }
-  .commit { background: #0055A5; color: #fff; padding: 14pt 16pt; margin: 10pt 0; }
+  .commit { background: #0A1A6E; color: #fff; padding: 14pt 16pt; margin: 10pt 0; }
   .commit .lbl { color: rgba(255,255,255,0.7); }
   .commit .ans { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.25); color: #fff; }
   .road-now  { background: #F0FAF4; border-left: 4pt solid #1A7F4B; padding: 8pt 12pt; margin-bottom: 8pt; }
   .road-soon { background: #FFFBEB; border-left: 4pt solid #D97706; padding: 8pt 12pt; margin-bottom: 8pt; }
-  .road-late { background: #EBF3FB; border-left: 4pt solid #0055A5; padding: 8pt 12pt; margin-bottom: 8pt; }
+  .road-late { background: #EBF3FB; border-left: 4pt solid #0A1A6E; padding: 8pt 12pt; margin-bottom: 8pt; }
   .road-lbl  { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5pt; margin-bottom: 5pt; }
   .summary-card { border: 1.5pt solid #DDE3EC; padding: 12pt; margin-bottom: 8pt; background: #fff; }
   .footer { margin-top: 24pt; border-top: 1pt solid #DDE3EC; padding-top: 8pt;
@@ -1130,22 +1101,22 @@
 
 <!-- ── HEADER ── -->
 <table style="margin-bottom:18pt;border:none"><tr>
-  <td style="background:#0055A5;color:#fff;font-size:14pt;font-weight:700;
-             padding:6pt 12pt;width:55pt;border:none;letter-spacing:1pt">HWZ</td>
+  <td style="background:#0A1A6E;color:#fff;font-size:14pt;font-weight:700;
+             padding:6pt 12pt;width:90pt;border:none;letter-spacing:0.3pt">swisscom</td>
   <td style="padding-left:14pt;border:none;vertical-align:middle">
-    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">AI Operating Model</span><br>
-    <h1>Personal Workbook</h1>
+    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">AI im HR</span><br>
+    <h1>Workshop Workbook</h1>
   </td>
   <td style="text-align:right;border:none;vertical-align:top;font-size:9pt;color:#5A6478">${date}</td>
 </tr></table>
 
 <!-- ── TEILNEHMER ── -->
 <table style="margin-bottom:20pt">
-  <tr style="background:#0055A5">
-    <th style="width:25%">Name</th><th style="width:25%">Unternehmen</th>
+  <tr style="background:#0A1A6E">
+    <th style="width:25%">Name</th><th style="width:25%">Team / Bereich</th>
     <th style="width:25%">Funktion</th><th style="width:25%">Datum</th>
   </tr>
-  <tr><td><b>${name}</b></td><td>${company}</td><td>${role}</td><td>${date}</td></tr>
+  <tr><td><b>${name}</b></td><td>${team}</td><td>${role}</td><td>${date}</td></tr>
 </table>
 
 <!-- ══════════════════════════════════════════
@@ -1154,11 +1125,11 @@
 <h2>Executive Summary</h2>
 
 <table style="margin-bottom:16pt">
-  <tr style="background:#0055A5">
+  <tr style="background:#0A1A6E">
     <th colspan="3">AI Maturity — Übersicht auf einen Blick</th>
   </tr>
   <tr><td colspan="3" style="padding:4pt 10pt;font-size:9pt;color:#5A6478;background:#EBF3FB">
-    Durchschnittlicher Reifegrad: <b style="color:#0055A5;font-size:13pt">${avgScore}</b> / 5.0
+    Durchschnittlicher Reifegrad: <b style="color:#0A1A6E;font-size:13pt">${avgScore}</b> / 5.0
   </td></tr>
   ${dimNames.map((d,i) => `
   <tr>
@@ -1169,15 +1140,15 @@
 </table>
 
 <table style="margin-bottom:16pt">
-  <tr style="background:#0055A5">
+  <tr style="background:#0A1A6E">
     <th>Spannungsfeld</th><th style="width:160pt">Position</th>
   </tr>
-  <tr><td>Zentralisierung vs. Dezentralisierung</td>
-      <td style="font-weight:600;color:#0055A5">${getVal('t1-val')||'—'}</td></tr>
-  <tr><td>Build vs. Buy vs. Partner</td>
-      <td style="font-weight:600;color:#0055A5">${getVal('t2-val')||'—'}</td></tr>
-  <tr><td>Effizienz vs. Transformation</td>
-      <td style="font-weight:600;color:#0055A5">${getVal('t3-val')||'—'}</td></tr>
+  <tr><td>Zentrales AI-Team vs. AI in jedem HR-Team</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t1-val')||'—'}</td></tr>
+  <tr><td>Standard-HR-Tools vs. Eigenbau</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t2-val')||'—'}</td></tr>
+  <tr><td>Effizienz Backoffice vs. Transformation Employee Experience</td>
+      <td style="font-weight:600;color:#0A1A6E">${getVal('t3-val')||'—'}</td></tr>
 </table>
 
 <div class="commit">
@@ -1198,10 +1169,10 @@
 ══════════════════════════════════════════ -->
 <h2>Modul 1 · Standortbestimmung — AI Maturity Scan</h2>
 
-<span class="lbl">Kontext: Mein Unternehmen &amp; AI-Status quo</span>
+<span class="lbl">Kontext: Aktueller Stand AI im HR</span>
 <div class="ans">${getVal('m1-context').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Grösste AI-Herausforderung</span>
+<span class="lbl">Grösste Herausforderung mit AI im HR</span>
 <div class="ans">${getVal('m1-challenge').replace(/\n/g,'<br>') || '—'}</div>
 
 <h3>AI Maturity Scan — 5 Dimensionen</h3>
@@ -1221,9 +1192,9 @@
 <!-- ══════════════════════════════════════════
      MODUL 2
 ══════════════════════════════════════════ -->
-<h2>Modul 2 · Anatomie eines AI Operating Models</h2>
+<h2>Modul 2 · Anatomie von AI im HR</h2>
 
-<span class="lbl">Zugeteilte Dimension</span>
+<span class="lbl">Vertiefte Dimension</span>
 <div class="ans-blue"><b>${getVal('m2-dim') || '—'}</b></div>
 
 <span class="lbl">Was bedeutet diese Dimension konkret?</span>
@@ -1232,7 +1203,7 @@
 <span class="lbl">Häufigster Fehler</span>
 <div class="ans">${getVal('m2-mistake').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Wie steht mein Unternehmen — wo ist die grösste Lücke?</span>
+<span class="lbl">Wie steht unser HR — wo ist die grösste Lücke?</span>
 <div class="ans">${getVal('m2-mycompany').replace(/\n/g,'<br>') || '—'}</div>
 
 <span class="lbl">Relevante Inputs aus dem Plenum</span>
@@ -1246,32 +1217,32 @@
 <table style="margin-bottom:14pt">
   <tr><th>Spannungsfeld</th><th style="width:160pt">Meine Position</th><th>Begründung</th></tr>
   <tr>
-    <td><b>Zentralisierung vs. Dezentralisierung</b></td>
-    <td style="color:#0055A5;font-weight:600">${getVal('t1-val')||'—'}</td>
+    <td><b>Zentrales AI-Team vs. AI in jedem HR-Team</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t1-val')||'—'}</td>
     <td>${getVal('t1-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
   <tr>
-    <td><b>Build vs. Buy vs. Partner</b></td>
-    <td style="color:#0055A5;font-weight:600">${getVal('t2-val')||'—'}</td>
+    <td><b>Standard-HR-Tools vs. Eigenbau</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t2-val')||'—'}</td>
     <td>${getVal('t2-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
   <tr>
-    <td><b>Effizienz vs. Transformation</b></td>
-    <td style="color:#0055A5;font-weight:600">${getVal('t3-val')||'—'}</td>
+    <td><b>Effizienz Backoffice vs. Transformation Employee Experience</b></td>
+    <td style="color:#0A1A6E;font-weight:600">${getVal('t3-val')||'—'}</td>
     <td>${getVal('t3-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
 </table>
-
-<span class="lbl">Top-Insights vom Gastredner</span>
-<div class="ans">${getVal('m3-guest').replace(/\n/g,'<br>') || '—'}</div>
-
-<span class="lbl">Was bedeutet das konkret für mein Unternehmen?</span>
-<div class="ans">${getVal('m3-apply').replace(/\n/g,'<br>') || '—'}</div>
 
 <!-- ══════════════════════════════════════════
      MODUL 4
 ══════════════════════════════════════════ -->
 <h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
+
+<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
+<span class="lbl">Entscheidender Unterschied im Operating Model</span>
+<div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
+<span class="lbl">Transfer auf unser HR</span>
+<div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
 
 <h3>Prioritäten-Roadmap</h3>
 <div class="road-now">
@@ -1283,7 +1254,7 @@
   ${getVal('m4-soon').replace(/\n/g,'<br>') || '—'}
 </div>
 <div class="road-late">
-  <div class="road-lbl" style="color:#0055A5">Mittelfristig — 1 bis 3 Jahre</div>
+  <div class="road-lbl" style="color:#0A1A6E">Mittelfristig — 1 bis 3 Jahre</div>
   ${getVal('m4-later').replace(/\n/g,'<br>') || '—'}
 </div>
 
@@ -1324,7 +1295,7 @@
 {<br>
 &nbsp;&nbsp;<span class="json-key">"meta"</span>: {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"name"</span>: <span class="json-str">"${name}"</span>,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"company"</span>: <span class="json-str">"${company}"</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"team"</span>: <span class="json-str">"${team}"</span>,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"role"</span>: <span class="json-str">"${role}"</span>,<br>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"date"</span>: <span class="json-str">"${date}"</span><br>
 &nbsp;&nbsp;},<br>
@@ -1353,7 +1324,7 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
 }
 </div>
 
-<div class="footer">HWZ Zürich · AI Operating Model Tageskurs · ${date}</div>
+<div class="footer">Swisscom · AI Operating Model Workshop · ${date}</div>
 
 </body></html>`;
 
@@ -1361,7 +1332,7 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'AI_OM_Workbook_' + (name.replace(/\s+/g,'_') || 'HWZ') + '.doc';
+    a.download = 'Swisscom_AI_OM_Workbook_' + (name.replace(/\s+/g,'_') || 'Swisscom') + '.doc';
     a.click();
     URL.revokeObjectURL(url);
   }
