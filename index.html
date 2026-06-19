@@ -378,6 +378,17 @@
     .module-time { margin-left: 0; }
     .participant-bar input { width: 100%; }
   }
+
+  /* ── Save status indicator ── */
+  .save-status {
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    transition: all 0.4s; white-space: nowrap; flex-shrink: 0;
+    opacity: 0;
+  }
+  .save-status.saving { opacity: 1; background: #FFF8E1; color: #D97706; }
+  .save-status.saved  { opacity: 1; background: #E8F5EE; color: #1A7F4B; }
+  .save-status.error  { opacity: 1; background: #FEE2E2; color: #DC2626; }
 </style>
 </head>
 <body>
@@ -389,6 +400,7 @@
       <div class="topbar-divider"></div>
       <div class="topbar-title">AI Operating Model — Personal Workbook</div>
       <div class="topbar-badge" id="badge-progress">Modul 1 / 5</div>
+      <span class="save-status" id="save-status"></span>
     </div>
   </div>
 
@@ -684,23 +696,6 @@
     <div class="module-body">
 
       <div class="section">
-        <div class="section-title">Case-Analyse (Gruppenarbeit)</div>
-        <div class="instruction">Ihr analysiert einen Unternehmens-Case: Gleiche Technologie, unterschiedliche Operating Models — unterschiedliche Outcomes. Was war der Unterschied?</div>
-        <div class="field-wrap">
-          <label class="field-label">Case-Name / Unternehmen</label>
-          <input type="text" id="m4-case" placeholder="Welcher Case wurde analysiert?"/>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Was war der entscheidende Unterschied im Operating Model?</label>
-          <textarea id="m4-diff" rows="3" placeholder="Was hat das erfolgreiche Unternehmen anders gemacht?"></textarea>
-        </div>
-        <div class="field-wrap">
-          <label class="field-label">Was würde das für mein Unternehmen bedeuten?</label>
-          <textarea id="m4-transfer" rows="3" placeholder="Welche 1–2 Dinge könnte ich direkt übernehmen?"></textarea>
-        </div>
-      </div>
-
-      <div class="section">
         <div class="section-title">Meine Prioritäten-Roadmap</div>
         <div class="instruction">Definiere 3 konkrete Prioritäten für dein Unternehmen — mit Zeithorizont. Sei so spezifisch wie möglich.</div>
         <div class="field-wrap">
@@ -866,13 +861,75 @@
     }
   }
 
+  // ── Supabase auto-save ────────────────────────────────────────────────────
+  const SB_URL = 'https://dbmhzsnqzjdwscssimhg.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWh6c25xempkd3Njc3NpbWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5ODQ3MDYsImV4cCI6MjA5MzU2MDcwNn0.kGl0ffmbQs5lBJXpob36jZCR8B_VKug61FQ41K5H6Ww';
+
+  function getSessionId() {
+    let sid = localStorage.getItem('hwz-session-id');
+    if (!sid) { sid = crypto.randomUUID(); localStorage.setItem('hwz-session-id', sid); }
+    return sid;
+  }
+
+  let _saveTimer = null;
+  let _lastHash  = null;
+
+  function setSaveStatus(s) {
+    const el = document.getElementById('save-status');
+    if (!el) return;
+    el.className = 'save-status ' + s;
+    el.textContent = s === 'saving' ? 'Speichert…' : s === 'saved' ? '✓ Gespeichert' : '⚠ Fehler';
+    if (s === 'saved') setTimeout(() => { if (el) el.style.opacity = '0'; }, 3000);
+  }
+
+  async function saveToSupabase() {
+    const state = collectWorkbookState();
+    const hash  = JSON.stringify(state.fields);
+    if (hash === _lastHash) return;
+
+    setSaveStatus('saving');
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/workbook_results', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'apikey':         SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Prefer':         'resolution=merge-duplicates'
+        },
+        body: JSON.stringify({
+          session_id: getSessionId(),
+          name:       getVal('p-name')    || null,
+          company:    getVal('p-company') || null,
+          role:       getVal('p-role')    || null,
+          updated_at: new Date().toISOString(),
+          data:       state.fields
+        })
+      });
+      if (res.ok || res.status === 201) { _lastHash = hash; setSaveStatus('saved'); }
+      else setSaveStatus('error');
+    } catch { setSaveStatus('error'); }
+  }
+
+  function scheduleSave() {
+    clearTimeout(_saveTimer);
+    _saveTimer = setTimeout(saveToSupabase, 2500);
+  }
+
   function initAutosave() {
     restoreWorkbookState();
 
     document.querySelectorAll(autosaveSelector).forEach(el => {
-      el.addEventListener('input', saveWorkbookState);
-      el.addEventListener('change', saveWorkbookState);
+      el.addEventListener('input',  () => { saveWorkbookState(); scheduleSave(); });
+      el.addEventListener('change', () => { saveWorkbookState(); scheduleSave(); });
     });
+
+    // Save when switching modules
+    const _origGoModule = goModule;
+    window.goModule = function(idx) { _origGoModule(idx); saveToSupabase(); };
+
+    // Save on page close/refresh
+    window.addEventListener('beforeunload', () => saveToSupabase());
   }
 
   function goModule(idx) {
@@ -1215,12 +1272,6 @@
      MODUL 4
 ══════════════════════════════════════════ -->
 <h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
-
-<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
-<span class="lbl">Entscheidender Unterschied im Operating Model</span>
-<div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
-<span class="lbl">Transfer auf mein Unternehmen</span>
-<div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
 
 <h3>Prioritäten-Roadmap</h3>
 <div class="road-now">

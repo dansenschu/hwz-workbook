@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — HWZ Workbook Ergebnisse</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+         background: #F0F4F8; color: #1A2A3A; min-height: 100vh; }
+
+  /* ── Login ── */
+  .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+  .login-card { background: #fff; border-radius: 12px; border: 1px solid #D8E4EF;
+                padding: 40px; width: 360px; text-align: center; }
+  .login-card .hwz-logo { background: #0055A5; color: #fff; font-size: 16px; font-weight: 700;
+                          padding: 7px 13px; border-radius: 3px; display: inline-block;
+                          letter-spacing: 0.5px; margin-bottom: 20px; }
+  .login-card h1 { font-size: 20px; color: #002D5C; margin-bottom: 6px; }
+  .login-card p  { font-size: 13px; color: #64748B; margin-bottom: 24px; }
+  .login-card input { width: 100%; padding: 11px 14px; border: 1.5px solid #D8E4EF;
+                      border-radius: 8px; font-size: 15px; font-family: inherit;
+                      margin-bottom: 12px; }
+  .login-card input:focus { outline: none; border-color: #0055A5; }
+  .login-card button { width: 100%; padding: 11px; background: #0055A5; color: #fff;
+                       border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
+                       cursor: pointer; font-family: inherit; }
+  .login-card button:hover { background: #004088; }
+  .login-error { color: #DC2626; font-size: 13px; margin-top: 10px; display: none; }
+
+  /* ── Dashboard ── */
+  .dash { display: none; }
+  .topbar { background: #fff; border-bottom: 1px solid #D8E4EF; padding: 0 24px; }
+  .topbar-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center;
+                  height: 56px; gap: 16px; }
+  .hwz-logo { background: #0055A5; color: #fff; font-size: 14px; font-weight: 700;
+              padding: 5px 10px; border-radius: 3px; letter-spacing: 0.5px; flex-shrink: 0; }
+  .topbar-title { font-size: 14px; font-weight: 600; color: #002D5C; flex: 1; }
+  .btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+         cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
+  .btn-primary { background: #0055A5; color: #fff; }
+  .btn-primary:hover { background: #004088; }
+  .btn-secondary { background: #fff; color: #64748B; border: 1px solid #C5D8ED; }
+  .btn-secondary:hover { background: #F0F4F8; }
+  .btn-danger { background: #fff; color: #DC2626; border: 1px solid #FECACA; }
+  .btn-danger:hover { background: #FEF2F2; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+
+  /* ── Stats row ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .stat-card { background: #fff; border: 1px solid #D8E4EF; border-radius: 10px; padding: 18px 20px; }
+  .stat-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;
+                letter-spacing: 0.5px; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #0055A5; }
+  .stat-sub   { font-size: 12px; color: #94A3B8; margin-top: 3px; }
+
+  /* ── Table ── */
+  .table-wrap { background: #fff; border: 1px solid #D8E4EF; border-radius: 10px; overflow: hidden; }
+  .table-header { padding: 16px 20px; border-bottom: 1px solid #EBF0F6; display: flex;
+                  align-items: center; gap: 12px; }
+  .table-header h2 { font-size: 15px; font-weight: 700; color: #002D5C; flex: 1; }
+  .search-input { padding: 8px 12px; border: 1.5px solid #D8E4EF; border-radius: 8px;
+                  font-size: 13px; font-family: inherit; width: 220px; }
+  .search-input:focus { outline: none; border-color: #0055A5; }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th { background: #F8FBFF; padding: 10px 16px; text-align: left; font-size: 11px;
+             font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;
+             border-bottom: 1px solid #EBF0F6; }
+  tbody tr { border-bottom: 1px solid #F0F4F8; cursor: pointer; transition: background 0.1s; }
+  tbody tr:hover { background: #F8FBFF; }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 12px 16px; font-size: 13px; vertical-align: middle; }
+  td.name   { font-weight: 600; color: #002D5C; }
+  td.score  { font-weight: 700; color: #0055A5; }
+  .score-bar { display: flex; align-items: center; gap: 8px; }
+  .bar-track { width: 80px; height: 6px; background: #E8EEF4; border-radius: 3px; overflow: hidden; }
+  .bar-fill  { height: 100%; border-radius: 3px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .badge-complete { background: #D6EAD8; color: #166534; }
+  .badge-partial  { background: #FEF9C3; color: #854D0E; }
+  .time-ago { color: #94A3B8; font-size: 12px; }
+
+  /* ── Detail drawer ── */
+  .drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 100; }
+  .drawer { position: fixed; right: 0; top: 0; bottom: 0; width: min(680px, 95vw);
+            background: #fff; overflow-y: auto; z-index: 101;
+            transform: translateX(100%); transition: transform 0.3s ease;
+            box-shadow: -4px 0 24px rgba(0,0,0,0.12); }
+  .drawer.open { transform: translateX(0); }
+  .drawer-overlay.open { display: block; }
+  .drawer-head { padding: 20px 24px; border-bottom: 1px solid #EBF0F6;
+                 display: flex; align-items: center; gap: 14px; position: sticky; top: 0;
+                 background: #fff; z-index: 1; }
+  .drawer-head h2 { font-size: 16px; font-weight: 700; color: #002D5C; flex: 1; }
+  .drawer-body { padding: 24px; }
+  .d-section { margin-bottom: 28px; }
+  .d-section-title { font-size: 11px; font-weight: 700; color: #0055A5; text-transform: uppercase;
+                     letter-spacing: 0.7px; margin-bottom: 14px; padding-bottom: 6px;
+                     border-bottom: 2px solid #EBF3FB; }
+  .d-field { margin-bottom: 12px; }
+  .d-label { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase;
+             letter-spacing: 0.4px; margin-bottom: 4px; }
+  .d-value { font-size: 14px; color: #1A2A3A; background: #F8FBFF; border-radius: 7px;
+             padding: 10px 14px; line-height: 1.6; border: 1px solid #EBF0F6; }
+  .d-value.empty { color: #94A3B8; font-style: italic; }
+  .score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .score-row .dim-label { font-size: 13px; font-weight: 500; flex: 1; }
+  .score-pill { background: #0055A5; color: #fff; border-radius: 5px; padding: 2px 10px;
+                font-size: 13px; font-weight: 700; min-width: 38px; text-align: center; }
+
+  .empty-state { text-align: center; padding: 60px 20px; color: #94A3B8; }
+  .empty-state svg { margin-bottom: 16px; opacity: 0.4; }
+  .empty-state p { font-size: 15px; }
+
+  .refresh-btn { background: none; border: none; color: #64748B; cursor: pointer;
+                 font-size: 18px; padding: 4px 8px; border-radius: 6px; }
+  .refresh-btn:hover { background: #F0F4F8; }
+
+  @media(max-width: 700px) {
+    .stats { grid-template-columns: 1fr 1fr; }
+    .topbar-title { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div class="login-wrap" id="login-screen">
+  <div class="login-card">
+    <div class="hwz-logo">HWZ</div>
+    <h1>Admin-Dashboard</h1>
+    <p>AI Operating Model Workbook — Ergebnisse</p>
+    <input type="password" id="pw-input" placeholder="Passwort eingeben…" onkeydown="if(event.key==='Enter')checkPw()"/>
+    <button onclick="checkPw()">Einloggen</button>
+    <div class="login-error" id="pw-error">Falsches Passwort.</div>
+  </div>
+</div>
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div class="dash" id="dashboard">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="hwz-logo">HWZ</div>
+      <div class="topbar-title">Workbook Ergebnisse — MCA-MAI26-1</div>
+      <button class="refresh-btn" onclick="loadResults()" title="Aktualisieren">↻</button>
+      <button class="btn btn-secondary" onclick="exportCsv()">⬇ CSV exportieren</button>
+      <button class="btn btn-primary" onclick="window.open('index.html')">Workbook öffnen</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Teilnehmende</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-sub">Einträge gespeichert</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ø AI-Reife</div>
+        <div class="stat-value" id="stat-avg">—</div>
+        <div class="stat-sub">von 5.0 (alle Dimensionen)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Letzter Eintrag</div>
+        <div class="stat-value" id="stat-last" style="font-size:16px;margin-top:6px">—</div>
+        <div class="stat-sub" id="stat-last-name">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Commitment</div>
+        <div class="stat-value" id="stat-commit">—</div>
+        <div class="stat-sub">haben M5 ausgefüllt</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <h2>Alle Teilnehmenden</h2>
+        <input class="search-input" type="text" placeholder="Suchen…" id="search" oninput="renderTable()"/>
+      </div>
+      <div id="table-container">
+        <div class="empty-state"><p>Lade Daten…</p></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ DETAIL DRAWER ══════════════ -->
+<div class="drawer-overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h2 id="drawer-title">—</h2>
+    <button class="btn btn-danger" id="drawer-delete-btn" onclick="deleteCurrentRow()">🗑 Löschen</button>
+    <button class="btn btn-secondary" onclick="closeDrawer()">✕ Schliessen</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+  const SB_URL = 'https://dbmhzsnqzjdwscssimhg.supabase.co';
+  const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRibWh6c25xempkd3Njc3NpbWhnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5ODQ3MDYsImV4cCI6MjA5MzU2MDcwNn0.kGl0ffmbQs5lBJXpob36jZCR8B_VKug61FQ41K5H6Ww';
+  const ADMIN_PW = 'hwz2026'; // ← Passwort hier ändern
+
+  const DIM_NAMES = ['Governance & Entscheidung','Rollen & Capabilities','Prozesse & Workflows','Daten & Infrastruktur','Kultur & Change'];
+
+  let allRows = [];
+
+  // ── Auth ──────────────────────────────────────────────────────────────────
+  function checkPw() {
+    const val = document.getElementById('pw-input').value;
+    if (val === ADMIN_PW) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display   = 'block';
+      loadResults();
+    } else {
+      document.getElementById('pw-error').style.display = 'block';
+      document.getElementById('pw-input').focus();
+    }
+  }
+
+  // ── Load from Supabase ────────────────────────────────────────────────────
+  async function loadResults() {
+    document.getElementById('table-container').innerHTML = '<div class="empty-state"><p>Lade Daten…</p></div>';
+    try {
+      const res = await fetch(SB_URL + '/rest/v1/workbook_results?select=*&order=updated_at.desc', {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      });
+      allRows = await res.json();
+      updateStats();
+      renderTable();
+    } catch(e) {
+      document.getElementById('table-container').innerHTML =
+        '<div class="empty-state"><p>Fehler beim Laden. Supabase erreichbar?</p></div>';
+    }
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  function avgScore(data) {
+    const scores = [1,2,3,4,5].map(i => parseFloat(data['s'+i]||0)).filter(Boolean);
+    return scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+  }
+
+  function updateStats() {
+    document.getElementById('stat-total').textContent = allRows.length;
+
+    const avgs = allRows.map(r => avgScore(r.data || {})).filter(s => s > 0);
+    document.getElementById('stat-avg').textContent =
+      avgs.length ? (avgs.reduce((a,b)=>a+b,0)/avgs.length).toFixed(1) : '—';
+
+    if (allRows.length) {
+      const last = allRows[0];
+      const d = new Date(last.updated_at);
+      document.getElementById('stat-last').textContent =
+        d.toLocaleTimeString('de-CH', {hour:'2-digit', minute:'2-digit'});
+      document.getElementById('stat-last-name').textContent = last.name || 'Unbekannt';
+    }
+
+    const withCommit = allRows.filter(r => (r.data||{})['m5-commit']?.trim()).length;
+    document.getElementById('stat-commit').textContent = withCommit + ' / ' + allRows.length;
+  }
+
+  // ── Table ─────────────────────────────────────────────────────────────────
+  function timeAgo(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff/60000);
+    if (m < 1)  return 'gerade eben';
+    if (m < 60) return 'vor ' + m + ' Min.';
+    const h = Math.floor(m/60);
+    if (h < 24) return 'vor ' + h + ' Std.';
+    return new Date(iso).toLocaleDateString('de-CH');
+  }
+
+  function renderTable() {
+    const q = (document.getElementById('search').value || '').toLowerCase();
+    const rows = allRows.filter(r =>
+      !q ||
+      (r.name    || '').toLowerCase().includes(q) ||
+      (r.company || '').toLowerCase().includes(q) ||
+      (r.role    || '').toLowerCase().includes(q)
+    );
+
+    if (!rows.length) {
+      document.getElementById('table-container').innerHTML =
+        '<div class="empty-state"><p>' + (allRows.length ? 'Keine Treffer.' : 'Noch keine Einträge.') + '</p></div>';
+      return;
+    }
+
+    const trs = rows.map(r => {
+      const avg  = avgScore(r.data || {});
+      const pct  = Math.round((avg/5)*100);
+      const col  = avg <= 2 ? '#DC2626' : avg <= 3 ? '#D97706' : '#1A7F4B';
+      const hasCommit = !!((r.data||{})['m5-commit']?.trim());
+      return `<tr onclick="openDrawer('${r.id}')">
+        <td class="name">${r.name || '<em style="color:#94A3B8">—</em>'}</td>
+        <td>${r.company || '<em style="color:#94A3B8">—</em>'}</td>
+        <td>${r.role    || '<em style="color:#94A3B8">—</em>'}</td>
+        <td class="score">
+          <div class="score-bar">
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${col}"></div></div>
+            <span style="color:${col}">${avg ? avg.toFixed(1) : '—'}</span>
+          </div>
+        </td>
+        <td>${hasCommit
+          ? '<span class="badge badge-complete">✓ Commitment</span>'
+          : '<span class="badge badge-partial">Ausstehend</span>'}</td>
+        <td class="time-ago">${timeAgo(r.updated_at)}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('table-container').innerHTML = `
+      <table>
+        <thead><tr>
+          <th>Name</th><th>Unternehmen</th><th>Funktion</th>
+          <th>Ø AI-Reife</th><th>Status</th><th>Zuletzt</th>
+        </tr></thead>
+        <tbody>${trs}</tbody>
+      </table>`;
+  }
+
+  // ── Detail drawer ─────────────────────────────────────────────────────────
+  function v(data, key) {
+    const val = (data || {})[key];
+    return val ? String(val).replace(/\n/g,'<br>') : null;
+  }
+  function field(data, key, label) {
+    const val = v(data, key);
+    return `<div class="d-field">
+      <div class="d-label">${label}</div>
+      <div class="d-value${val ? '' : ' empty'}">${val || 'Nicht ausgefüllt'}</div>
+    </div>`;
+  }
+
+  function openDrawer(id) {
+    const r = allRows.find(x => x.id === id);
+    if (!r) return;
+    _currentDrawerId = id;
+    const btn = document.getElementById('drawer-delete-btn');
+    btn.textContent = '🗑 Löschen'; btn.disabled = false;
+    const d = r.data || {};
+
+    document.getElementById('drawer-title').textContent = r.name || 'Unbekannte Person';
+    document.getElementById('overlay').classList.add('open');
+    document.getElementById('drawer').classList.add('open');
+
+    const scores = [1,2,3,4,5].map(i => parseInt(d['s'+i]||3));
+    const avg    = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
+
+    document.getElementById('drawer-body').innerHTML = `
+      <div class="d-section">
+        <div class="d-section-title">Teilnehmende:r</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          ${field(r, 'name',    'Name')}
+          ${field(r, 'company', 'Unternehmen')}
+          ${field(r, 'role',    'Funktion')}
+        </div>
+        <div style="font-size:12px;color:#94A3B8;margin-top:8px">
+          Gespeichert: ${new Date(r.updated_at).toLocaleString('de-CH')}
+        </div>
+      </div>
+
+      <div class="d-section">
+        <div class="d-section-title">Modul 1 · AI Maturity Scan (Ø ${avg}/5)</div>
+        ${DIM_NAMES.map((name,i) => `
+          <div class="score-row">
+            <span class="dim-label">${name}</span>
+            <span class="score-pill">${scores[i]}/5</span>
+          </div>`).join('')}
+        ${field(d, 'm1-context',    'Kontext: Unternehmen & AI-Status quo')}
+        ${field(d, 'm1-challenge',  'Grösste AI-Herausforderung')}
+        ${field(d, 'm1-reflection', 'Erkenntnis aus dem 2er-Austausch')}
+      </div>
+
+      <div class="d-section">
+        <div class="d-section-title">Modul 2 · Anatomie AI Operating Model</div>
+        ${field(d, 'm2-dim',       'Zugeteilte Dimension')}
+        ${field(d, 'm2-meaning',   'Was bedeutet diese Dimension?')}
+        ${field(d, 'm2-mistake',   'Häufigster Fehler')}
+        ${field(d, 'm2-mycompany', 'Eigene Einschätzung — grösste Lücke')}
+        ${field(d, 'm2-plenum',    'Relevante Inputs aus dem Plenum')}
+      </div>
+
+      <div class="d-section">
+        <div class="d-section-title">Modul 3 · Spannungsfelder</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px">
+          <div class="d-field">
+            <div class="d-label">Zentralisierung vs. Dezentralisierung</div>
+            <div class="d-value${d['t1-val']?'':' empty'}">${d['t1-val']||'—'}</div>
+          </div>
+          <div class="d-field">
+            <div class="d-label">Build vs. Buy vs. Partner</div>
+            <div class="d-value${d['t2-val']?'':' empty'}">${d['t2-val']||'—'}</div>
+          </div>
+          <div class="d-field">
+            <div class="d-label">Effizienz vs. Transformation</div>
+            <div class="d-value${d['t3-val']?'':' empty'}">${d['t3-val']||'—'}</div>
+          </div>
+        </div>
+        ${field(d, 'm3-guest', 'Top-3 Insights vom Gastreferenten')}
+        ${field(d, 'm3-apply', 'Relevantester Insight für mein Unternehmen')}
+      </div>
+
+      <div class="d-section">
+        <div class="d-section-title">Modul 4 · Prioritäten-Roadmap</div>
+        ${field(d, 'm4-now',   'Sofort (0–3 Monate)')}
+        ${field(d, 'm4-soon',  'Kurzfristig (3–12 Monate)')}
+        ${field(d, 'm4-later', 'Mittelfristig (1–3 Jahre)')}
+      </div>
+
+      <div class="d-section">
+        <div class="d-section-title">Modul 5 · Commitment</div>
+        ${field(d, 'm5-commit',   '30-Tage-Commitment')}
+        ${field(d, 'm5-partner',  'Accountability-Partner')}
+        ${field(d, 'm5-date',     'Check-in Datum')}
+        ${field(d, 'm5-learnings','Key Learnings')}
+        ${field(d, 'm5-good',     'Was war gut am Kurs?')}
+        ${field(d, 'm5-improve',  'Was könnte besser sein?')}
+      </div>
+    `;
+  }
+
+  let _currentDrawerId = null;
+
+  function closeDrawer() {
+    document.getElementById('drawer').classList.remove('open');
+    document.getElementById('overlay').classList.remove('open');
+    _currentDrawerId = null;
+  }
+
+  async function deleteCurrentRow() {
+    if (!_currentDrawerId) return;
+    const row = allRows.find(r => r.id === _currentDrawerId);
+    const name = row?.name || 'diesen Eintrag';
+    if (!confirm(`«${name}» wirklich löschen?`)) return;
+
+    const btn = document.getElementById('drawer-delete-btn');
+    btn.textContent = 'Löscht…'; btn.disabled = true;
+
+    const res = await fetch(SB_URL + '/rest/v1/workbook_results?id=eq.' + _currentDrawerId, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+
+    if (res.ok) {
+      allRows = allRows.filter(r => r.id !== _currentDrawerId);
+      closeDrawer();
+      updateStats();
+      renderTable();
+    } else {
+      btn.textContent = '⚠ Fehler'; btn.disabled = false;
+    }
+  }
+
+  // ── CSV Export ───────────────────────────────────────────────────────────
+  function exportCsv() {
+    const headers = ['Name','Unternehmen','Funktion','Governance','Rollen','Prozesse','Daten','Kultur','Ø Score',
+      'Commitment','Partner','Check-in','Zuletzt gespeichert'];
+    const rows = allRows.map(r => {
+      const d = r.data || {};
+      const scores = [1,2,3,4,5].map(i => d['s'+i]||'');
+      const avg = scores.filter(Boolean).length
+        ? (scores.filter(Boolean).map(Number).reduce((a,b)=>a+b,0)/scores.filter(Boolean).length).toFixed(1)
+        : '';
+      return [r.name||'', r.company||'', r.role||'',
+        ...scores, avg,
+        (d['m5-commit']||'').replace(/\n/g,' '),
+        d['m5-partner']||'', d['m5-date']||'',
+        new Date(r.updated_at).toLocaleString('de-CH')
+      ].map(v => '"' + String(v).replace(/"/g,'""') + '"');
+    });
+
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = 'HWZ_Workbook_Ergebnisse.csv';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url);
+  }
+
+  // ── Keyboard ─────────────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeDrawer();
+    if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') checkPw();
+  });
+</script>
+</body>
+</html>
