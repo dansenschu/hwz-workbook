@@ -459,7 +459,7 @@
         </svg>
       </div>
       <div class="topbar-divider"></div>
-      <div class="topbar-title">AI im HR — Workshop Workbook</div>
+      <div class="topbar-title" id="topbar-title">AI im HR — Workshop Workbook</div>
       <div class="topbar-badge" id="badge-progress">Modul 1 / 5</div>
       <div class="lang-toggle">
         <button class="lang-btn" id="lang-de" onclick="setLang('de')">DE</button>
@@ -1414,6 +1414,7 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
       moduleOf: (n, t) => `Modul ${n} von ${t}`,
       moduleSlash: (n, t) => `Modul ${n} / ${t}`,
       // Participant bar
+      topbarTitle: 'AI im HR — Workshop Workbook',
       labelName: 'Dein Name', labelTeam: 'Team / Bereich', labelRole: 'Funktion',
       phName: 'Vorname Nachname', phTeam: 'z.B. Recruiting, People Development', phRole: 'Deine Rolle',
       // Tabs
@@ -1527,6 +1528,7 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
       moduleOf: (n, t) => `Module ${n} of ${t}`,
       moduleSlash: (n, t) => `Module ${n} / ${t}`,
       // Participant bar
+      topbarTitle: 'AI in HR — Workshop Workbook',
       labelName: 'Your Name', labelTeam: 'Team / Department', labelRole: 'Role',
       phName: 'First Last', phTeam: 'e.g. Recruiting, People Development', phRole: 'Your Role',
       // Tabs
@@ -1642,6 +1644,9 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
     const tr = T[lang];
     const $ = id => document.getElementById(id);
     const setPh = (id, text) => { const el = $(id); if (el) el.placeholder = text; };
+
+    // Topbar title
+    $('topbar-title').textContent = tr.topbarTitle;
 
     // Badge / progress
     $('badge-progress').textContent = tr.moduleSlash(current + 1, modules);
