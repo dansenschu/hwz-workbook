@@ -1075,15 +1075,21 @@
   }
 
   function exportWord() {
-    const name    = getVal('p-name')    || 'Teilnehmende:r';
+    const isEN    = LANG === 'en';
+    const name    = getVal('p-name')    || (isEN ? 'Participant' : 'Teilnehmende:r');
     const team    = getVal('p-team')    || '—';
     const role    = getVal('p-role')    || '—';
-    const date    = new Date().toLocaleDateString('de-CH', {day:'2-digit',month:'long',year:'numeric'});
+    const locale  = isEN ? 'en-GB' : 'de-CH';
+    const date    = new Date().toLocaleDateString(locale, {day:'2-digit',month:'long',year:'numeric'});
 
     const scores   = [1,2,3,4,5].map(i => parseInt(document.getElementById('s'+i)?.value || 3));
     const avgScore = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
-    const dimNames = ['Recruiting & Talent Acquisition','People Analytics & Daten','Skills & Enablement HR','HR-Tech-Infrastruktur','Akzeptanz & Change'];
-    const dimShort = ['Recruiting','PeopleAnalytics','Skills','HRTech','Akzeptanz'];
+    const dimNames = isEN
+      ? ['Recruiting & Talent Acquisition','People Analytics & Data','Skills & Enablement HR','HR-Tech Infrastructure','Acceptance & Change']
+      : ['Recruiting & Talent Acquisition','People Analytics & Daten','Skills & Enablement HR','HR-Tech-Infrastruktur','Akzeptanz & Change'];
+    const dimShort = isEN
+      ? ['Recruiting','PeopleAnalytics','Skills','HRTech','Acceptance']
+      : ['Recruiting','PeopleAnalytics','Skills','HRTech','Akzeptanz'];
 
     // Score bar helper: renders a visual bar as colored table cells
     function scoreBar(val) {
@@ -1095,6 +1101,56 @@
         <td style="padding-left:5pt;font-weight:700;color:${color};font-size:11pt;white-space:nowrap">${val}/5</td>
       </tr></table>`;
     }
+
+    const W = {
+      aiInHR:          isEN ? 'AI in HR'                                   : 'AI im HR',
+      participant:     isEN ? 'Participant'                                 : 'Teilnehmende:r',
+      teamDept:        isEN ? 'Team / Department'                           : 'Team / Bereich',
+      roleCol:         isEN ? 'Role'                                        : 'Funktion',
+      dateCol:         isEN ? 'Date'                                        : 'Datum',
+      maturityOverview:isEN ? 'AI Maturity — Overview at a Glance'         : 'AI Maturity — Übersicht auf einen Blick',
+      avgMaturity:     isEN ? 'Average maturity level:'                     : 'Durchschnittlicher Reifegrad:',
+      tensionHeader:   isEN ? 'Tension'                                     : 'Spannungsfeld',
+      positionHeader:  isEN ? 'Position'                                    : 'Position',
+      t1row:           isEN ? 'Central AI Team vs. AI in every HR team'    : 'Zentrales AI-Team vs. AI in jedem HR-Team',
+      t2row:           isEN ? 'Standard HR tools vs. Custom build'          : 'Standard-HR-Tools vs. Eigenbau',
+      t3row:           isEN ? 'Back-office efficiency vs. Employee Experience transformation' : 'Effizienz Backoffice vs. Transformation Employee Experience',
+      commitLbl:       isEN ? '30-Day Commitment'                           : '30-Tage-Commitment',
+      partnerLbl:      isEN ? 'Accountability Partner:'                     : 'Accountability-Partner:',
+      checkinLbl:      isEN ? 'Check-in Date:'                              : 'Check-in Datum:',
+      mod1h2:          isEN ? 'Module 1 · Position Assessment — AI Maturity Scan' : 'Modul 1 · Standortbestimmung — AI Maturity Scan',
+      m1ctx:           isEN ? 'Context: Current State of AI in HR'          : 'Kontext: Aktueller Stand AI im HR',
+      m1chal:          isEN ? 'Biggest challenge with AI in HR'             : 'Grösste Herausforderung mit AI im HR',
+      dimHeader:       isEN ? 'Dimension'                                   : 'Dimension',
+      scoreHeader:     isEN ? 'Score'                                       : 'Score',
+      notesHeader:     isEN ? 'Notes &amp; Observations'                    : 'Notizen &amp; Beobachtungen',
+      m1refl:          isEN ? 'Key insight from the pair exchange'          : 'Wichtigste Erkenntnis aus dem 2er-Austausch',
+      mod2h2:          isEN ? 'Module 2 · Anatomy of AI in HR'             : 'Modul 2 · Anatomie von AI im HR',
+      m2deepDim:       isEN ? 'Deepened Dimension'                          : 'Vertiefte Dimension',
+      m2meaning:       isEN ? 'What does this dimension mean concretely?'   : 'Was bedeutet diese Dimension konkret?',
+      m2mistake:       isEN ? 'Most Common Mistake'                         : 'Häufigster Fehler',
+      m2gap:           isEN ? 'How does our HR stand — where is the biggest gap?' : 'Wie steht unser HR — wo ist die grösste Lücke?',
+      m2plenum:        isEN ? 'Relevant inputs from the plenary'            : 'Relevante Inputs aus dem Plenum',
+      mod3h2:          isEN ? 'Module 3 · Tensions &amp; Trade-offs'        : 'Modul 3 · Spannungsfelder &amp; Trade-offs',
+      myPosition:      isEN ? 'My Position'                                 : 'Meine Position',
+      reasoning:       isEN ? 'Reasoning'                                   : 'Begründung',
+      mod4h2:          isEN ? 'Module 4 · Roadmap — From Analysis to Action' : 'Modul 4 · Roadmap — Von Analyse zu Aktion',
+      caseAnalysis:    isEN ? 'Case Analysis:'                              : 'Case-Analyse:',
+      m4diff:          isEN ? 'Decisive difference in the operating model'  : 'Entscheidender Unterschied im Operating Model',
+      m4transfer:      isEN ? 'Transfer to our HR'                          : 'Transfer auf unser HR',
+      roadmap:         isEN ? 'Priority Roadmap'                            : 'Prioritäten-Roadmap',
+      roadNow:         isEN ? 'Immediate — 0 to 3 months'                  : 'Sofort — 0 bis 3 Monate',
+      roadSoon:        isEN ? 'Short-term — 3 to 12 months'                : 'Kurzfristig — 3 bis 12 Monate',
+      roadLate:        isEN ? 'Medium-term — 1 to 3 years'                 : 'Mittelfristig — 1 bis 3 Jahre',
+      mod5h2:          isEN ? 'Module 5 · Personal Commitment &amp; Closing' : 'Modul 5 · Persönliches Commitment &amp; Abschluss',
+      commitWhat:      isEN ? 'What I will concretely do in the next 30 days' : 'Was ich in den nächsten 30 Tagen konkret tue',
+      top3learnings:   isEN ? 'My Top 3 Learnings Today'                   : 'Meine Top-3-Learnings heute',
+      feedbackGood:    isEN ? 'What worked particularly well?'              : 'Was hat besonders gut funktioniert?',
+      feedbackImprove: isEN ? 'What would you change for next time?'        : 'Was würdest du für nächstes Mal ändern?',
+      appendixH2:      isEN ? 'Appendix · Structured Data (LLM-readable)'  : 'Appendix · Strukturierte Daten (LLM-lesbar)',
+      appendixP:       isEN ? 'This section contains all workbook data as structured JSON — optimised for further processing with AI tools (Claude, ChatGPT, etc.).' : 'Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).',
+      footer:          isEN ? `Swisscom · AI Operating Model Workshop · ${date}` : `Swisscom · AI Operating Model Workshop · ${date}`,
+    };
 
     const html = `
 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -1139,32 +1195,28 @@
   <td style="background:#0A1A6E;color:#fff;font-size:14pt;font-weight:700;
              padding:6pt 12pt;width:90pt;border:none;letter-spacing:0.3pt">swisscom</td>
   <td style="padding-left:14pt;border:none;vertical-align:middle">
-    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">AI im HR</span><br>
+    <span style="font-size:9pt;color:#5A6478;text-transform:uppercase;letter-spacing:0.5pt">${W.aiInHR}</span><br>
     <h1>Workshop Workbook</h1>
   </td>
   <td style="text-align:right;border:none;vertical-align:top;font-size:9pt;color:#5A6478">${date}</td>
 </tr></table>
 
-<!-- ── TEILNEHMER ── -->
 <table style="margin-bottom:20pt">
   <tr style="background:#0A1A6E">
-    <th style="width:25%">Name</th><th style="width:25%">Team / Bereich</th>
-    <th style="width:25%">Funktion</th><th style="width:25%">Datum</th>
+    <th style="width:25%">Name</th><th style="width:25%">${W.teamDept}</th>
+    <th style="width:25%">${W.roleCol}</th><th style="width:25%">${W.dateCol}</th>
   </tr>
   <tr><td><b>${name}</b></td><td>${team}</td><td>${role}</td><td>${date}</td></tr>
 </table>
 
-<!-- ══════════════════════════════════════════
-     EXECUTIVE SUMMARY (Seite 1)
-══════════════════════════════════════════ -->
 <h2>Executive Summary</h2>
 
 <table style="margin-bottom:16pt">
   <tr style="background:#0A1A6E">
-    <th colspan="3">AI Maturity — Übersicht auf einen Blick</th>
+    <th colspan="3">${W.maturityOverview}</th>
   </tr>
   <tr><td colspan="3" style="padding:4pt 10pt;font-size:9pt;color:#5A6478;background:#EBF3FB">
-    Durchschnittlicher Reifegrad: <b style="color:#0A1A6E;font-size:13pt">${avgScore}</b> / 5.0
+    ${W.avgMaturity} <b style="color:#0A1A6E;font-size:13pt">${avgScore}</b> / 5.0
   </td></tr>
   ${dimNames.map((d,i) => `
   <tr>
@@ -1176,43 +1228,40 @@
 
 <table style="margin-bottom:16pt">
   <tr style="background:#0A1A6E">
-    <th>Spannungsfeld</th><th style="width:160pt">Position</th>
+    <th>${W.tensionHeader}</th><th style="width:160pt">${W.positionHeader}</th>
   </tr>
-  <tr><td>Zentrales AI-Team vs. AI in jedem HR-Team</td>
+  <tr><td>${W.t1row}</td>
       <td style="font-weight:600;color:#0A1A6E">${getVal('t1-val')||'—'}</td></tr>
-  <tr><td>Standard-HR-Tools vs. Eigenbau</td>
+  <tr><td>${W.t2row}</td>
       <td style="font-weight:600;color:#0A1A6E">${getVal('t2-val')||'—'}</td></tr>
-  <tr><td>Effizienz Backoffice vs. Transformation Employee Experience</td>
+  <tr><td>${W.t3row}</td>
       <td style="font-weight:600;color:#0A1A6E">${getVal('t3-val')||'—'}</td></tr>
 </table>
 
 <div class="commit">
-  <span class="lbl">30-Tage-Commitment</span>
+  <span class="lbl">${W.commitLbl}</span>
   <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
   <table style="border:none;margin-top:8pt">
     <tr>
       <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0">
-        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+        <b>${W.partnerLbl}</b> ${getVal('m5-partner')||'—'}</td>
       <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:0;text-align:right">
-        <b>Check-in:</b> ${getVal('m5-date')||'—'}</td>
+        <b>${W.checkinLbl}</b> ${getVal('m5-date')||'—'}</td>
     </tr>
   </table>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODUL 1
-══════════════════════════════════════════ -->
-<h2>Modul 1 · Standortbestimmung — AI Maturity Scan</h2>
+<h2>${W.mod1h2}</h2>
 
-<span class="lbl">Kontext: Aktueller Stand AI im HR</span>
+<span class="lbl">${W.m1ctx}</span>
 <div class="ans">${getVal('m1-context').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Grösste Herausforderung mit AI im HR</span>
+<span class="lbl">${W.m1chal}</span>
 <div class="ans">${getVal('m1-challenge').replace(/\n/g,'<br>') || '—'}</div>
 
-<h3>AI Maturity Scan — 5 Dimensionen</h3>
+<h3>AI Maturity Scan — 5 ${isEN ? 'Dimensions' : 'Dimensionen'}</h3>
 <table>
-  <tr><th>Dimension</th><th style="width:80pt;text-align:center">Score</th><th>Notizen &amp; Beobachtungen</th></tr>
+  <tr><th>${W.dimHeader}</th><th style="width:80pt;text-align:center">${W.scoreHeader}</th><th>${W.notesHeader}</th></tr>
   ${dimNames.map((d,i) => `
   <tr>
     <td><b>${d}</b></td>
@@ -1221,110 +1270,95 @@
   </tr>`).join('')}
 </table>
 
-<br><span class="lbl">Wichtigste Erkenntnis aus dem 2er-Austausch</span>
+<br><span class="lbl">${W.m1refl}</span>
 <div class="ans">${getVal('m1-reflection').replace(/\n/g,'<br>') || '—'}</div>
 
-<!-- ══════════════════════════════════════════
-     MODUL 2
-══════════════════════════════════════════ -->
-<h2>Modul 2 · Anatomie von AI im HR</h2>
+<h2>${W.mod2h2}</h2>
 
-<span class="lbl">Vertiefte Dimension</span>
+<span class="lbl">${W.m2deepDim}</span>
 <div class="ans-blue"><b>${getVal('m2-dim') || '—'}</b></div>
 
-<span class="lbl">Was bedeutet diese Dimension konkret?</span>
+<span class="lbl">${W.m2meaning}</span>
 <div class="ans">${getVal('m2-meaning').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Häufigster Fehler</span>
+<span class="lbl">${W.m2mistake}</span>
 <div class="ans">${getVal('m2-mistake').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Wie steht unser HR — wo ist die grösste Lücke?</span>
+<span class="lbl">${W.m2gap}</span>
 <div class="ans">${getVal('m2-mycompany').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Relevante Inputs aus dem Plenum</span>
+<span class="lbl">${W.m2plenum}</span>
 <div class="ans">${getVal('m2-plenum').replace(/\n/g,'<br>') || '—'}</div>
 
-<!-- ══════════════════════════════════════════
-     MODUL 3
-══════════════════════════════════════════ -->
-<h2>Modul 3 · Spannungsfelder &amp; Trade-offs</h2>
+<h2>${W.mod3h2}</h2>
 
 <table style="margin-bottom:14pt">
-  <tr><th>Spannungsfeld</th><th style="width:160pt">Meine Position</th><th>Begründung</th></tr>
+  <tr><th>${W.tensionHeader}</th><th style="width:160pt">${W.myPosition}</th><th>${W.reasoning}</th></tr>
   <tr>
-    <td><b>Zentrales AI-Team vs. AI in jedem HR-Team</b></td>
+    <td><b>${W.t1row}</b></td>
     <td style="color:#0A1A6E;font-weight:600">${getVal('t1-val')||'—'}</td>
     <td>${getVal('t1-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
   <tr>
-    <td><b>Standard-HR-Tools vs. Eigenbau</b></td>
+    <td><b>${W.t2row}</b></td>
     <td style="color:#0A1A6E;font-weight:600">${getVal('t2-val')||'—'}</td>
     <td>${getVal('t2-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
   <tr>
-    <td><b>Effizienz Backoffice vs. Transformation Employee Experience</b></td>
+    <td><b>${W.t3row}</b></td>
     <td style="color:#0A1A6E;font-weight:600">${getVal('t3-val')||'—'}</td>
     <td>${getVal('t3-note').replace(/\n/g,'<br>') || '—'}</td>
   </tr>
 </table>
 
-<!-- ══════════════════════════════════════════
-     MODUL 4
-══════════════════════════════════════════ -->
-<h2>Modul 4 · Roadmap — Von Analyse zu Aktion</h2>
+<h2>${W.mod4h2}</h2>
 
-<h3>Case-Analyse: ${getVal('m4-case') || '—'}</h3>
-<span class="lbl">Entscheidender Unterschied im Operating Model</span>
+<h3>${W.caseAnalysis} ${getVal('m4-case') || '—'}</h3>
+<span class="lbl">${W.m4diff}</span>
 <div class="ans">${getVal('m4-diff').replace(/\n/g,'<br>') || '—'}</div>
-<span class="lbl">Transfer auf unser HR</span>
+<span class="lbl">${W.m4transfer}</span>
 <div class="ans">${getVal('m4-transfer').replace(/\n/g,'<br>') || '—'}</div>
 
-<h3>Prioritäten-Roadmap</h3>
+<h3>${W.roadmap}</h3>
 <div class="road-now">
-  <div class="road-lbl" style="color:#1A7F4B">Sofort — 0 bis 3 Monate</div>
+  <div class="road-lbl" style="color:#1A7F4B">${W.roadNow}</div>
   ${getVal('m4-now').replace(/\n/g,'<br>') || '—'}
 </div>
 <div class="road-soon">
-  <div class="road-lbl" style="color:#D97706">Kurzfristig — 3 bis 12 Monate</div>
+  <div class="road-lbl" style="color:#D97706">${W.roadSoon}</div>
   ${getVal('m4-soon').replace(/\n/g,'<br>') || '—'}
 </div>
 <div class="road-late">
-  <div class="road-lbl" style="color:#0A1A6E">Mittelfristig — 1 bis 3 Jahre</div>
+  <div class="road-lbl" style="color:#0A1A6E">${W.roadLate}</div>
   ${getVal('m4-later').replace(/\n/g,'<br>') || '—'}
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODUL 5
-══════════════════════════════════════════ -->
-<h2>Modul 5 · Persönliches Commitment &amp; Abschluss</h2>
+<h2>${W.mod5h2}</h2>
 
 <div class="commit">
-  <span class="lbl">Was ich in den nächsten 30 Tagen konkret tue</span>
+  <span class="lbl">${W.commitWhat}</span>
   <div class="ans">${getVal('m5-commit').replace(/\n/g,'<br>') || '—'}</div>
   <table style="border:none;margin-top:10pt">
     <tr>
       <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0">
-        <b>Accountability-Partner:</b> ${getVal('m5-partner')||'—'}</td>
+        <b>${W.partnerLbl}</b> ${getVal('m5-partner')||'—'}</td>
       <td style="border:none;color:rgba(255,255,255,0.75);font-size:10pt;padding:2pt 0;text-align:right">
-        <b>Check-in Datum:</b> ${getVal('m5-date')||'—'}</td>
+        <b>${W.checkinLbl}</b> ${getVal('m5-date')||'—'}</td>
     </tr>
   </table>
 </div>
 
-<span class="lbl">Meine Top-3-Learnings heute</span>
+<span class="lbl">${W.top3learnings}</span>
 <div class="ans">${getVal('m5-learnings').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Was hat besonders gut funktioniert?</span>
+<span class="lbl">${W.feedbackGood}</span>
 <div class="ans">${getVal('m5-good').replace(/\n/g,'<br>') || '—'}</div>
 
-<span class="lbl">Was würdest du für nächstes Mal ändern?</span>
+<span class="lbl">${W.feedbackImprove}</span>
 <div class="ans">${getVal('m5-improve').replace(/\n/g,'<br>') || '—'}</div>
 
-<!-- ══════════════════════════════════════════
-     MASCHINENLESBARER APPENDIX (für LLMs)
-══════════════════════════════════════════ -->
-<h2>Appendix · Strukturierte Daten (LLM-lesbar)</h2>
-<p style="font-size:9pt;color:#5A6478">Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).</p>
+<h2>${W.appendixH2}</h2>
+<p style="font-size:9pt;color:#5A6478">${W.appendixP}</p>
 
 <div class="json-block">
 {<br>
