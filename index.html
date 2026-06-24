@@ -379,6 +379,17 @@
     .participant-bar input { width: 100%; }
   }
 
+  /* ── Language toggle ── */
+  .lang-toggle { display: flex; gap: 4px; flex-shrink: 0; }
+  .lang-btn {
+    padding: 4px 10px; border-radius: 4px; border: 1.5px solid var(--border);
+    background: var(--white); font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .lang-btn.active { background: var(--hwz-blue); border-color: var(--hwz-blue); color: #fff; }
+  .lang-btn:not(.active):hover { border-color: var(--hwz-blue); color: var(--hwz-blue); }
+
   /* ── Save status indicator ── */
   .save-status {
     font-size: 11px; font-weight: 600;
@@ -400,6 +411,10 @@
       <div class="topbar-divider"></div>
       <div class="topbar-title">AI Operating Model — Personal Workbook</div>
       <div class="topbar-badge" id="badge-progress">Modul 1 / 5</div>
+      <div class="lang-toggle">
+        <button class="lang-btn" id="lang-de" onclick="setLang('de')">DE</button>
+        <button class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+      </div>
       <span class="save-status" id="save-status"></span>
     </div>
   </div>
@@ -878,7 +893,7 @@
     const el = document.getElementById('save-status');
     if (!el) return;
     el.className = 'save-status ' + s;
-    el.textContent = s === 'saving' ? 'Speichert…' : s === 'saved' ? '✓ Gespeichert' : '⚠ Fehler';
+    el.textContent = s === 'saving' ? T[LANG].saveStatusSaving : s === 'saved' ? T[LANG].saveStatusSaved : T[LANG].saveStatusError;
     if (s === 'saved') setTimeout(() => { if (el) el.style.opacity = '0'; }, 3000);
   }
 
@@ -949,8 +964,8 @@
     // Progress
     const pct = Math.round(((idx + 1) / modules) * 100);
     document.getElementById('progress-bar').style.width = pct + '%';
-    document.getElementById('progress-label').textContent = 'Modul ' + (idx + 1) + ' von ' + modules;
-    document.getElementById('badge-progress').textContent = 'Modul ' + (idx + 1) + ' / ' + modules;
+    document.getElementById('progress-label').textContent = T[LANG].moduleOf(idx + 1, modules);
+    document.getElementById('badge-progress').textContent = T[LANG].moduleSlash(idx + 1, modules);
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
     saveWorkbookState();
@@ -1028,16 +1043,16 @@
     const btn = document.getElementById('submit-supabase');
 
     if (!isSupabaseConfigured()) {
-      setSubmissionStatus('Supabase ist noch nicht konfiguriert.', 'error');
+      setSubmissionStatus(T[LANG].submitNotConfigured, 'error');
       return;
     }
 
     try {
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Wird eingereicht...';
+        btn.textContent = T[LANG].submitSending;
       }
-      setSubmissionStatus('Antworten werden gespeichert...', 'info');
+      setSubmissionStatus(T[LANG].submitSendingStatus, 'info');
 
       const endpoint = supabaseConfig.url.replace(/\/$/, '') + '/rest/v1/' + supabaseConfig.table;
       const response = await fetch(endpoint, {
@@ -1056,14 +1071,14 @@
         throw new Error(detail || ('HTTP ' + response.status));
       }
 
-      setSubmissionStatus('Antworten wurden gespeichert.', 'success');
+      setSubmissionStatus(T[LANG].submitSuccess, 'success');
     } catch (err) {
       console.error('Supabase submission failed:', err);
-      setSubmissionStatus('Speichern fehlgeschlagen. Bitte Word-Dokument exportieren und später erneut versuchen.', 'error');
+      setSubmissionStatus(T[LANG].submitError, 'error');
     } finally {
       if (btn) {
         btn.disabled = false;
-        btn.textContent = 'Antworten einreichen';
+        btn.textContent = T[LANG].btnSubmit;
       }
     }
   }
@@ -1366,7 +1381,423 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
     URL.revokeObjectURL(url);
   }
 
+  // ── i18n ─────────────────────────────────────────────────────────────────
+  let LANG = localStorage.getItem('hwz-lang') || 'en';
+
+  const T = {
+    de: {
+      topbarTitle: 'AI Operating Model — Personal Workbook',
+      saveStatusSaving: 'Speichert…',
+      saveStatusSaved: '✓ Gespeichert',
+      saveStatusError: '⚠ Fehler',
+      moduleOf: (n, t) => `Modul ${n} von ${t}`,
+      moduleSlash: (n, t) => `Modul ${n} / ${t}`,
+      // Participant bar
+      labelName: 'Dein Name', labelCompany: 'Unternehmen', labelRole: 'Funktion',
+      phName: 'Vorname Nachname', phCompany: 'Firma / Organisation', phRole: 'Deine Rolle',
+      // Tabs
+      tab1: '1 · Standort', tab2: '2 · Dimensionen', tab3: '3 · Spannungsfelder',
+      tab4: '4 · Roadmap', tab5: '5 · Commitment',
+      // Module 1
+      m1h2: 'Standortbestimmung — AI Maturity Scan',
+      m1p: 'Wo steht dein Unternehmen heute auf den 5 Dimensionen eines AI Operating Models?',
+      m1sec1: 'Kontext: Mein Unternehmen',
+      m1inst1: 'Beschreibe kurz dein Unternehmen und den Status quo von AI in deiner Organisation. Was läuft bereits? Was sind die grössten Hürden?',
+      m1lbl1: 'Kurzbeschreibung meines Unternehmens & AI-Status quo',
+      m1ph1: 'z.B. Wir sind ein mittelgrosses Finanzunternehmen mit ca. 1\'200 FTE. AI wird bisher hauptsächlich im Fraud Detection Bereich genutzt. Die grösste Hürde ist aktuell fehlende Datenverfügbarkeit und unklare Governance...',
+      m1lbl2: 'Meine grösste AI-Herausforderung (1 Satz)',
+      m1ph2: 'Was ist das eine Ding, das euch am meisten bremst?',
+      m1sec2: 'AI Maturity Scan — 5 Dimensionen',
+      m1inst2: 'Bewerte dein Unternehmen auf jeder Dimension ehrlich. Skala: 1 = Anfänger, 5 = Vorreiter.',
+      dim1: '1 · Governance & Entscheidungsstrukturen',
+      dim2: '2 · Rollen & Capabilities',
+      dim3: '3 · Prozesse & Workflows',
+      dim4: '4 · Daten & Infrastruktur',
+      dim5: '5 · Kultur & Change',
+      sliderL: '1 – Kaum vorhanden', sliderM: '3 – Im Aufbau', sliderH: '5 – Voll etabliert',
+      dimDesc1: 'Gibt es klare AI-Verantwortlichkeiten, Risikorahmen und Entscheidungsprozesse?',
+      dimDesc2: 'Haben wir die richtigen Rollen, Skills und Weiterbildungsprogramme für AI?',
+      dimDesc3: 'Sind AI-Prozesse und Human-AI-Workflows klar definiert und skaliert?',
+      dimDesc4: 'Ist die Datengrundlage und technische Infrastruktur für skalierbare AI vorhanden?',
+      dimDesc5: 'Wie hoch ist die AI-Bereitschaft und das Vertrauen der Mitarbeitenden?',
+      dimPh1: 'Was fehlt konkret bei euch? Was funktioniert bereits?',
+      dimPh2: 'Welche Rollen fehlen? Wo investiert ihr in Skills?',
+      dimPh3: 'Wo setzt ihr AI in Prozessen ein? Wo ist es noch ad-hoc?',
+      dimPh4: 'Welche Datenprobleme habt ihr? Wie ist die Cloud/AI-Infrastruktur?',
+      dimPh5: 'Wie reagiert eure Belegschaft auf AI? Gibt es Widerstände? Enabler?',
+      m1sec3: 'Reflexion (2er-Austausch)',
+      m1inst3: 'Tausch dich mit einer Person aus: Was überrascht dich an deiner Selbsteinschätzung? Was deckt sich nicht mit der offiziellen Darstellung?',
+      m1lbl3: 'Meine wichtigste Erkenntnis aus dem Austausch',
+      m1ph3: 'Was habe ich im Gespräch gelernt oder bestätigt bekommen?',
+      btnNext1: 'Weiter → Dimensionen',
+      // Module 2
+      m2h2: 'Anatomie eines AI Operating Models',
+      m2p: 'Was muss sich in deiner Organisation konkret verändern?',
+      m2sec1: 'Dimension Deep-Dive (Gruppenarbeit)',
+      m2inst1: 'Du hast eine Dimension zugeteilt bekommen. Erarbeite mit deiner Gruppe: Was bedeutet diese Dimension konkret — und was ist der häufigste Fehler? Notiere parallel deine eigene Unternehmenseinschätzung.',
+      m2lbl1: 'Meine zugeteilte Dimension', m2ph1: 'z.B. Governance & Entscheidungsstrukturen',
+      m2lbl2: 'Was bedeutet diese Dimension konkret? (Gruppe)',
+      m2ph2: 'Welche konkreten Elemente, Rollen, Prozesse gehören dazu?',
+      m2lbl3: 'Häufigster Fehler bei dieser Dimension',
+      m2ph3: 'Was machen Unternehmen typischerweise falsch?',
+      m2lbl4: 'Wie steht mein Unternehmen bei dieser Dimension? Was ist die grösste Lücke?',
+      m2ph4: 'Eigene Einschätzung — was fehlt konkret bei uns?',
+      m2sec2: 'Best Practice aus dem Plenum',
+      m2inst2: 'Notiere 2–3 Insights aus den Kurzpräsentationen der anderen Gruppen, die für dein Unternehmen relevant sind.',
+      m2lbl5: 'Relevante Inputs aus dem Plenum',
+      m2ph5: 'Welche Erkenntnisse der anderen Gruppen treffen auch auf meine Organisation zu?',
+      btnBack: '← Zurück', btnNext2: 'Weiter → Spannungsfelder',
+      // Module 3
+      m3h2: 'Spannungsfelder & Trade-offs',
+      m3p: 'Wo reibt es in eurer Organisation — und warum?',
+      m3sec1: 'Spannungsfeld-Assessment',
+      m3inst1: 'Wo steht dein Unternehmen bei den drei zentralen Spannungsfeldern? Wähle die treffendste Position und notiere deine Begründung.',
+      t1label: '1 · AI-Struktur: Zentralisierung vs. Dezentralisierung',
+      t1a: 'Vollständig zentral (AI CoE)', t1b: 'Hybrid (CoE + embedded)',
+      t1c: 'Vollständig dezentral', t1d: 'Noch unklar',
+      t1ph: 'Warum diese Position? Was spricht dafür/dagegen?',
+      t2label: '2 · Build vs. Buy vs. Partner',
+      t2a: 'Primär Build (intern)', t2b: 'Primär Buy (Vendor)', t2c: 'Hybrid', t2d: 'Noch unklar',
+      t2ph: 'Was ist eure aktuelle Strategie? Was würdest du ändern?',
+      t3label: '3 · Effizienz vs. Transformation',
+      t3a: 'Fokus Effizienz', t3b: 'Ausgewogen', t3c: 'Fokus Transformation', t3d: 'Noch unklar',
+      t3ph: 'Wo drückt der Schuh? Was sollte anders gewichtet werden?',
+      m3sec2: 'Inputs vom Gastredner / Top Management Consulting',
+      m3inst2: 'Notiere die für dich wichtigsten Erkenntnisse aus dem Impuls (30 min + Q&A).',
+      m3lbl1: 'Top 3 Insights aus dem Gastimpuls',
+      m3ph1: '1. ...\n2. ...\n3. ...',
+      m3lbl2: 'Was bedeutet das konkret für mein Unternehmen?',
+      m3ph2: 'Welcher Insight ist für meine Situation am relevantesten?',
+      btnNext3: 'Weiter → Roadmap',
+      // Module 4
+      m4h2: 'Roadmap — Von Analyse zu Aktion',
+      m4p: 'Wie kommen wir von der Diagnose zu konkreten Massnahmen?',
+      m4sec1: 'Meine Prioritäten-Roadmap',
+      m4inst1: 'Definiere 3 konkrete Prioritäten für dein Unternehmen — mit Zeithorizont. Sei so spezifisch wie möglich.',
+      m4lbl1: 'Sofort (0–3 Monate): Was kann ich / mein Team direkt anschieben?',
+      m4ph1: 'z.B. AI Governance Working Group einberufen, Daten-Audit starten...',
+      m4lbl2: 'Kurzfristig (3–12 Monate): Was braucht Planung und Ressourcen?',
+      m4ph2: 'z.B. Pilot AI CoE aufbauen, erste Reskilling-Programme starten...',
+      m4lbl3: 'Mittelfristig (1–3 Jahre): Was ist die transformative Vision?',
+      m4ph3: 'z.B. Vollständig skaliertes AI Operating Model, AI-native Prozesse in allen BUs...',
+      btnNext4: 'Weiter → Commitment',
+      // Module 5
+      m5h2: 'Persönliches Commitment & Abschluss',
+      m5p: 'Was nimmst du heute mit — und was wirst du konkret tun?',
+      m5sec1: 'Mein 30-Tage-Commitment',
+      m5commit_h3: 'Was ich in den nächsten 30 Tagen konkret tue',
+      m5commit_p: 'Sei spezifisch: Was, mit wem, bis wann? Je konkreter, desto wahrscheinlicher wird es passieren.',
+      m5ph1: 'In den nächsten 30 Tagen werde ich... konkret erreichen, indem ich...',
+      m5ph_partner: 'Accountability-Partner (Name)', m5ph_date: 'Datum meines Check-ins',
+      m5sec2: 'Meine Top-3-Learnings heute',
+      m5sec3: 'Feedback zum Kurs',
+      m5lbl1: 'Was hat besonders gut funktioniert?',
+      m5lbl2: 'Was würdest du für nächstes Mal ändern?',
+      m5sec4: 'Workbook exportieren',
+      exportH3: 'Workbook abgeschlossen',
+      exportP: 'Exportiere dein persönliches Workbook als Word-Dokument — zum Weiterbearbeiten, Ablegen oder Teilen.',
+      btnWord: '📄 Als Word herunterladen',
+      btnSubmit: 'Antworten einreichen',
+      btnPrint: '🖨️ Drucken / PDF',
+      submissionNote: 'Beim Einreichen werden deine Workbook-Antworten in der Kursdatenbank gespeichert.',
+      submitSending: 'Wird eingereicht...',
+      submitSendingStatus: 'Antworten werden gespeichert...',
+      submitSuccess: 'Antworten wurden gespeichert.',
+      submitError: 'Speichern fehlgeschlagen. Bitte Word-Dokument exportieren und später erneut versuchen.',
+      submitNotConfigured: 'Supabase ist noch nicht konfiguriert.',
+    },
+    en: {
+      topbarTitle: 'AI Operating Model — Personal Workbook',
+      saveStatusSaving: 'Saving…',
+      saveStatusSaved: '✓ Saved',
+      saveStatusError: '⚠ Error',
+      moduleOf: (n, t) => `Module ${n} of ${t}`,
+      moduleSlash: (n, t) => `Module ${n} / ${t}`,
+      // Participant bar
+      labelName: 'Your Name', labelCompany: 'Company', labelRole: 'Role',
+      phName: 'First Last', phCompany: 'Company / Organisation', phRole: 'Your Role',
+      // Tabs
+      tab1: '1 · Position', tab2: '2 · Dimensions', tab3: '3 · Tensions',
+      tab4: '4 · Roadmap', tab5: '5 · Commitment',
+      // Module 1
+      m1h2: 'Position Assessment — AI Maturity Scan',
+      m1p: 'Where does your company stand today across the 5 dimensions of an AI Operating Model?',
+      m1sec1: 'Context: My Company',
+      m1inst1: 'Briefly describe your company and the current state of AI in your organisation. What is already running? What are the biggest hurdles?',
+      m1lbl1: 'Brief description of my company & AI status quo',
+      m1ph1: 'e.g. We are a mid-sized financial company with approx. 1,200 FTE. AI is currently mainly used in fraud detection. The biggest hurdle is limited data availability and unclear governance...',
+      m1lbl2: 'My biggest AI challenge (1 sentence)',
+      m1ph2: 'What is the one thing that holds you back the most?',
+      m1sec2: 'AI Maturity Scan — 5 Dimensions',
+      m1inst2: 'Rate your company on each dimension honestly. Scale: 1 = Beginner, 5 = Pioneer.',
+      dim1: '1 · Governance & Decision Structures',
+      dim2: '2 · Roles & Capabilities',
+      dim3: '3 · Processes & Workflows',
+      dim4: '4 · Data & Infrastructure',
+      dim5: '5 · Culture & Change',
+      sliderL: '1 – Barely present', sliderM: '3 – In progress', sliderH: '5 – Fully established',
+      dimDesc1: 'Are there clear AI responsibilities, risk frameworks and decision processes?',
+      dimDesc2: 'Do we have the right roles, skills and upskilling programmes for AI?',
+      dimDesc3: 'Are AI processes and human-AI workflows clearly defined and scaled?',
+      dimDesc4: 'Is the data foundation and technical infrastructure in place for scalable AI?',
+      dimDesc5: 'How high is the AI readiness and trust among employees?',
+      dimPh1: 'What is concretely missing? What is already working?',
+      dimPh2: 'Which roles are missing? Where are you investing in skills?',
+      dimPh3: 'Where do you use AI in processes? Where is it still ad-hoc?',
+      dimPh4: 'What data problems do you have? How is your cloud/AI infrastructure?',
+      dimPh5: 'How does your workforce respond to AI? Any resistance? Enablers?',
+      m1sec3: 'Reflection (Pair Exchange)',
+      m1inst3: 'Exchange with one other person: What surprises you about your self-assessment? What does not match the official picture?',
+      m1lbl3: 'My key insight from the exchange',
+      m1ph3: 'What did I learn or have confirmed in the conversation?',
+      btnNext1: 'Next → Dimensions',
+      // Module 2
+      m2h2: 'Anatomy of an AI Operating Model',
+      m2p: 'What specifically needs to change in your organisation?',
+      m2sec1: 'Dimension Deep-Dive (Group Work)',
+      m2inst1: 'You have been assigned a dimension. Work with your group: What does this dimension mean concretely — and what is the most common mistake? Take notes on your own company assessment in parallel.',
+      m2lbl1: 'My assigned dimension', m2ph1: 'e.g. Governance & Decision Structures',
+      m2lbl2: 'What does this dimension mean concretely? (Group)',
+      m2ph2: 'Which concrete elements, roles, processes belong to it?',
+      m2lbl3: 'Most common mistake in this dimension',
+      m2ph3: 'What do companies typically get wrong?',
+      m2lbl4: 'How does my company stand on this dimension? What is the biggest gap?',
+      m2ph4: 'Own assessment — what is concretely missing with us?',
+      m2sec2: 'Best Practice from the Plenary',
+      m2inst2: 'Note 2–3 insights from the short presentations of the other groups that are relevant for your company.',
+      m2lbl5: 'Relevant inputs from the plenary',
+      m2ph5: 'Which insights from the other groups also apply to my organisation?',
+      btnBack: '← Back', btnNext2: 'Next → Tensions',
+      // Module 3
+      m3h2: 'Tensions & Trade-offs',
+      m3p: 'Where is friction in your organisation — and why?',
+      m3sec1: 'Tension Assessment',
+      m3inst1: 'Where does your company stand on the three central tensions? Choose the most fitting position and note your reasoning.',
+      t1label: '1 · AI Structure: Centralisation vs. Decentralisation',
+      t1a: 'Fully centralised (AI CoE)', t1b: 'Hybrid (CoE + embedded)',
+      t1c: 'Fully decentralised', t1d: 'Still unclear',
+      t1ph: 'Why this position? What speaks for / against it?',
+      t2label: '2 · Build vs. Buy vs. Partner',
+      t2a: 'Primarily Build (internal)', t2b: 'Primarily Buy (vendor)', t2c: 'Hybrid', t2d: 'Still unclear',
+      t2ph: 'What is your current strategy? What would you change?',
+      t3label: '3 · Efficiency vs. Transformation',
+      t3a: 'Focus Efficiency', t3b: 'Balanced', t3c: 'Focus Transformation', t3d: 'Still unclear',
+      t3ph: 'Where is the pain point? What should be weighted differently?',
+      m3sec2: 'Inputs from the Guest Speaker / Top Management Consulting',
+      m3inst2: 'Note the most important insights from the impulse session (30 min + Q&A).',
+      m3lbl1: 'Top 3 insights from the guest impulse',
+      m3ph1: '1. ...\n2. ...\n3. ...',
+      m3lbl2: 'What does this mean concretely for my company?',
+      m3ph2: 'Which insight is most relevant for my situation?',
+      btnNext3: 'Next → Roadmap',
+      // Module 4
+      m4h2: 'Roadmap — From Analysis to Action',
+      m4p: 'How do we move from diagnosis to concrete measures?',
+      m4sec1: 'My Priority Roadmap',
+      m4inst1: 'Define 3 concrete priorities for your company — with a time horizon. Be as specific as possible.',
+      m4lbl1: 'Immediate (0–3 months): What can I / my team kick off right away?',
+      m4ph1: 'e.g. Convene AI Governance Working Group, launch data audit...',
+      m4lbl2: 'Short-term (3–12 months): What requires planning and resources?',
+      m4ph2: 'e.g. Build pilot AI CoE, launch first reskilling programmes...',
+      m4lbl3: 'Medium-term (1–3 years): What is the transformative vision?',
+      m4ph3: 'e.g. Fully scaled AI Operating Model, AI-native processes across all BUs...',
+      btnNext4: 'Next → Commitment',
+      // Module 5
+      m5h2: 'Personal Commitment & Closing',
+      m5p: 'What do you take away today — and what will you concretely do?',
+      m5sec1: 'My 30-Day Commitment',
+      m5commit_h3: 'What I will concretely do in the next 30 days',
+      m5commit_p: 'Be specific: What, with whom, by when? The more concrete, the more likely it is to happen.',
+      m5ph1: 'In the next 30 days I will... concretely achieve by...',
+      m5ph_partner: 'Accountability partner (name)', m5ph_date: 'Date of my check-in',
+      m5sec2: 'My Top 3 Learnings Today',
+      m5sec3: 'Course Feedback',
+      m5lbl1: 'What worked particularly well?',
+      m5lbl2: 'What would you change for next time?',
+      m5sec4: 'Export Workbook',
+      exportH3: 'Workbook Completed',
+      exportP: 'Export your personal workbook as a Word document — to continue editing, file or share.',
+      btnWord: '📄 Download as Word',
+      btnSubmit: 'Submit Answers',
+      btnPrint: '🖨️ Print / PDF',
+      submissionNote: 'When submitting, your workbook answers are stored in the course database.',
+      submitSending: 'Submitting...',
+      submitSendingStatus: 'Saving answers...',
+      submitSuccess: 'Answers saved successfully.',
+      submitError: 'Saving failed. Please export the Word document and try again later.',
+      submitNotConfigured: 'Supabase is not yet configured.',
+    }
+  };
+
+  function applyLang(lang) {
+    const tr = T[lang];
+    const $ = id => document.getElementById(id);
+    const setText = (id, text) => { const el = $(id); if (el) el.textContent = text; };
+    const setPh   = (id, text) => { const el = $(id); if (el) el.placeholder = text; };
+
+    // Topbar
+    document.querySelector('.topbar-title').textContent = tr.topbarTitle;
+    // badge/progress updated by goModule — trigger with current state
+    const badgeEl = $('badge-progress');
+    if (badgeEl) badgeEl.textContent = tr.moduleSlash(current + 1, modules);
+    const progEl = $('progress-label');
+    if (progEl) progEl.textContent = tr.moduleOf(current + 1, modules);
+
+    // Lang buttons
+    $('lang-de').classList.toggle('active', lang === 'de');
+    $('lang-en').classList.toggle('active', lang === 'en');
+
+    // Participant bar
+    const pLabels = document.querySelectorAll('.participant-bar label');
+    if (pLabels[0]) pLabels[0].textContent = tr.labelName;
+    if (pLabels[1]) pLabels[1].textContent = tr.labelCompany;
+    if (pLabels[2]) pLabels[2].textContent = tr.labelRole;
+    setPh('p-name', tr.phName); setPh('p-company', tr.phCompany); setPh('p-role', tr.phRole);
+
+    // Module tabs
+    const tabs = document.querySelectorAll('.mod-tab');
+    ['tab1','tab2','tab3','tab4','tab5'].forEach((k, i) => { if (tabs[i]) tabs[i].textContent = tr[k]; });
+
+    // --- Module 1 ---
+    const m1 = document.getElementById('mod-0');
+    m1.querySelector('.module-header h2').textContent = tr.m1h2;
+    m1.querySelector('.module-header p').textContent  = tr.m1p;
+    const m1secs = m1.querySelectorAll('.section-title');
+    m1secs[0].textContent = tr.m1sec1;
+    m1secs[1].textContent = tr.m1sec2;
+    m1secs[2].textContent = tr.m1sec3;
+    const m1insts = m1.querySelectorAll('.instruction');
+    m1insts[0].textContent = tr.m1inst1;
+    m1insts[1].textContent = tr.m1inst2;
+    m1insts[2].textContent = tr.m1inst3;
+    const m1lbls = m1.querySelectorAll('.field-label');
+    m1lbls[0].textContent = tr.m1lbl1; m1lbls[1].textContent = tr.m1lbl2;
+    m1lbls[2].textContent = tr.m1lbl3;
+    setPh('m1-context', tr.m1ph1); setPh('m1-challenge', tr.m1ph2); setPh('m1-reflection', tr.m1ph3);
+
+    // Dimension names
+    const dimNames = m1.querySelectorAll('.dim-name');
+    ['dim1','dim2','dim3','dim4','dim5'].forEach((k, i) => { if (dimNames[i]) dimNames[i].textContent = tr[k]; });
+
+    // Slider labels (all sets)
+    m1.querySelectorAll('.slider-labels').forEach(row => {
+      const spans = row.querySelectorAll('span');
+      if (spans[0]) spans[0].textContent = tr.sliderL;
+      if (spans[1]) spans[1].textContent = tr.sliderM;
+      if (spans[2]) spans[2].textContent = tr.sliderH;
+    });
+
+    // Dim descriptions
+    const dimDescs = m1.querySelectorAll('.dim-desc');
+    ['dimDesc1','dimDesc2','dimDesc3','dimDesc4','dimDesc5'].forEach((k,i) => { if (dimDescs[i]) dimDescs[i].textContent = tr[k]; });
+
+    // Dim note placeholders
+    ['m1-d1-note','m1-d2-note','m1-d3-note','m1-d4-note','m1-d5-note'].forEach((id,i) => {
+      setPh(id, tr['dimPh' + (i+1)]);
+    });
+
+    // M1 nav
+    const m1nav = m1.querySelector('.nav-bar');
+    m1nav.querySelector('span').textContent = tr.moduleOf(1, modules);
+    m1nav.querySelector('.btn-primary').textContent = tr.btnNext1;
+
+    // --- Module 2 ---
+    const m2 = document.getElementById('mod-1');
+    m2.querySelector('.module-header h2').textContent = tr.m2h2;
+    m2.querySelector('.module-header p').textContent  = tr.m2p;
+    const m2secs = m2.querySelectorAll('.section-title');
+    m2secs[0].textContent = tr.m2sec1; m2secs[1].textContent = tr.m2sec2;
+    const m2insts = m2.querySelectorAll('.instruction');
+    m2insts[0].textContent = tr.m2inst1; m2insts[1].textContent = tr.m2inst2;
+    const m2lbls = m2.querySelectorAll('.field-label');
+    m2lbls[0].textContent = tr.m2lbl1; m2lbls[1].textContent = tr.m2lbl2;
+    m2lbls[2].textContent = tr.m2lbl3; m2lbls[3].textContent = tr.m2lbl4;
+    m2lbls[4].textContent = tr.m2lbl5;
+    setPh('m2-dim', tr.m2ph1); setPh('m2-meaning', tr.m2ph2);
+    setPh('m2-mistake', tr.m2ph3); setPh('m2-mycompany', tr.m2ph4); setPh('m2-plenum', tr.m2ph5);
+    const m2btns = m2.querySelectorAll('.nav-bar .btn');
+    m2btns[0].textContent = tr.btnBack; m2btns[1].textContent = tr.btnNext2;
+
+    // --- Module 3 ---
+    const m3 = document.getElementById('mod-2');
+    m3.querySelector('.module-header h2').textContent = tr.m3h2;
+    m3.querySelector('.module-header p').textContent  = tr.m3p;
+    const m3secs = m3.querySelectorAll('.section-title');
+    m3secs[0].textContent = tr.m3sec1; m3secs[1].textContent = tr.m3sec2;
+    const m3insts = m3.querySelectorAll('.instruction');
+    m3insts[0].textContent = tr.m3inst1; m3insts[1].textContent = tr.m3inst2;
+    const tRows = m3.querySelectorAll('.tension-row');
+    // t1
+    tRows[0].querySelector('.tension-label').textContent = tr.t1label;
+    const t1btns = tRows[0].querySelectorAll('.tension-btn');
+    [tr.t1a,tr.t1b,tr.t1c,tr.t1d].forEach((txt,i)=>{ if(t1btns[i]) t1btns[i].textContent=txt; });
+    setPh('t1-note', tr.t1ph);
+    // t2
+    tRows[1].querySelector('.tension-label').textContent = tr.t2label;
+    const t2btns = tRows[1].querySelectorAll('.tension-btn');
+    [tr.t2a,tr.t2b,tr.t2c,tr.t2d].forEach((txt,i)=>{ if(t2btns[i]) t2btns[i].textContent=txt; });
+    setPh('t2-note', tr.t2ph);
+    // t3
+    tRows[2].querySelector('.tension-label').textContent = tr.t3label;
+    const t3btns = tRows[2].querySelectorAll('.tension-btn');
+    [tr.t3a,tr.t3b,tr.t3c,tr.t3d].forEach((txt,i)=>{ if(t3btns[i]) t3btns[i].textContent=txt; });
+    setPh('t3-note', tr.t3ph);
+    const m3lbls = m3.querySelectorAll('.field-label');
+    m3lbls[0].textContent = tr.m3lbl1; m3lbls[1].textContent = tr.m3lbl2;
+    setPh('m3-guest', tr.m3ph1); setPh('m3-apply', tr.m3ph2);
+    const m3btns = m3.querySelectorAll('.nav-bar .btn');
+    m3btns[0].textContent = tr.btnBack; m3btns[1].textContent = tr.btnNext3;
+
+    // --- Module 4 ---
+    const m4 = document.getElementById('mod-3');
+    m4.querySelector('.module-header h2').textContent = tr.m4h2;
+    m4.querySelector('.module-header p').textContent  = tr.m4p;
+    m4.querySelector('.section-title').textContent = tr.m4sec1;
+    m4.querySelector('.instruction').textContent   = tr.m4inst1;
+    const m4lbls = m4.querySelectorAll('.field-label');
+    m4lbls[0].textContent = tr.m4lbl1; m4lbls[1].textContent = tr.m4lbl2; m4lbls[2].textContent = tr.m4lbl3;
+    setPh('m4-now', tr.m4ph1); setPh('m4-soon', tr.m4ph2); setPh('m4-later', tr.m4ph3);
+    const m4btns = m4.querySelectorAll('.nav-bar .btn');
+    m4btns[0].textContent = tr.btnBack; m4btns[1].textContent = tr.btnNext4;
+
+    // --- Module 5 ---
+    const m5 = document.getElementById('mod-4');
+    m5.querySelector('.module-header h2').textContent = tr.m5h2;
+    m5.querySelector('.module-header p').textContent  = tr.m5p;
+    const m5secs = m5.querySelectorAll('.section-title');
+    m5secs[0].textContent = tr.m5sec1; m5secs[1].textContent = tr.m5sec2;
+    m5secs[2].textContent = tr.m5sec3; m5secs[3].textContent = tr.m5sec4;
+    m5.querySelector('.commitment-box h3').textContent = tr.m5commit_h3;
+    m5.querySelector('.commitment-box p').textContent  = tr.m5commit_p;
+    setPh('m5-commit', tr.m5ph1);
+    setPh('m5-partner', tr.m5ph_partner); setPh('m5-date', tr.m5ph_date);
+    const m5lbls = m5.querySelectorAll('.field-label');
+    m5lbls[0].textContent = tr.m5lbl1; m5lbls[1].textContent = tr.m5lbl2;
+    m5.querySelector('.export-section h3').textContent = tr.exportH3;
+    m5.querySelector('.export-section p').textContent  = tr.exportP;
+    m5.querySelector('.submission-note').textContent   = tr.submissionNote;
+    const expBtns = m5.querySelectorAll('.export-btns .btn');
+    expBtns[0].textContent = tr.btnWord;
+    expBtns[2].textContent = tr.btnPrint;
+    // submit btn text only if not currently submitting
+    const submitBtn = document.getElementById('submit-supabase');
+    if (submitBtn && !submitBtn.disabled) submitBtn.textContent = tr.btnSubmit;
+    const m5nav = m5.querySelector('.nav-bar');
+    m5nav.querySelector('.btn-secondary').textContent = tr.btnBack;
+    m5nav.querySelector('span').textContent = tr.moduleOf(5, modules);
+
+    // html lang attribute
+    document.documentElement.lang = lang;
+  }
+
+  function setLang(lang) {
+    LANG = lang;
+    localStorage.setItem('hwz-lang', lang);
+    applyLang(lang);
+  }
+
   initAutosave();
+  applyLang(LANG);
 
 </script>
 </body>
