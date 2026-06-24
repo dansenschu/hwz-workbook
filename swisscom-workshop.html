@@ -464,6 +464,7 @@
       <div class="lang-toggle">
         <button class="lang-btn" id="lang-de" onclick="setLang('de')">DE</button>
         <button class="lang-btn active" id="lang-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" id="lang-fr" onclick="setLang('fr')">FR</button>
       </div>
     </div>
   </div>
@@ -1034,16 +1035,16 @@
     const btn = document.getElementById('submit-supabase');
 
     if (!isSupabaseConfigured()) {
-      setSubmissionStatus(LANG === 'en' ? 'Supabase is not yet configured.' : 'Supabase ist noch nicht konfiguriert.', 'error');
+      setSubmissionStatus(LANG === 'en' ? 'Supabase is not yet configured.' : LANG === 'fr' ? 'Supabase n\'est pas encore configuré.' : 'Supabase ist noch nicht konfiguriert.', 'error');
       return;
     }
 
     try {
       if (btn) {
         btn.disabled = true;
-        btn.textContent = LANG === 'en' ? 'Submitting...' : 'Wird eingereicht...';
+        btn.textContent = LANG === 'en' ? 'Submitting...' : LANG === 'fr' ? 'Envoi en cours...' : 'Wird eingereicht...';
       }
-      setSubmissionStatus(LANG === 'en' ? 'Saving answers...' : 'Antworten werden gespeichert...', 'info');
+      setSubmissionStatus(LANG === 'en' ? 'Saving answers...' : LANG === 'fr' ? 'Enregistrement des réponses...' : 'Antworten werden gespeichert...', 'info');
 
       const endpoint = supabaseConfig.url.replace(/\/$/, '') + '/rest/v1/' + supabaseConfig.table;
       const response = await fetch(endpoint, {
@@ -1062,10 +1063,10 @@
         throw new Error(detail || ('HTTP ' + response.status));
       }
 
-      setSubmissionStatus(LANG === 'en' ? 'Answers saved successfully.' : 'Antworten wurden gespeichert.', 'success');
+      setSubmissionStatus(LANG === 'en' ? 'Answers saved successfully.' : LANG === 'fr' ? 'Réponses enregistrées avec succès.' : 'Antworten wurden gespeichert.', 'success');
     } catch (err) {
       console.error('Supabase submission failed:', err);
-      setSubmissionStatus(LANG === 'en' ? 'Saving failed. Please export the Word document and try again later.' : 'Speichern fehlgeschlagen. Bitte Word-Dokument exportieren und später erneut versuchen.', 'error');
+      setSubmissionStatus(LANG === 'en' ? 'Saving failed. Please export the Word document and try again later.' : LANG === 'fr' ? 'Échec de l\'enregistrement. Veuillez exporter le document Word et réessayer plus tard.' : 'Speichern fehlgeschlagen. Bitte Word-Dokument exportieren und später erneut versuchen.', 'error');
     } finally {
       if (btn) {
         btn.disabled = false;
@@ -1076,19 +1077,24 @@
 
   function exportWord() {
     const isEN    = LANG === 'en';
-    const name    = getVal('p-name')    || (isEN ? 'Participant' : 'Teilnehmende:r');
+    const isFR    = LANG === 'fr';
+    const name    = getVal('p-name')    || (isEN ? 'Participant' : isFR ? 'Participant·e' : 'Teilnehmende:r');
     const team    = getVal('p-team')    || '—';
     const role    = getVal('p-role')    || '—';
-    const locale  = isEN ? 'en-GB' : 'de-CH';
+    const locale  = isEN ? 'en-GB' : isFR ? 'fr-CH' : 'de-CH';
     const date    = new Date().toLocaleDateString(locale, {day:'2-digit',month:'long',year:'numeric'});
 
     const scores   = [1,2,3,4,5].map(i => parseInt(document.getElementById('s'+i)?.value || 3));
     const avgScore = (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1);
     const dimNames = isEN
       ? ['Recruiting & Talent Acquisition','People Analytics & Data','Skills & Enablement HR','HR-Tech Infrastructure','Acceptance & Change']
+      : isFR
+      ? ['Recrutement & Acquisition de talents','People Analytics & Données','Compétences & Développement RH','Infrastructure HR-Tech','Acceptation & Changement']
       : ['Recruiting & Talent Acquisition','People Analytics & Daten','Skills & Enablement HR','HR-Tech-Infrastruktur','Akzeptanz & Change'];
     const dimShort = isEN
       ? ['Recruiting','PeopleAnalytics','Skills','HRTech','Acceptance']
+      : isFR
+      ? ['Recrutement','PeopleAnalytics','Competences','HRTech','Acceptation']
       : ['Recruiting','PeopleAnalytics','Skills','HRTech','Akzeptanz'];
 
     // Score bar helper: renders a visual bar as colored table cells
@@ -1103,53 +1109,53 @@
     }
 
     const W = {
-      aiInHR:          isEN ? 'AI in HR'                                   : 'AI im HR',
-      participant:     isEN ? 'Participant'                                 : 'Teilnehmende:r',
-      teamDept:        isEN ? 'Team / Department'                           : 'Team / Bereich',
-      roleCol:         isEN ? 'Role'                                        : 'Funktion',
-      dateCol:         isEN ? 'Date'                                        : 'Datum',
-      maturityOverview:isEN ? 'AI Maturity — Overview at a Glance'         : 'AI Maturity — Übersicht auf einen Blick',
-      avgMaturity:     isEN ? 'Average maturity level:'                     : 'Durchschnittlicher Reifegrad:',
-      tensionHeader:   isEN ? 'Tension'                                     : 'Spannungsfeld',
-      positionHeader:  isEN ? 'Position'                                    : 'Position',
-      t1row:           isEN ? 'Central AI Team vs. AI in every HR team'    : 'Zentrales AI-Team vs. AI in jedem HR-Team',
-      t2row:           isEN ? 'Standard HR tools vs. Custom build'          : 'Standard-HR-Tools vs. Eigenbau',
-      t3row:           isEN ? 'Back-office efficiency vs. Employee Experience transformation' : 'Effizienz Backoffice vs. Transformation Employee Experience',
-      commitLbl:       isEN ? '30-Day Commitment'                           : '30-Tage-Commitment',
-      partnerLbl:      isEN ? 'Accountability Partner:'                     : 'Accountability-Partner:',
-      checkinLbl:      isEN ? 'Check-in Date:'                              : 'Check-in Datum:',
-      mod1h2:          isEN ? 'Module 1 · Position Assessment — AI Maturity Scan' : 'Modul 1 · Standortbestimmung — AI Maturity Scan',
-      m1ctx:           isEN ? 'Context: Current State of AI in HR'          : 'Kontext: Aktueller Stand AI im HR',
-      m1chal:          isEN ? 'Biggest challenge with AI in HR'             : 'Grösste Herausforderung mit AI im HR',
-      dimHeader:       isEN ? 'Dimension'                                   : 'Dimension',
-      scoreHeader:     isEN ? 'Score'                                       : 'Score',
-      notesHeader:     isEN ? 'Notes &amp; Observations'                    : 'Notizen &amp; Beobachtungen',
-      m1refl:          isEN ? 'Key insight from the pair exchange'          : 'Wichtigste Erkenntnis aus dem 2er-Austausch',
-      mod2h2:          isEN ? 'Module 2 · Anatomy of AI in HR'             : 'Modul 2 · Anatomie von AI im HR',
-      m2deepDim:       isEN ? 'Deepened Dimension'                          : 'Vertiefte Dimension',
-      m2meaning:       isEN ? 'What does this dimension mean concretely?'   : 'Was bedeutet diese Dimension konkret?',
-      m2mistake:       isEN ? 'Most Common Mistake'                         : 'Häufigster Fehler',
-      m2gap:           isEN ? 'How does our HR stand — where is the biggest gap?' : 'Wie steht unser HR — wo ist die grösste Lücke?',
-      m2plenum:        isEN ? 'Relevant inputs from the plenary'            : 'Relevante Inputs aus dem Plenum',
-      mod3h2:          isEN ? 'Module 3 · Tensions &amp; Trade-offs'        : 'Modul 3 · Spannungsfelder &amp; Trade-offs',
-      myPosition:      isEN ? 'My Position'                                 : 'Meine Position',
-      reasoning:       isEN ? 'Reasoning'                                   : 'Begründung',
-      mod4h2:          isEN ? 'Module 4 · Roadmap — From Analysis to Action' : 'Modul 4 · Roadmap — Von Analyse zu Aktion',
-      caseAnalysis:    isEN ? 'Case Analysis:'                              : 'Case-Analyse:',
-      m4diff:          isEN ? 'Decisive difference in the operating model'  : 'Entscheidender Unterschied im Operating Model',
-      m4transfer:      isEN ? 'Transfer to our HR'                          : 'Transfer auf unser HR',
-      roadmap:         isEN ? 'Priority Roadmap'                            : 'Prioritäten-Roadmap',
-      roadNow:         isEN ? 'Immediate — 0 to 3 months'                  : 'Sofort — 0 bis 3 Monate',
-      roadSoon:        isEN ? 'Short-term — 3 to 12 months'                : 'Kurzfristig — 3 bis 12 Monate',
-      roadLate:        isEN ? 'Medium-term — 1 to 3 years'                 : 'Mittelfristig — 1 bis 3 Jahre',
-      mod5h2:          isEN ? 'Module 5 · Personal Commitment &amp; Closing' : 'Modul 5 · Persönliches Commitment &amp; Abschluss',
-      commitWhat:      isEN ? 'What I will concretely do in the next 30 days' : 'Was ich in den nächsten 30 Tagen konkret tue',
-      top3learnings:   isEN ? 'My Top 3 Learnings Today'                   : 'Meine Top-3-Learnings heute',
-      feedbackGood:    isEN ? 'What worked particularly well?'              : 'Was hat besonders gut funktioniert?',
-      feedbackImprove: isEN ? 'What would you change for next time?'        : 'Was würdest du für nächstes Mal ändern?',
-      appendixH2:      isEN ? 'Appendix · Structured Data (LLM-readable)'  : 'Appendix · Strukturierte Daten (LLM-lesbar)',
-      appendixP:       isEN ? 'This section contains all workbook data as structured JSON — optimised for further processing with AI tools (Claude, ChatGPT, etc.).' : 'Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).',
-      footer:          isEN ? `Swisscom · AI Operating Model Workshop · ${date}` : `Swisscom · AI Operating Model Workshop · ${date}`,
+      aiInHR:          isEN ? 'AI in HR'                                   : isFR ? 'IA en RH'                                      : 'AI im HR',
+      participant:     isEN ? 'Participant'                                 : isFR ? 'Participant·e'                                 : 'Teilnehmende:r',
+      teamDept:        isEN ? 'Team / Department'                           : isFR ? 'Équipe / Département'                          : 'Team / Bereich',
+      roleCol:         isEN ? 'Role'                                        : isFR ? 'Fonction'                                      : 'Funktion',
+      dateCol:         isEN ? 'Date'                                        : isFR ? 'Date'                                          : 'Datum',
+      maturityOverview:isEN ? 'AI Maturity — Overview at a Glance'         : isFR ? 'Maturité IA — Vue d\'ensemble'                 : 'AI Maturity — Übersicht auf einen Blick',
+      avgMaturity:     isEN ? 'Average maturity level:'                     : isFR ? 'Niveau de maturité moyen :'                   : 'Durchschnittlicher Reifegrad:',
+      tensionHeader:   isEN ? 'Tension'                                     : isFR ? 'Tension'                                       : 'Spannungsfeld',
+      positionHeader:  isEN ? 'Position'                                    : isFR ? 'Position'                                      : 'Position',
+      t1row:           isEN ? 'Central AI Team vs. AI in every HR team'    : isFR ? 'Équipe IA centrale vs. IA dans chaque équipe RH' : 'Zentrales AI-Team vs. AI in jedem HR-Team',
+      t2row:           isEN ? 'Standard HR tools vs. Custom build'          : isFR ? 'Outils RH standard vs. Développement interne'  : 'Standard-HR-Tools vs. Eigenbau',
+      t3row:           isEN ? 'Back-office efficiency vs. Employee Experience transformation' : isFR ? 'Efficacité back-office vs. Transformation expérience collaborateur' : 'Effizienz Backoffice vs. Transformation Employee Experience',
+      commitLbl:       isEN ? '30-Day Commitment'                           : isFR ? 'Engagement sur 30 jours'                      : '30-Tage-Commitment',
+      partnerLbl:      isEN ? 'Accountability Partner:'                     : isFR ? 'Partenaire de responsabilité :'               : 'Accountability-Partner:',
+      checkinLbl:      isEN ? 'Check-in Date:'                              : isFR ? 'Date du point de suivi :'                     : 'Check-in Datum:',
+      mod1h2:          isEN ? 'Module 1 · Position Assessment — AI Maturity Scan' : isFR ? 'Module 1 · Évaluation de la position — Scan de maturité IA' : 'Modul 1 · Standortbestimmung — AI Maturity Scan',
+      m1ctx:           isEN ? 'Context: Current State of AI in HR'          : isFR ? 'Contexte : État actuel de l\'IA en RH'        : 'Kontext: Aktueller Stand AI im HR',
+      m1chal:          isEN ? 'Biggest challenge with AI in HR'             : isFR ? 'Plus grand défi avec l\'IA en RH'             : 'Grösste Herausforderung mit AI im HR',
+      dimHeader:       isEN ? 'Dimension'                                   : isFR ? 'Dimension'                                     : 'Dimension',
+      scoreHeader:     isEN ? 'Score'                                       : isFR ? 'Score'                                         : 'Score',
+      notesHeader:     isEN ? 'Notes &amp; Observations'                    : isFR ? 'Notes &amp; Observations'                     : 'Notizen &amp; Beobachtungen',
+      m1refl:          isEN ? 'Key insight from the pair exchange'          : isFR ? 'Principale prise de conscience lors de l\'échange' : 'Wichtigste Erkenntnis aus dem 2er-Austausch',
+      mod2h2:          isEN ? 'Module 2 · Anatomy of AI in HR'             : isFR ? 'Module 2 · Anatomie de l\'IA en RH'           : 'Modul 2 · Anatomie von AI im HR',
+      m2deepDim:       isEN ? 'Deepened Dimension'                          : isFR ? 'Dimension approfondie'                         : 'Vertiefte Dimension',
+      m2meaning:       isEN ? 'What does this dimension mean concretely?'   : isFR ? 'Que signifie concrètement cette dimension ?'  : 'Was bedeutet diese Dimension konkret?',
+      m2mistake:       isEN ? 'Most Common Mistake'                         : isFR ? 'Erreur la plus fréquente'                     : 'Häufigster Fehler',
+      m2gap:           isEN ? 'How does our HR stand — where is the biggest gap?' : isFR ? 'Où en est notre RH — où est le plus grand écart ?' : 'Wie steht unser HR — wo ist die grösste Lücke?',
+      m2plenum:        isEN ? 'Relevant inputs from the plenary'            : isFR ? 'Inputs pertinents issus de la plénière'       : 'Relevante Inputs aus dem Plenum',
+      mod3h2:          isEN ? 'Module 3 · Tensions &amp; Trade-offs'        : isFR ? 'Module 3 · Tensions &amp; Arbitrages'         : 'Modul 3 · Spannungsfelder &amp; Trade-offs',
+      myPosition:      isEN ? 'My Position'                                 : isFR ? 'Ma position'                                   : 'Meine Position',
+      reasoning:       isEN ? 'Reasoning'                                   : isFR ? 'Justification'                                 : 'Begründung',
+      mod4h2:          isEN ? 'Module 4 · Roadmap — From Analysis to Action' : isFR ? 'Module 4 · Feuille de route — De l\'analyse à l\'action' : 'Modul 4 · Roadmap — Von Analyse zu Aktion',
+      caseAnalysis:    isEN ? 'Case Analysis:'                              : isFR ? 'Analyse de cas :'                              : 'Case-Analyse:',
+      m4diff:          isEN ? 'Decisive difference in the operating model'  : isFR ? 'Différence décisive dans le modèle opérationnel' : 'Entscheidender Unterschied im Operating Model',
+      m4transfer:      isEN ? 'Transfer to our HR'                          : isFR ? 'Transposition à notre RH'                     : 'Transfer auf unser HR',
+      roadmap:         isEN ? 'Priority Roadmap'                            : isFR ? 'Feuille de route prioritaire'                  : 'Prioritäten-Roadmap',
+      roadNow:         isEN ? 'Immediate — 0 to 3 months'                  : isFR ? 'Immédiat — 0 à 3 mois'                        : 'Sofort — 0 bis 3 Monate',
+      roadSoon:        isEN ? 'Short-term — 3 to 12 months'                : isFR ? 'Court terme — 3 à 12 mois'                    : 'Kurzfristig — 3 bis 12 Monate',
+      roadLate:        isEN ? 'Medium-term — 1 to 3 years'                 : isFR ? 'Moyen terme — 1 à 3 ans'                      : 'Mittelfristig — 1 bis 3 Jahre',
+      mod5h2:          isEN ? 'Module 5 · Personal Commitment &amp; Closing' : isFR ? 'Module 5 · Engagement personnel &amp; Clôture' : 'Modul 5 · Persönliches Commitment &amp; Abschluss',
+      commitWhat:      isEN ? 'What I will concretely do in the next 30 days' : isFR ? 'Ce que je ferai concrètement dans les 30 prochains jours' : 'Was ich in den nächsten 30 Tagen konkret tue',
+      top3learnings:   isEN ? 'My Top 3 Learnings Today'                   : isFR ? 'Mes 3 principaux apprentissages aujourd\'hui' : 'Meine Top-3-Learnings heute',
+      feedbackGood:    isEN ? 'What worked particularly well?'              : isFR ? 'Qu\'est-ce qui a particulièrement bien fonctionné ?' : 'Was hat besonders gut funktioniert?',
+      feedbackImprove: isEN ? 'What would you change for next time?'        : isFR ? 'Que changeriez-vous pour la prochaine fois ?' : 'Was würdest du für nächstes Mal ändern?',
+      appendixH2:      isEN ? 'Appendix · Structured Data (LLM-readable)'  : isFR ? 'Annexe · Données structurées (lisibles par LLM)' : 'Appendix · Strukturierte Daten (LLM-lesbar)',
+      appendixP:       isEN ? 'This section contains all workbook data as structured JSON — optimised for further processing with AI tools (Claude, ChatGPT, etc.).' : isFR ? 'Cette section contient toutes les données du workbook en JSON structuré — optimisé pour le traitement ultérieur avec des outils IA (Claude, ChatGPT, etc.).' : 'Dieser Abschnitt enthält alle Workbook-Daten als strukturiertes JSON — optimiert für die Weiterverarbeitung mit KI-Tools (Claude, ChatGPT, etc.).',
+      footer:          `Swisscom · AI Operating Model Workshop · ${date}`,
     };
 
     const html = `
@@ -1259,7 +1265,7 @@
 <span class="lbl">${W.m1chal}</span>
 <div class="ans">${getVal('m1-challenge').replace(/\n/g,'<br>') || '—'}</div>
 
-<h3>AI Maturity Scan — 5 ${isEN ? 'Dimensions' : 'Dimensionen'}</h3>
+<h3>AI Maturity Scan — 5 ${isEN ? 'Dimensions' : isFR ? 'Dimensions' : 'Dimensionen'}</h3>
 <table>
   <tr><th>${W.dimHeader}</th><th style="width:80pt;text-align:center">${W.scoreHeader}</th><th>${W.notesHeader}</th></tr>
   ${dimNames.map((d,i) => `
@@ -1524,6 +1530,113 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
       btnPrint: '🖨️ Drucken / PDF',
       submissionNote: 'Beim Einreichen werden deine Workbook-Antworten in der Kursdatenbank gespeichert.',
     },
+    fr: {
+      moduleOf: (n, t) => `Module ${n} sur ${t}`,
+      moduleSlash: (n, t) => `Module ${n} / ${t}`,
+      topbarTitle: 'IA en RH — Workbook d\'atelier',
+      labelName: 'Votre nom', labelTeam: 'Équipe / Département', labelRole: 'Fonction',
+      phName: 'Prénom Nom', phTeam: 'p.ex. Recrutement, Développement RH', phRole: 'Votre rôle',
+      tab1: '1 · Position', tab2: '2 · Dimensions', tab3: '3 · Tensions',
+      tab4: '4 · Feuille de route', tab5: '5 · Engagement',
+      m1h2: 'Évaluation de la position — Scan de maturité IA',
+      m1p: 'Où se situe notre fonction RH aujourd\'hui sur les 5 dimensions de l\'IA en RH ?',
+      m1sec1: 'Contexte : Mon défi RH',
+      m1inst1: 'Décrivez l\'état actuel de l\'IA dans votre fonction RH et votre plus grand défi. Qu\'est-ce qui fonctionne déjà ? Qu\'est-ce qui vous freine le plus ?',
+      m1lbl1: 'État actuel : l\'IA dans ma fonction RH',
+      m1ph1: 'p.ex. Nous utilisons l\'IA ponctuellement dans le recrutement (tri de CV). Le principal obstacle est le manque de qualité des données dans nos systèmes RH...',
+      m1lbl2: 'Mon plus grand défi avec l\'IA en RH (1 phrase)',
+      m1ph2: 'Quelle est la chose qui nous freine le plus ?',
+      m1sec2: 'Scan de maturité IA — 5 Dimensions',
+      m1inst2: 'Évaluez honnêtement notre fonction RH sur chaque dimension. Échelle : 1 = Débutant, 5 = Pionnier.',
+      dim1: '1 · IA dans le recrutement & l\'acquisition de talents',
+      dim2: '2 · IA dans le People Analytics & les données',
+      dim3: '3 · Compétences & développement de la communauté RH',
+      dim4: '4 · Infrastructure HR-Tech & qualité des données',
+      dim5: '5 · Acceptation, confiance & changement',
+      sliderL: '1 – Quasi absent', sliderM: '3 – En développement', sliderH: '5 – Pleinement établi',
+      dimDesc1: 'L\'IA est-elle utilisée dans le recrutement (sourcing, tri, matching) — et à quel niveau de maturité ?',
+      dimDesc2: 'Utilisons-nous les données RH et l\'IA pour des décisions RH éclairées (turnover, compétences, performance) ?',
+      dimDesc3: 'Les collaborateurs RH ont-ils les compétences et outils pour utiliser l\'IA au quotidien ?',
+      dimDesc4: 'Les données de nos systèmes RH (p.ex. Workday/SAP) sont-elles exploitables par l\'IA ?',
+      dimDesc5: 'Quel est le niveau de confiance des collaborateurs dans les décisions RH assistées par l\'IA ?',
+      dimPh1: 'Qu\'est-ce qui manque concrètement ? Qu\'est-ce qui fonctionne déjà ?',
+      dimPh2: 'Quelles données/analyses manquent ? Qu\'est-ce qui est déjà évalué ?',
+      dimPh3: 'Où utilisons-nous l\'IA au quotidien ? Où est-ce encore ad hoc ?',
+      dimPh4: 'Quels problèmes de données avons-nous ? Nos systèmes RH sont-ils bien connectés ?',
+      dimPh5: 'Comment les collaborateurs réagissent-ils à l\'IA en RH ? Des résistances ? Des facilitateurs ?',
+      m1sec3: 'Réflexion (échange en binôme)',
+      m1inst3: 'Échangez avec une personne : Qu\'est-ce qui vous surprend dans votre auto-évaluation ? Qu\'est-ce qui ne correspond pas au tableau officiel ?',
+      m1lbl3: 'Ma principale prise de conscience lors de l\'échange',
+      m1ph3: 'Qu\'ai-je appris ou confirmé lors de la conversation ?',
+      btnNext1: 'Suivant → Dimensions',
+      m2h2: 'Anatomie de l\'IA en RH',
+      m2p: 'Qu\'est-ce qui doit concrètement changer dans notre fonction RH ?',
+      m2sec1: 'Approfondissement d\'une dimension',
+      m2inst1: 'Approfondissez une dimension du scan de maturité : Que signifie-t-elle concrètement pour notre RH — et quelle est l\'erreur la plus fréquente ? Notez en parallèle votre propre évaluation.',
+      m2lbl1: 'Ma dimension approfondie', m2ph1: 'p.ex. IA dans le recrutement & l\'acquisition de talents',
+      m2lbl2: 'Que signifie concrètement cette dimension ?',
+      m2ph2: 'Quels éléments, rôles, processus concrets en font partie ?',
+      m2lbl3: 'Erreur la plus fréquente dans cette dimension',
+      m2ph3: 'Qu\'est-ce que les organisations RH font typiquement mal ?',
+      m2lbl4: 'Où en est notre RH sur cette dimension ? Où est le plus grand écart ?',
+      m2ph4: 'Évaluation personnelle — qu\'est-ce qui manque concrètement chez nous ?',
+      m2sec2: 'Bonne pratique issue de la plénière',
+      m2inst2: 'Notez 2 à 3 insights des courts exposés en plénière qui sont pertinents pour notre RH.',
+      m2lbl5: 'Inputs pertinents issus de la plénière',
+      m2ph5: 'Quels insights s\'appliquent également à notre fonction RH ?',
+      btnBack: '← Retour', btnNext2: 'Suivant → Tensions',
+      m3h2: 'Tensions & arbitrages',
+      m3p: 'Où y a-t-il des frictions avec l\'IA en RH — et pourquoi ?',
+      m3sec1: 'Évaluation des tensions',
+      m3inst1: 'Où se situe notre RH sur les trois tensions centrales ? Choisissez la position la plus appropriée et notez votre justification.',
+      t1label: '1 · Structure IA : Équipe IA centrale vs. IA dans chaque équipe RH',
+      t1a: 'Entièrement centralisé (HR AI CoE)', t1b: 'Hybride (CoE + intégré)',
+      t1c: 'Entièrement décentralisé', t1d: 'Encore flou',
+      t1ph: 'Pourquoi cette position ? Quels sont les arguments pour/contre ?',
+      t2label: '2 · Outils RH standard (p.ex. modules IA Workday/SAP) vs. Développement interne',
+      t2a: 'Principalement Build (interne)', t2b: 'Principalement Buy (outils standard)', t2c: 'Hybride', t2d: 'Encore flou',
+      t2ph: 'Quelle est notre stratégie actuelle ? Que changeriez-vous ?',
+      t3label: '3 · Efficacité back-office vs. Transformation de l\'expérience collaborateur',
+      t3a: 'Focus Efficacité', t3b: 'Équilibré', t3c: 'Focus Transformation', t3d: 'Encore flou',
+      t3ph: 'Où est le point de friction ? Qu\'est-ce qui devrait être pondéré différemment ?',
+      btnNext3: 'Suivant → Feuille de route',
+      m4h2: 'Feuille de route — De l\'analyse à l\'action',
+      m4p: 'Comment passer du diagnostic à des mesures concrètes ?',
+      m4sec1: 'Analyse de cas',
+      m4inst1: 'Analysez un cas RH : Même technologie, modèles opérationnels différents — résultats différents. Quelle était la différence ?',
+      m4lbl1: 'Nom du cas / exemple', m4ph1: 'Quel cas a été analysé ?',
+      m4lbl2: 'Quelle était la différence décisive dans le modèle opérationnel ?',
+      m4ph2: 'Qu\'est-ce que l\'organisation RH réussie a fait différemment ?',
+      m4lbl3: 'Qu\'est-ce que cela signifierait pour notre RH ?',
+      m4ph3: 'Quelles 1 à 2 choses pourrais-je adopter directement ?',
+      m4sec2: 'Ma feuille de route prioritaire',
+      m4inst2: 'Définissez 3 priorités concrètes pour notre RH — avec un horizon temporel. Soyez aussi précis que possible.',
+      m4lbl4: 'Immédiat (0 à 3 mois) : Que puis-je / mon équipe lancer dès maintenant ?',
+      m4ph4: 'p.ex. Lancer un projet pilote IA dans le recrutement, auditer la qualité des données dans les systèmes RH...',
+      m4lbl5: 'Court terme (3 à 12 mois) : Qu\'est-ce qui nécessite planification et ressources ?',
+      m4ph5: 'p.ex. Élaborer des lignes directrices IA pour la communauté RH, lancer les premières formations...',
+      m4lbl6: 'Moyen terme (1 à 3 ans) : Quelle est la vision transformatrice ?',
+      m4ph6: 'p.ex. People analytics alimenté par l\'IA à grande échelle, processus RH natifs IA...',
+      btnNext4: 'Suivant → Engagement',
+      m5h2: 'Engagement personnel & clôture',
+      m5p: 'Qu\'emportez-vous aujourd\'hui — et que ferez-vous concrètement ?',
+      m5sec1: 'Mon engagement sur 30 jours',
+      m5commit_h3: 'Ce que je ferai concrètement dans les 30 prochains jours',
+      m5commit_p: 'Soyez précis : Quoi, avec qui, d\'ici quand ? Plus c\'est concret, plus c\'est susceptible de se réaliser.',
+      m5ph1: 'Dans les 30 prochains jours, je vais... concrètement atteindre en...',
+      m5ph_partner: 'Partenaire de responsabilité (nom)', m5ph_date: 'Date de mon point de suivi',
+      m5sec2: 'Mes 3 principaux apprentissages aujourd\'hui',
+      m5sec3: 'Retour sur la formation',
+      m5lbl1: 'Qu\'est-ce qui a particulièrement bien fonctionné ?',
+      m5lbl2: 'Que changeriez-vous pour la prochaine fois ?',
+      m5sec4: 'Exporter le workbook',
+      exportH3: 'Workbook terminé',
+      exportP: 'Exportez votre workbook personnel en document Word — pour continuer à l\'éditer, le classer ou le partager.',
+      btnWord: '📄 Télécharger en Word',
+      btnSubmit: 'Soumettre les réponses',
+      btnPrint: '🖨️ Imprimer / PDF',
+      submissionNote: 'Lors de la soumission, vos réponses au workbook sont enregistrées dans la base de données du cours.',
+    },
     en: {
       moduleOf: (n, t) => `Module ${n} of ${t}`,
       moduleSlash: (n, t) => `Module ${n} / ${t}`,
@@ -1655,6 +1768,7 @@ ${dimShort.map((d,i)=>`&nbsp;&nbsp;&nbsp;&nbsp;<span class="json-key">"${d}"</sp
     // Lang buttons
     $('lang-de').classList.toggle('active', lang === 'de');
     $('lang-en').classList.toggle('active', lang === 'en');
+    $('lang-fr').classList.toggle('active', lang === 'fr');
 
     // Participant bar
     const pLabels = document.querySelectorAll('.participant-bar label');
